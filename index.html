@@ -849,6 +849,14 @@
             opacity: 0.6;
             cursor: not-allowed;
         }
+        
+        /* Mobile optimization for Metrics Bar */
+        @media (max-width: 768px) {
+            .metrics-bar {
+                position: static; /* Disables the sticky behavior on mobile */
+                padding: 1.5rem 0; /* Reduces vertical space slightly for a better fit */
+            }
+        }
     </style>
 </head>
 <body>
