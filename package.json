@@ -11,6 +11,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "nodemailer": "^7.0.3"
+    "resend": "^4.6.0"
   }
 }
