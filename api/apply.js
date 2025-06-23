@@ -89,12 +89,12 @@ export default async function handler(req, res) {
     `;
 
     // Send email using Resend
-    const { data, error } = await resend.emails.send({
-      from: 'The Protocol <onboarding@resend.dev>',
-      to: 'your-resend-signup-email@example.com',
-      subject: `New Founding Charter Application: ${name} - ${company}`,
-      html: emailHtml,
-    });
+	const { data, error } = await resend.emails.send({
+	from: 'The Protocol <onboarding@resend.dev>',
+	to: 'AgentVault@proton.me', // <- THIS IS THE FIX
+	subject: `New Founding Charter Application: ${name} - ${company}`,
+	html: emailHtml,
+	});
 
     if (error) {
       console.error('Resend error:', error);
