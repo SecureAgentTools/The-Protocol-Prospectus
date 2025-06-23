@@ -1,6 +1,15 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Create reusable transporter object using Proton Mail SMTP
+const transporter = nodemailer.createTransport({
+  host: 'smtp.protonmail.ch',
+  port: 465,
+  secure: true, // true for 465, false for other ports
+  auth: {
+    user: process.env.MAIL_USERNAME,
+    pass: process.env.MAIL_PASSWORD
+  }
+});
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -88,18 +97,15 @@ export default async function handler(req, res) {
       </html>
     `;
 
-    // Send email using Resend
-	const { data, error } = await resend.emails.send({
-	from: 'The Protocol <onboarding@resend.dev>',
-	to: 'AgentVault@proton.me', // <- THIS IS THE FIX
-	subject: `New Founding Charter Application: ${name} - ${company}`,
-	html: emailHtml,
-	});
+    // Send email using nodemailer
+    const mailOptions = {
+      from: process.env.MAIL_USERNAME,
+      to: 'AgentVault@proton.me',
+      subject: `New Founding Charter Application: ${name} - ${company}`,
+      html: emailHtml
+    };
 
-    if (error) {
-      console.error('Resend error:', error);
-      return res.status(500).json({ message: 'Failed to process application.' });
-    }
+    await transporter.sendMail(mailOptions);
 
     return res.status(200).json({ message: 'Application submitted successfully!' });
 
