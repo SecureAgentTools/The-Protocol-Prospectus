@@ -91,7 +91,7 @@ export default async function handler(req, res) {
     // Send email using Resend
     const { data, error } = await resend.emails.send({
       from: 'The Protocol <onboarding@resend.dev>',
-      to: 'AgentVault@proton.me',
+      to: 'your-resend-signup-email@example.com',
       subject: `New Founding Charter Application: ${name} - ${company}`,
       html: emailHtml,
     });
