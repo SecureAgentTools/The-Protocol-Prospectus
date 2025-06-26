@@ -2,16 +2,14 @@ import nodemailer from 'nodemailer';
 
 // Create reusable transporter object using Proton Mail SMTP
 const transporter = nodemailer.createTransport({
-  host: 'smtp.protonmail.ch', // Keep this the same
-  port: 587,                 // Change port to 587
-  secure: false,               // Set secure to false for STARTTLS
+  host: "smtp.protonmail.ch",
+  port: 587,
+  secure: false, // This must be false for STARTTLS
+  requireTLS: true, // Force STARTTLS
   auth: {
     user: process.env.MAIL_USERNAME,
-    pass: process.env.MAIL_PASSWORD
+    pass: process.env.MAIL_PASSWORD,
   },
-  tls: {
-    ciphers:'SSLv3' // Optional, but can help with compatibility
-  }
 });
 
 export default async function handler(req, res) {
