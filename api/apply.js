@@ -80,12 +80,12 @@ export default async function handler(req, res) {
             </div>
             
             <div class="signature">
-              <p style="margin: 0 0 10px 0;"><strong>The AgentVault Project Team</strong></p>
+              <p style="margin: 0 0 10px 0;"><strong>The Protocol Team</strong></p>
               <p style="margin: 0; font-size: 14px;">Building the Economic Infrastructure for Autonomous AI</p>
               <p style="margin: 10px 0 0 0; font-size: 13px;">
                 <em>"Where Compute Has Value"</em><br>
                 <a href="https://www.linkedin.com/in/raphaeljeziorny/">LinkedIn</a> | 
-                AgentVault@proton.me
+                onboarding.contact@theprotocol.cloud
               </p>
               <p style="margin: 15px 0 0 0; font-size: 12px; color: #999;">
                 This email contains confidential information regarding The Protocol's founding partnership program. 
@@ -100,8 +100,8 @@ export default async function handler(req, res) {
 
     // Send email using nodemailer
     const mailOptions = {
-      from: process.env.MAIL_USERNAME,
-      to: 'AgentVault@proton.me',
+      from: `"The Protocol" <${process.env.MAIL_USERNAME}>`,
+      to: process.env.MAIL_USERNAME,
       subject: `New Founding Charter Application: ${name} - ${company}`,
       html: emailHtml
     };
