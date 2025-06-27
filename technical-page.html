@@ -784,7 +784,7 @@
             </div>
             
             <div class="architecture-visual">
-                <canvas id="architecture-canvas"></canvas>
+                <div id="architecture-canvas"></div>
             </div>
             
             <div class="features-grid">
@@ -963,101 +963,393 @@ print(f<span class="string">"Agent DID: {deployment.did}"</span>)  <span class="
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Live Federation Network Visualization
+        // Enhanced Live Federation Network Visualization
         const networkCanvas = document.getElementById('federation-network');
         const networkCtx = networkCanvas.getContext('2d');
         
+        // Enhanced registry data with more properties - adjusted positions for better spacing
+        const registries = [
+            { name: 'Silicon Valley', x: 0.2, y: 0.25, color: '#3B82F6', agents: 7027, growth: 2.3, status: 'optimal', latency: '12ms' },
+            { name: 'Tokyo', x: 0.8, y: 0.25, color: '#8B5CF6', agents: 4890, growth: 1.8, status: 'optimal', latency: '45ms' },
+            { name: 'London', x: 0.2, y: 0.75, color: '#10B981', agents: 3431, growth: 3.1, status: 'growing', latency: '28ms' },
+            { name: 'Singapore', x: 0.8, y: 0.75, color: '#EF4444', agents: 5234, growth: 2.7, status: 'optimal', latency: '35ms' },
+            { name: 'Frankfurt', x: 0.5, y: 0.45, color: '#F59E0B', agents: 8123, growth: 1.5, status: 'optimal', latency: '18ms' }
+        ];
+        
+        // Animation state
+        let animationTime = 0;
+        let mouseX = 0;
+        let mouseY = 0;
+        let hoveredRegistry = null;
+        const particles = [];
+        const connections = [];
+        
+        // Initialize connections
+        for (let i = 0; i < registries.length; i++) {
+            for (let j = i + 1; j < registries.length; j++) {
+                connections.push({
+                    from: i,
+                    to: j,
+                    packets: []
+                });
+                // Initialize data packets for each connection
+                for (let k = 0; k < 3; k++) {
+                    connections[connections.length - 1].packets.push({
+                        progress: Math.random(),
+                        speed: 0.3 + Math.random() * 0.4,
+                        size: 2 + Math.random() * 2
+                    });
+                }
+            }
+        }
+        
+        // Background particles
+        for (let i = 0; i < 50; i++) {
+            particles.push({
+                x: Math.random(),
+                y: Math.random(),
+                vx: (Math.random() - 0.5) * 0.0005,
+                vy: (Math.random() - 0.5) * 0.0005,
+                size: Math.random() * 2,
+                opacity: Math.random() * 0.5
+            });
+        }
+        
         function resizeNetworkCanvas() {
-            networkCanvas.width = networkCanvas.parentElement.clientWidth;
-            networkCanvas.height = networkCanvas.parentElement.clientHeight;
+            const rect = networkCanvas.parentElement.getBoundingClientRect();
+            networkCanvas.width = rect.width;
+            networkCanvas.height = rect.height;
         }
         
         resizeNetworkCanvas();
         window.addEventListener('resize', resizeNetworkCanvas);
         
-        // Registry nodes for federation visualization
-        const registries = [
-            { name: 'Silicon Valley', x: 0.2, y: 0.3, color: '#3B82F6', agents: 7523 },
-            { name: 'Tokyo', x: 0.8, y: 0.2, color: '#8B5CF6', agents: 4892 },
-            { name: 'London', x: 0.3, y: 0.7, color: '#10B981', agents: 3421 },
-            { name: 'Singapore', x: 0.7, y: 0.6, color: '#EF4444', agents: 5234 },
-            { name: 'Frankfurt', x: 0.5, y: 0.5, color: '#F59E0B', agents: 6123 }
-        ];
+        // Mouse tracking
+        networkCanvas.addEventListener('mousemove', (e) => {
+            const rect = networkCanvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+            
+            // Check hover on registries
+            hoveredRegistry = null;
+            registries.forEach((registry, index) => {
+                const pos = getRegistryPos(registry);
+                const dist = Math.sqrt(Math.pow(mouseX - pos.x, 2) + Math.pow(mouseY - pos.y, 2));
+                const radius = getNodeRadius(registry);
+                if (dist < radius + 20) {
+                    hoveredRegistry = index;
+                }
+            });
+        });
         
-        // Convert relative positions to canvas coordinates
+        networkCanvas.addEventListener('mouseleave', () => {
+            hoveredRegistry = null;
+        });
+        
+        // Convert relative positions to canvas coordinates with padding
         function getRegistryPos(registry) {
+            const padding = 80; // Ensure nodes don't get cut off at edges
             return {
-                x: registry.x * networkCanvas.width,
-                y: registry.y * networkCanvas.height
+                x: padding + (registry.x * (networkCanvas.width - padding * 2)),
+                y: padding + (registry.y * (networkCanvas.height - padding * 2))
             };
         }
         
-        // Animated connections between registries
-        let connectionPhase = 0;
+        // Calculate node radius based on agent count
+        function getNodeRadius(registry) {
+            return Math.sqrt(registry.agents) * 0.8 + 20;
+        }
         
-        function drawFederationNetwork() {
-            networkCtx.clearRect(0, 0, networkCanvas.width, networkCanvas.height);
+        // Draw glowing line with gradient
+        function drawGlowingLine(x1, y1, x2, y2, color, opacity = 0.3, width = 2) {
+            // Glow effect
+            networkCtx.strokeStyle = color + Math.floor(opacity * 255 / 4).toString(16).padStart(2, '0');
+            networkCtx.lineWidth = width * 4;
+            networkCtx.beginPath();
+            networkCtx.moveTo(x1, y1);
+            networkCtx.lineTo(x2, y2);
+            networkCtx.stroke();
             
-            // Draw connections with animated data flow
-            networkCtx.strokeStyle = 'rgba(59, 130, 246, 0.2)';
-            networkCtx.lineWidth = 2;
+            // Main line
+            networkCtx.strokeStyle = color + Math.floor(opacity * 255).toString(16).padStart(2, '0');
+            networkCtx.lineWidth = width;
+            networkCtx.beginPath();
+            networkCtx.moveTo(x1, y1);
+            networkCtx.lineTo(x2, y2);
+            networkCtx.stroke();
+        }
+        
+        // Draw enhanced node
+        function drawNode(registry, index) {
+            const pos = getRegistryPos(registry);
+            const radius = getNodeRadius(registry);
+            const isHovered = hoveredRegistry === index;
+            const pulseScale = 1 + Math.sin(animationTime * 2 + index) * 0.05;
+            const actualRadius = radius * (isHovered ? 1.1 : 1) * pulseScale;
             
-            for (let i = 0; i < registries.length; i++) {
-                for (let j = i + 1; j < registries.length; j++) {
-                    const pos1 = getRegistryPos(registries[i]);
-                    const pos2 = getRegistryPos(registries[j]);
-                    
-                    // Draw connection line
-                    networkCtx.beginPath();
-                    networkCtx.moveTo(pos1.x, pos1.y);
-                    networkCtx.lineTo(pos2.x, pos2.y);
-                    networkCtx.stroke();
-                    
-                    // Animated data packets
-                    const progress = (connectionPhase + i * 0.2) % 1;
-                    const packetX = pos1.x + (pos2.x - pos1.x) * progress;
-                    const packetY = pos1.y + (pos2.y - pos1.y) * progress;
-                    
-                    networkCtx.fillStyle = 'rgba(59, 130, 246, 0.8)';
-                    networkCtx.beginPath();
-                    networkCtx.arc(packetX, packetY, 3, 0, Math.PI * 2);
-                    networkCtx.fill();
-                }
-            }
-            
-            // Draw registry nodes
-            registries.forEach((registry, index) => {
-                const pos = getRegistryPos(registry);
-                const radius = Math.sqrt(registry.agents) * 0.8;
-                
-                // Outer glow
-                const gradient = networkCtx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius * 2);
-                gradient.addColorStop(0, registry.color + '40');
+            // Outer glow layers
+            for (let i = 3; i > 0; i--) {
+                const gradient = networkCtx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, actualRadius * (1 + i * 0.5));
+                gradient.addColorStop(0, registry.color + '20');
+                gradient.addColorStop(0.5, registry.color + '10');
                 gradient.addColorStop(1, 'transparent');
                 networkCtx.fillStyle = gradient;
                 networkCtx.beginPath();
-                networkCtx.arc(pos.x, pos.y, radius * 2, 0, Math.PI * 2);
+                networkCtx.arc(pos.x, pos.y, actualRadius * (1 + i * 0.5), 0, Math.PI * 2);
                 networkCtx.fill();
-                
-                // Registry node
-                networkCtx.fillStyle = registry.color;
+            }
+            
+            // Main node gradient
+            const nodeGradient = networkCtx.createRadialGradient(
+                pos.x - actualRadius * 0.3, 
+                pos.y - actualRadius * 0.3, 
+                0, 
+                pos.x, 
+                pos.y, 
+                actualRadius
+            );
+            nodeGradient.addColorStop(0, registry.color + 'FF');
+            nodeGradient.addColorStop(0.7, registry.color + 'CC');
+            nodeGradient.addColorStop(1, registry.color + '88');
+            
+            // Node shadow
+            networkCtx.shadowColor = registry.color;
+            networkCtx.shadowBlur = 20;
+            networkCtx.fillStyle = nodeGradient;
+            networkCtx.beginPath();
+            networkCtx.arc(pos.x, pos.y, actualRadius, 0, Math.PI * 2);
+            networkCtx.fill();
+            networkCtx.shadowBlur = 0;
+            
+            // Inner bright core
+            const coreGradient = networkCtx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, actualRadius * 0.3);
+            coreGradient.addColorStop(0, '#FFFFFF');
+            coreGradient.addColorStop(1, registry.color + 'AA');
+            networkCtx.fillStyle = coreGradient;
+            networkCtx.beginPath();
+            networkCtx.arc(pos.x, pos.y, actualRadius * 0.3, 0, Math.PI * 2);
+            networkCtx.fill();
+            
+            // Orbital ring
+            if (isHovered || registry.status === 'optimal') {
+                networkCtx.strokeStyle = registry.color + '60';
+                networkCtx.lineWidth = 2;
+                networkCtx.setLineDash([5, 5]);
+                networkCtx.lineDashOffset = -animationTime * 50;
                 networkCtx.beginPath();
-                networkCtx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+                networkCtx.arc(pos.x, pos.y, actualRadius + 10, 0, Math.PI * 2);
+                networkCtx.stroke();
+                networkCtx.setLineDash([]);
+            }
+            
+            // Text styling
+            networkCtx.textAlign = 'center';
+            networkCtx.textBaseline = 'middle';
+            
+            // Registry name with better styling
+            networkCtx.font = `bold ${isHovered ? '16px' : '14px'} -apple-system, BlinkMacSystemFont, sans-serif`;
+            networkCtx.fillStyle = '#FFFFFF';
+            networkCtx.shadowColor = '#000000';
+            networkCtx.shadowBlur = 4;
+            networkCtx.fillText(registry.name, pos.x, pos.y - actualRadius - 25);
+            
+            // Agent count with formatting
+            networkCtx.font = `${isHovered ? '14px' : '12px'} -apple-system, BlinkMacSystemFont, sans-serif`;
+            networkCtx.fillStyle = registry.color;
+            networkCtx.fillText(`${registry.agents.toLocaleString()} agents`, pos.x, pos.y - actualRadius - 40);
+            
+            // Growth and latency indicators
+            if (isHovered) {
+                networkCtx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+                networkCtx.fillStyle = '#10B981';
+                networkCtx.fillText(`↑ ${registry.growth}% growth`, pos.x, pos.y - actualRadius - 55);
+                
+                // Latency display - positioned to avoid overlap
+                if (registry.name === 'Frankfurt') {
+                    // Special positioning for center node - display above
+                    networkCtx.textAlign = 'center';
+                    networkCtx.fillStyle = '#3B82F6';
+                    networkCtx.fillText(`⚡ ${registry.latency}`, pos.x, pos.y - actualRadius - 70);
+                } else {
+                    // Side positioning for other nodes
+                    const latencyX = pos.x + (registry.x > 0.5 ? actualRadius + 30 : -actualRadius - 30);
+                    networkCtx.textAlign = registry.x > 0.5 ? 'left' : 'right';
+                    networkCtx.fillStyle = '#3B82F6';
+                    networkCtx.fillText(`⚡ ${registry.latency}`, latencyX, pos.y);
+                    networkCtx.textAlign = 'center'; // Reset alignment
+                }
+            }
+            
+            networkCtx.shadowBlur = 0;
+            
+            // Status indicator inside node with better styling
+            networkCtx.font = 'bold 10px -apple-system, BlinkMacSystemFont, sans-serif';
+            if (registry.status === 'optimal') {
+                networkCtx.fillStyle = '#FFFFFF';
+                networkCtx.fillText('OPTIMAL', pos.x, pos.y);
+            } else if (registry.status === 'growing') {
+                networkCtx.fillStyle = '#10B981';
+                networkCtx.fillText('GROWING', pos.x, pos.y);
+            }
+            
+            // Network strength indicator - compact version
+            if (isHovered) {
+                if (registry.name === 'Frankfurt') {
+                    // For center node, show signal strength in the status area
+                    networkCtx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+                    networkCtx.fillStyle = '#10B981';
+                    networkCtx.fillText('████', pos.x, pos.y + 15);
+                } else {
+                    // Side indicators for other nodes
+                    const indicatorX = pos.x + (registry.x > 0.5 ? actualRadius + 15 : -actualRadius - 15);
+                    const indicatorY = pos.y + 20;
+                    
+                    networkCtx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+                    networkCtx.textAlign = registry.x > 0.5 ? 'left' : 'right';
+                    const signalStrength = parseInt(registry.latency) < 30 ? '████' : parseInt(registry.latency) < 40 ? '███░' : '██░░';
+                    networkCtx.fillStyle = parseInt(registry.latency) < 30 ? '#10B981' : parseInt(registry.latency) < 40 ? '#3B82F6' : '#F59E0B';
+                    networkCtx.fillText(signalStrength, indicatorX, indicatorY);
+                    networkCtx.textAlign = 'center'; // Reset
+                }
+            }
+        }
+        
+        // Main animation loop
+        function drawFederationNetwork() {
+            // Clear canvas
+            networkCtx.fillStyle = '#000000';
+            networkCtx.fillRect(0, 0, networkCanvas.width, networkCanvas.height);
+            
+            // Animated grid background
+            const gridSize = 50;
+            const gridOffset = (animationTime * 10) % gridSize;
+            
+            networkCtx.strokeStyle = 'rgba(59, 130, 246, 0.03)';
+            networkCtx.lineWidth = 1;
+            
+            // Vertical lines with subtle animation
+            for (let x = -gridSize; x < networkCanvas.width + gridSize; x += gridSize) {
+                const animX = x + gridOffset / 2;
+                networkCtx.beginPath();
+                networkCtx.moveTo(animX, 0);
+                networkCtx.lineTo(animX, networkCanvas.height);
+                networkCtx.stroke();
+            }
+            
+            // Horizontal lines
+            for (let y = 0; y < networkCanvas.height; y += gridSize) {
+                networkCtx.beginPath();
+                networkCtx.moveTo(0, y);
+                networkCtx.lineTo(networkCanvas.width, y);
+                networkCtx.stroke();
+            }
+            
+            // Background particles
+            particles.forEach(particle => {
+                const x = particle.x * networkCanvas.width;
+                const y = particle.y * networkCanvas.height;
+                
+                networkCtx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})`;
+                networkCtx.beginPath();
+                networkCtx.arc(x, y, particle.size, 0, Math.PI * 2);
                 networkCtx.fill();
                 
-                // Registry name
-                networkCtx.fillStyle = '#FFFFFF';
-                networkCtx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
-                networkCtx.textAlign = 'center';
-                networkCtx.fillText(registry.name, pos.x, pos.y - radius - 10);
+                // Update particle position
+                particle.x += particle.vx;
+                particle.y += particle.vy;
                 
-                // Agent count
-                networkCtx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
-                networkCtx.fillStyle = '#94A3B8';
-                networkCtx.fillText(`${registry.agents.toLocaleString()} agents`, pos.x, pos.y - radius - 25);
+                // Wrap around edges
+                if (particle.x < 0) particle.x = 1;
+                if (particle.x > 1) particle.x = 0;
+                if (particle.y < 0) particle.y = 1;
+                if (particle.y > 1) particle.y = 0;
             });
             
-            connectionPhase += 0.005;
+            // Draw connections with enhanced effects
+            connections.forEach(conn => {
+                const pos1 = getRegistryPos(registries[conn.from]);
+                const pos2 = getRegistryPos(registries[conn.to]);
+                
+                // Connection strength based on hover
+                const isConnectedToHover = hoveredRegistry === conn.from || hoveredRegistry === conn.to;
+                const opacity = isConnectedToHover ? 0.6 : 0.2;
+                
+                // Calculate connection quality based on latency
+                const avgLatency = (parseInt(registries[conn.from].latency) + parseInt(registries[conn.to].latency)) / 2;
+                const connectionColor = avgLatency < 30 ? '#10B981' : avgLatency < 40 ? '#3B82F6' : '#F59E0B';
+                
+                // Draw connection line with quality color
+                drawGlowingLine(pos1.x, pos1.y, pos2.x, pos2.y, connectionColor, opacity);
+                
+                // Animate data packets along connections
+                conn.packets.forEach(packet => {
+                    packet.progress += packet.speed * 0.01;
+                    if (packet.progress > 1) {
+                        packet.progress = 0;
+                        packet.speed = 0.3 + Math.random() * 0.4;
+                    }
+                    
+                    const packetX = pos1.x + (pos2.x - pos1.x) * packet.progress;
+                    const packetY = pos1.y + (pos2.y - pos1.y) * packet.progress;
+                    
+                    // Packet trail
+                    const trailLength = 5;
+                    for (let i = 0; i < trailLength; i++) {
+                        const trailProgress = Math.max(0, packet.progress - (i * 0.02));
+                        const trailX = pos1.x + (pos2.x - pos1.x) * trailProgress;
+                        const trailY = pos1.y + (pos2.y - pos1.y) * trailProgress;
+                        const trailOpacity = (1 - i / trailLength) * 0.3;
+                        
+                        networkCtx.fillStyle = `rgba(59, 130, 246, ${trailOpacity})`;
+                        networkCtx.beginPath();
+                        networkCtx.arc(trailX, trailY, packet.size * (1 - i / trailLength), 0, Math.PI * 2);
+                        networkCtx.fill();
+                    }
+                    
+                    // Main packet with connection quality color
+                    const packetGradient = networkCtx.createRadialGradient(packetX, packetY, 0, packetX, packetY, packet.size * 2);
+                    packetGradient.addColorStop(0, '#FFFFFF');
+                    packetGradient.addColorStop(0.5, connectionColor);
+                    packetGradient.addColorStop(1, 'transparent');
+                    
+                    networkCtx.fillStyle = packetGradient;
+                    networkCtx.beginPath();
+                    networkCtx.arc(packetX, packetY, packet.size * 2, 0, Math.PI * 2);
+                    networkCtx.fill();
+                });
+            });
+            
+            // Draw central hub indicator at Frankfurt's position
+            const frankfurtPos = getRegistryPos(registries[4]); // Frankfurt is at index 4
+            
+            // Central pulse effect
+            const pulseRadius = 25 + Math.sin(animationTime * 2) * 8;
+            const pulseGradient = networkCtx.createRadialGradient(frankfurtPos.x, frankfurtPos.y, 0, frankfurtPos.x, frankfurtPos.y, pulseRadius);
+            pulseGradient.addColorStop(0, 'rgba(245, 158, 11, 0.2)');
+            pulseGradient.addColorStop(0.5, 'rgba(245, 158, 11, 0.1)');
+            pulseGradient.addColorStop(1, 'transparent');
+            
+            networkCtx.fillStyle = pulseGradient;
+            networkCtx.beginPath();
+            networkCtx.arc(frankfurtPos.x, frankfurtPos.y, pulseRadius, 0, Math.PI * 2);
+            networkCtx.fill();
+            
+            // Draw nodes on top
+            registries.forEach((registry, index) => {
+                drawNode(registry, index);
+            });
+            
+            // Network title at the bottom
+            networkCtx.font = 'bold 16px -apple-system, BlinkMacSystemFont, sans-serif';
+            networkCtx.textAlign = 'center';
+            networkCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            networkCtx.shadowColor = '#000000';
+            networkCtx.shadowBlur = 4;
+            networkCtx.fillText('LIVE FEDERATION NETWORK', networkCanvas.width / 2, networkCanvas.height - 20);
+            networkCtx.shadowBlur = 0;
+            
+            // Update animation time
+            animationTime += 0.016;
             requestAnimationFrame(drawFederationNetwork);
         }
         
@@ -1066,95 +1358,454 @@ print(f<span class="string">"Agent DID: {deployment.did}"</span>)  <span class="
         // 3D Architecture Visualization using Three.js
         // Wait for DOM to be ready
         function initArchitectureVisualization() {
+            console.log('initArchitectureVisualization called');
             const architectureContainer = document.getElementById('architecture-canvas');
             if (!architectureContainer) {
                 console.error('Architecture canvas not found');
                 return;
             }
+            console.log('Architecture container found:', architectureContainer);
+            
+            // Ensure container has dimensions
+            const containerWidth = architectureContainer.clientWidth || architectureContainer.offsetWidth || 800;
+            const containerHeight = architectureContainer.clientHeight || architectureContainer.offsetHeight || 700;
+            console.log('Container dimensions:', containerWidth, 'x', containerHeight);
+            
+            if (containerWidth === 0 || containerHeight === 0) {
+                console.error('Architecture container has no dimensions');
+                setTimeout(initArchitectureVisualization, 100); // Retry after delay
+                return;
+            }
+            
+            // Clear any existing content
+            architectureContainer.innerHTML = '';
             
             const scene = new THREE.Scene();
-            const camera = new THREE.PerspectiveCamera(75, architectureContainer.clientWidth / architectureContainer.clientHeight, 0.1, 1000);
+            scene.fog = new THREE.Fog(0x000000, 10, 30);
+            
+            const camera = new THREE.PerspectiveCamera(75, containerWidth / containerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             
-            renderer.setSize(architectureContainer.clientWidth, architectureContainer.clientHeight);
+            renderer.setSize(containerWidth, containerHeight);
+            renderer.setClearColor(0x000000, 0);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             architectureContainer.appendChild(renderer.domElement);
-        
-        // Lighting
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
-        directionalLight.position.set(5, 10, 5);
-        scene.add(directionalLight);
-        
-        // Create architecture components
-        const components = [
-            { name: 'Identity Fabric', color: 0x3B82F6, position: { x: -3, y: 2, z: 0 } },
-            { name: 'Federation', color: 0x8B5CF6, position: { x: 3, y: 2, z: 0 } },
-            { name: 'ZKP Layer', color: 0x10B981, position: { x: -3, y: -2, z: 0 } },
-            { name: 'TEG Engine', color: 0xEF4444, position: { x: 3, y: -2, z: 0 } },
-            { name: 'Apex Control', color: 0xF59E0B, position: { x: 0, y: 0, z: 0 } }
-        ];
-        
-        const boxes = [];
-        components.forEach((comp, index) => {
-            const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: comp.color,
-                emissive: comp.color,
-                emissiveIntensity: 0.2
-            });
-            const box = new THREE.Mesh(geometry, material);
-            box.position.set(comp.position.x, comp.position.y, comp.position.z);
-            scene.add(box);
-            boxes.push(box);
-        });
-        
-        // Connection lines
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x3B82F6, opacity: 0.3, transparent: true });
-        for (let i = 0; i < boxes.length; i++) {
-            for (let j = i + 1; j < boxes.length; j++) {
-                const points = [];
-                points.push(boxes[i].position);
-                points.push(boxes[j].position);
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const line = new THREE.Line(geometry, lineMaterial);
-                scene.add(line);
+            console.log('Renderer created and appended successfully');
+            
+            // Enhanced Lighting Setup
+            const ambientLight = new THREE.AmbientLight(0x1a1a2e, 0.4);
+            scene.add(ambientLight);
+            
+            // Key light
+            const keyLight = new THREE.DirectionalLight(0x3B82F6, 0.8);
+            keyLight.position.set(5, 10, 5);
+            keyLight.castShadow = true;
+            keyLight.shadow.camera.near = 0.1;
+            keyLight.shadow.camera.far = 50;
+            keyLight.shadow.camera.left = -15;
+            keyLight.shadow.camera.right = 15;
+            keyLight.shadow.camera.top = 15;
+            keyLight.shadow.camera.bottom = -15;
+            scene.add(keyLight);
+            
+            // Fill light
+            const fillLight = new THREE.DirectionalLight(0x8B5CF6, 0.4);
+            fillLight.position.set(-5, 5, -5);
+            scene.add(fillLight);
+            
+            // Point lights for glow effects
+            const pointLight1 = new THREE.PointLight(0x3B82F6, 1, 20);
+            pointLight1.position.set(0, 5, 0);
+            scene.add(pointLight1);
+            
+            const pointLight2 = new THREE.PointLight(0x8B5CF6, 0.5, 15);
+            pointLight2.position.set(-5, -5, 5);
+            scene.add(pointLight2);
+            
+            // Helper function to create glow texture
+            function createGlowTexture(color) {
+                const canvas = document.createElement('canvas');
+                canvas.width = 64;
+                canvas.height = 64;
+                const context = canvas.getContext('2d');
+                
+                const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+                gradient.addColorStop(0, 'rgba(255,255,255,1)');
+                gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
+                gradient.addColorStop(0.4, 'rgba(255,255,255,0.3)');
+                gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                
+                context.fillStyle = gradient;
+                context.fillRect(0, 0, 64, 64);
+                
+                return canvas;
             }
-        }
         
-        camera.position.z = 10;
-        
-        // Animation
-        function animate3D() {
-            requestAnimationFrame(animate3D);
+            // Create architecture components with enhanced visuals
+            const components = [
+                { name: 'Identity Fabric', color: 0x3B82F6, icon: '🔐', position: { x: -4, y: 2.5, z: 0 }, scale: 1.2 },
+                { name: 'Federation', color: 0x8B5CF6, icon: '🌐', position: { x: 4, y: 2.5, z: 0 }, scale: 1.2 },
+                { name: 'ZKP Layer', color: 0x10B981, icon: '🛡️', position: { x: -4, y: -2.5, z: 0 }, scale: 1.1 },
+                { name: 'TEG Engine', color: 0xEF4444, icon: '💎', position: { x: 4, y: -2.5, z: 0 }, scale: 1.1 },
+                { name: 'Apex Control', color: 0xF59E0B, icon: '🎯', position: { x: 0, y: 0, z: 0 }, scale: 1.5 }
+            ];
             
-            boxes.forEach((box, index) => {
-                box.rotation.x += 0.005;
-                box.rotation.y += 0.007;
-                box.position.y += Math.sin(Date.now() * 0.001 + index) * 0.005;
+            const boxes = [];
+            const boxGroup = new THREE.Group();
+            const glowSprites = [];
+            
+            // Create base platform
+            const platformGeometry = new THREE.CylinderGeometry(8, 8, 0.2, 32);
+            const platformMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x1a1a2e,
+                emissive: 0x3B82F6,
+                emissiveIntensity: 0.1,
+                metalness: 0.8,
+                roughness: 0.2
+            });
+            const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            platform.position.y = -4;
+            platform.receiveShadow = true;
+            boxGroup.add(platform);
+            
+            // Create grid on platform
+            const gridHelper = new THREE.GridHelper(16, 32, 0x3B82F6, 0x1a1a2e);
+            gridHelper.position.y = -3.9;
+            boxGroup.add(gridHelper);
+            
+            components.forEach((comp, index) => {
+                const componentGroup = new THREE.Group();
+                
+                // Main geometry - using different shapes for variety
+                let geometry;
+                if (index === 4) { // Apex Control - central octahedron
+                    geometry = new THREE.OctahedronGeometry(1.2 * comp.scale, 0);
+                } else if (index % 2 === 0) { // Even indices - dodecahedron
+                    geometry = new THREE.DodecahedronGeometry(0.8 * comp.scale, 0);
+                } else { // Odd indices - icosahedron
+                    geometry = new THREE.IcosahedronGeometry(0.9 * comp.scale, 0);
+                }
+                
+                // Main material with enhanced properties
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: comp.color,
+                    emissive: comp.color,
+                    emissiveIntensity: 0.5,
+                    metalness: 0.3,
+                    roughness: 0.4,
+                    transparent: true,
+                    opacity: 0.9
+                });
+                const mainMesh = new THREE.Mesh(geometry, material);
+                mainMesh.castShadow = true;
+                componentGroup.add(mainMesh);
+                
+                // Inner core with brighter emission
+                const coreGeometry = geometry.clone();
+                const coreMaterial = new THREE.MeshBasicMaterial({ 
+                    color: 0xFFFFFF,
+                    transparent: true,
+                    opacity: 0.3
+                });
+                const core = new THREE.Mesh(coreGeometry, coreMaterial);
+                core.scale.setScalar(0.7);
+                componentGroup.add(core);
+                
+                // Outer shell with wireframe
+                const shellGeometry = geometry.clone();
+                const shellMaterial = new THREE.MeshBasicMaterial({ 
+                    color: comp.color,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const shell = new THREE.Mesh(shellGeometry, shellMaterial);
+                shell.scale.setScalar(1.3);
+                componentGroup.add(shell);
+                
+                // Add floating ring around component
+                const ringGeometry = new THREE.TorusGeometry(1.5 * comp.scale, 0.1, 8, 32);
+                const ringMaterial = new THREE.MeshBasicMaterial({ 
+                    color: comp.color,
+                    transparent: true,
+                    opacity: 0.4
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.rotation.x = Math.PI / 2;
+                componentGroup.add(ring);
+                
+                // Add glow effect using sprites
+                const glowTexture = new THREE.CanvasTexture(createGlowTexture(comp.color));
+                const glowMaterial = new THREE.SpriteMaterial({
+                    map: glowTexture,
+                    color: comp.color,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.5
+                });
+                const glowSprite = new THREE.Sprite(glowMaterial);
+                glowSprite.scale.setScalar(4 * comp.scale);
+                componentGroup.add(glowSprite);
+                
+                // Position the component group
+                componentGroup.position.set(comp.position.x, comp.position.y, comp.position.z);
+                boxGroup.add(componentGroup);
+                
+                boxes.push({ 
+                    mesh: mainMesh, 
+                    group: componentGroup,
+                    component: comp,
+                    ring: ring,
+                    shell: shell,
+                    core: core
+                });
             });
             
-            renderer.render(scene, camera);
-        }
+            scene.add(boxGroup);
+            
+            // Add particle field background for depth
+            const starGeometry = new THREE.BufferGeometry();
+            const starCount = 1000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            
+            for (let i = 0; i < starCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 50;
+                positions[i + 1] = (Math.random() - 0.5) * 50;
+                positions[i + 2] = (Math.random() - 0.5) * 50;
+                
+                const color = Math.random();
+                colors[i] = color * 0.5 + 0.5;
+                colors[i + 1] = color * 0.7 + 0.3;
+                colors[i + 2] = 1;
+            }
+            
+            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const starMaterial = new THREE.PointsMaterial({
+                size: 0.05,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const stars = new THREE.Points(starGeometry, starMaterial);
+            scene.add(stars);
+        
+            // Enhanced connection system with curved paths
+            const connections = [];
+            const particles = [];
+            const connectionMaterial = new THREE.LineBasicMaterial({ 
+                color: 0x3B82F6, 
+                opacity: 0.15, 
+                transparent: true,
+                linewidth: 2
+            });
+            
+            // Create connections between components
+            for (let i = 0; i < boxes.length; i++) {
+                for (let j = i + 1; j < boxes.length; j++) {
+                    const start = boxes[i].group.position;
+                    const end = boxes[j].group.position;
+                    
+                    // Create curved path for connection
+                    const mid = new THREE.Vector3(
+                        (start.x + end.x) / 2,
+                        (start.y + end.y) / 2 + 1,
+                        (start.z + end.z) / 2 + 2
+                    );
+                    
+                    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
+                    const points = curve.getPoints(50);
+                    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const line = new THREE.Line(lineGeometry, connectionMaterial);
+                    boxGroup.add(line);
+                    connections.push({ line, curve });
+                    
+                    // Create multiple particles per connection for data flow effect
+                    for (let k = 0; k < 3; k++) {
+                        const particleGroup = new THREE.Group();
+                        
+                        // Energy particle core
+                        const particleGeometry = new THREE.SphereGeometry(0.08, 12, 12);
+                        const particleMaterial = new THREE.MeshBasicMaterial({
+                            color: 0x00D4FF,
+                            transparent: true,
+                            opacity: 0.9
+                        });
+                        const particleCore = new THREE.Mesh(particleGeometry, particleMaterial);
+                        particleGroup.add(particleCore);
+                        
+                        // Particle glow
+                        const glowGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+                        const glowMaterial = new THREE.MeshBasicMaterial({
+                            color: boxes[i].component.color,
+                            transparent: true,
+                            opacity: 0.2
+                        });
+                        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                        particleGroup.add(glow);
+                        
+                        // Particle trail
+                        const trailGeometry = new THREE.ConeGeometry(0.05, 0.5, 4);
+                        const trailMaterial = new THREE.MeshBasicMaterial({
+                            color: 0x3B82F6,
+                            transparent: true,
+                            opacity: 0.3
+                        });
+                        const trail = new THREE.Mesh(trailGeometry, trailMaterial);
+                        trail.position.z = -0.25;
+                        trail.rotation.x = Math.PI / 2;
+                        particleGroup.add(trail);
+                        
+                        boxGroup.add(particleGroup);
+                        
+                        particles.push({
+                            particle: particleGroup,
+                            curve: curve,
+                            progress: (k / 3) + Math.random() * 0.3,
+                            speed: 0.005 + Math.random() * 0.005,
+                            trail: trail
+                        });
+                    }
+                }
+            }
+            
+            // Set camera position for optimal view
+            camera.position.set(0, 5, 15);
+            camera.lookAt(0, 0, 0);
+            
+            // Mouse interaction variables
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetRotationX = 0;
+            let targetRotationY = 0;
+            const windowHalfX = containerWidth / 2;
+            const windowHalfY = containerHeight / 2;
+            
+            // Mouse move handler
+            function onMouseMove(event) {
+                const rect = architectureContainer.getBoundingClientRect();
+                mouseX = ((event.clientX - rect.left) - windowHalfX) / windowHalfX;
+                mouseY = ((event.clientY - rect.top) - windowHalfY) / windowHalfY;
+            }
+            
+            architectureContainer.addEventListener('mousemove', onMouseMove, false);
+            
+            // Animation loop
+            function animate3D() {
+                requestAnimationFrame(animate3D);
+                
+                // Smooth camera rotation based on mouse
+                targetRotationY = mouseX * 0.5;
+                targetRotationX = -mouseY * 0.3;
+                boxGroup.rotation.y += (targetRotationY - boxGroup.rotation.y) * 0.05;
+                boxGroup.rotation.x += (targetRotationX - boxGroup.rotation.x) * 0.05;
+                
+                // Animate components
+                boxes.forEach((boxData, index) => {
+                    const time = Date.now() * 0.001;
+                    
+                    // Rotate main mesh
+                    boxData.mesh.rotation.x += 0.002;
+                    boxData.mesh.rotation.y += 0.003;
+                    
+                    // Counter-rotate shell for effect
+                    boxData.shell.rotation.x -= 0.001;
+                    boxData.shell.rotation.y -= 0.002;
+                    
+                    // Float animation
+                    boxData.group.position.y = boxData.component.position.y + Math.sin(time + index * 0.5) * 0.2;
+                    
+                    // Pulse core
+                    const corePulse = 0.7 + Math.sin(time * 2 + index) * 0.1;
+                    boxData.core.scale.setScalar(corePulse);
+                    
+                    // Rotate ring
+                    boxData.ring.rotation.z += 0.01;
+                    boxData.ring.rotation.x = Math.PI / 2 + Math.sin(time + index) * 0.1;
+                    
+                    // Ring pulse
+                    const ringScale = 1 + Math.sin(time * 1.5 + index) * 0.1;
+                    boxData.ring.scale.setScalar(ringScale);
+                });
+                
+                // Animate particles along curved paths
+                particles.forEach((particleData, index) => {
+                    particleData.progress += particleData.speed;
+                    if (particleData.progress > 1) {
+                        particleData.progress = 0;
+                    }
+                    
+                    // Get position on curve
+                    const point = particleData.curve.getPoint(particleData.progress);
+                    particleData.particle.position.copy(point);
+                    
+                    // Orient trail based on movement direction
+                    if (particleData.progress > 0.01) {
+                        const prevPoint = particleData.curve.getPoint(particleData.progress - 0.01);
+                        const direction = new THREE.Vector3().subVectors(point, prevPoint).normalize();
+                        particleData.particle.lookAt(point.clone().add(direction));
+                    }
+                    
+                    // Pulse and scale effect
+                    const pulseScale = 0.8 + Math.sin(Date.now() * 0.005 + index) * 0.2;
+                    particleData.particle.scale.setScalar(pulseScale);
+                    
+                    // Fade in/out at edges
+                    const edgeFade = Math.sin(particleData.progress * Math.PI);
+                    particleData.particle.children[0].material.opacity = 0.9 * edgeFade;
+                    particleData.particle.children[1].material.opacity = 0.2 * edgeFade;
+                });
+                
+                // Animate point lights
+                const time = Date.now() * 0.001;
+                pointLight1.position.x = Math.sin(time * 0.7) * 10;
+                pointLight1.position.z = Math.cos(time * 0.7) * 10;
+                pointLight2.position.x = Math.cos(time * 0.5) * 8;
+                pointLight2.position.z = Math.sin(time * 0.5) * 8;
+                
+                // Rotate star field
+                stars.rotation.y += 0.0001;
+                stars.rotation.x += 0.00005;
+                
+                renderer.render(scene, camera);
+            }
         
             animate3D();
             
             // Handle resize
             window.addEventListener('resize', () => {
-                const container = document.getElementById('architecture-canvas');
-                if (container && camera && renderer) {
-                    camera.aspect = container.clientWidth / container.clientHeight;
+                if (architectureContainer && camera && renderer) {
+                    const newWidth = architectureContainer.clientWidth || architectureContainer.offsetWidth || 800;
+                    const newHeight = architectureContainer.clientHeight || architectureContainer.offsetHeight || 700;
+                    camera.aspect = newWidth / newHeight;
                     camera.updateProjectionMatrix();
-                    renderer.setSize(container.clientWidth, container.clientHeight);
+                    renderer.setSize(newWidth, newHeight);
                 }
             });
         }
         
         // Initialize 3D visualization when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initArchitectureVisualization);
-        } else {
+        function tryInitArchitecture() {
+            console.log('Trying to initialize architecture visualization...');
+            if (typeof THREE === 'undefined') {
+                console.error('Three.js not loaded yet, retrying...');
+                setTimeout(tryInitArchitecture, 100);
+                return;
+            }
+            console.log('Three.js is loaded, version:', THREE.REVISION);
             initArchitectureVisualization();
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', tryInitArchitecture);
+        } else {
+            // Give a small delay to ensure Three.js is fully loaded
+            setTimeout(tryInitArchitecture, 100);
         }
         
         // Mobile Navigation Toggle
