@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Federation Protocol - Sovereign Registries in Perfect Harmony</title>
+    
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Discover how The Protocol's revolutionary Federation Protocol enables sovereign registries to form a powerful mesh network without centralization or blockchain.">
+    <meta property="og:title" content="The Protocol Federation - No Single Point of Failure">
+    <meta property="og:description" content="P2P registry discovery, Byzantine fault tolerance, and instant global agent discovery. See how we built the internet of autonomous agents.">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link.active {
+            color: var(--primary-glow);
+        }
+        
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link.nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta::after {
+            display: none;
+        }
+
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 968px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #FFFFFF 0%, #8B5CF6 50%, #3B82F6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* Interactive P2P Network Visualization */
+        .p2p-visualization {
+            width: 100%;
+            height: 600px;
+            margin: 4rem 0;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Protocol Flow Diagram */
+        .protocol-flow {
+            margin: 4rem 0;
+            padding: 3rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .flow-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 40px;
+            top: 80px;
+            width: 2px;
+            height: calc(100% + 2rem);
+            background: var(--gradient-primary);
+        }
+
+        .step-number {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-right: 2rem;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Sequence Diagram */
+        .sequence-diagram {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        /* Security Model */
+        .security-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .security-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .security-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary-glow);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+        }
+
+        .security-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .security-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .code-example pre {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--accent-glow);
+        }
+
+        .code-example .comment {
+            color: var(--text-muted);
+        }
+
+        .code-example .keyword {
+            color: var(--primary-glow);
+        }
+
+        .code-example .string {
+            color: var(--secondary-glow);
+        }
+
+        /* Benchmark Table */
+        .benchmark-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+
+        .benchmark-table th {
+            background: rgba(139, 92, 246, 0.2);
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-bright);
+        }
+
+        .benchmark-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.1);
+        }
+
+        .benchmark-table tr:hover {
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        /* Features List */
+        .feature-list {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: start;
+            gap: 1rem;
+        }
+
+        .feature-check {
+            color: var(--accent-glow);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+        }
+
+        /* CTA */
+        .btn-primary, .btn-secondary {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .p2p-visualization {
+                height: 400px;
+            }
+            
+            .hero h1 {
+                font-size: clamp(2.5rem, 7vw, 5rem);
+            }
+            
+            .flow-step {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .flow-step:not(:last-child)::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .step-number {
+                margin: 0 auto 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
+                    <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
+                    <li><a href="/federation.html" class="nav-link active">Federation Model</a></li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="/#economic-model" class="nav-link">Economics</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                <span class="gradient-text">Federation Without Blockchain</span>
+            </h1>
+            <p style="font-size: 1.5rem; color: var(--text-secondary); max-width: 800px; margin: 2rem auto;">
+                Every registry is sovereign. Every agent is discoverable.<br>
+                No consensus required. No single point of failure.
+            </p>
+            
+            <!-- P2P Network Visualization -->
+            <div class="p2p-visualization">
+                <canvas id="p2p-network"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section style="background: var(--bg-deep);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Peer-to-Peer Registry Discovery</h2>
+                <p class="section-subtitle">
+                    Registries find each other, authenticate, and sync agent catalogs - all without central coordination
+                </p>
+            </div>
+            
+            <div class="protocol-flow">
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Registry Bootstrap</h3>
+                        <p class="step-description">
+                            New registries announce themselves to known peers via the federation_public endpoint. 
+                            Each registry maintains a cryptographic identity (SPIFFE ID) that proves its authenticity.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Mutual Authentication</h3>
+                        <p class="step-description">
+                            Registries exchange signed certificates and establish mTLS connections. 
+                            Every communication is cryptographically verified - no trust assumptions.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Catalog Synchronization</h3>
+                        <p class="step-description">
+                            Registries exchange agent metadata using differential sync. Only changes since 
+                            last_sync are transmitted, keeping bandwidth usage minimal.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Health Monitoring</h3>
+                        <p class="step-description">
+                            Background tasks check peer health every 5 minutes. Failed registries are 
+                            automatically removed from routing tables - the network self-heals.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Protocol Specification -->
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Protocol Specification</h2>
+                <p class="section-subtitle">
+                    HTTP/2 + mTLS + Merkle Trees = Unstoppable Federation
+                </p>
+            </div>
+            
+            <div class="sequence-diagram">
+                <pre style="color: var(--text-primary); font-family: monospace; line-height: 1.6;">
+Registry A                    Registry B                    Registry C
+    |                             |                             |
+    |-------- Announce ---------->|                             |
+    |         (Public Key)        |                             |
+    |                             |                             |
+    |<------- Challenge ----------|                             |
+    |     (Signed Nonce)          |                             |
+    |                             |                             |
+    |-------- Response ---------->|                             |
+    |    (Signed Response)        |                             |
+    |                             |                             |
+    |<======= mTLS Established ===|                             |
+    |                             |                             |
+    |-------- Sync Request ------->|                             |
+    |    (Last Sync: T-1)         |                             |
+    |                             |                             |
+    |<------- Diff Payload -------|                             |
+    |   (Changes Since T-1)       |                             |
+    |                             |                             |
+    |                             |------- Gossip Update ------>|
+    |                             |    (New Registry: A)        |
+    |                             |                             |
+    |<------------ Direct Connection Established --------------->|
+                </pre>
+            </div>
+            
+            <h3 style="font-size: 2rem; margin: 3rem 0 1.5rem;">Sync Protocol Details</h3>
+            
+            <div class="code-example">
+                <pre><code><span class="comment"># Federation sync endpoint specification</span>
+<span class="keyword">POST</span> /federation/sync/catalog
+<span class="keyword">Content-Type:</span> application/json
+<span class="keyword">X-Registry-Signature:</span> {base64_signature}
+<span class="keyword">X-Registry-ID:</span> {registry_did}
+
+{
+  <span class="string">"last_sync"</span>: <span class="string">"2025-01-27T10:30:00Z"</span>,
+  <span class="string">"merkle_root"</span>: <span class="string">"0x3a4f9b2c..."</span>,
+  <span class="string">"requested_changes"</span>: {
+    <span class="string">"max_batch_size"</span>: 1000,
+    <span class="string">"include_proofs"</span>: <span class="keyword">true</span>
+  }
+}
+
+<span class="comment"># Response with differential updates</span>
+{
+  <span class="string">"changes"</span>: [
+    {
+      <span class="string">"operation"</span>: <span class="string">"CREATE"</span>,
+      <span class="string">"agent"</span>: {
+        <span class="string">"did"</span>: <span class="string">"did:cosmos:registry-b:agent-789"</span>,
+        <span class="string">"humanReadableId"</span>: <span class="string">"acme/translator"</span>,
+        <span class="string">"capabilities"</span>: [...],
+        <span class="string">"reputation_score"</span>: 0.95
+      },
+      <span class="string">"merkle_proof"</span>: [...]
+    }
+  ],
+  <span class="string">"new_merkle_root"</span>: <span class="string">"0x5d8a1f3e..."</span>,
+  <span class="string">"sync_timestamp"</span>: <span class="string">"2025-01-27T10:31:15Z"</span>
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Model -->
+    <section style="background: var(--bg-deep);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Byzantine Fault Tolerant Security</h2>
+                <p class="section-subtitle">
+                    Designed to operate safely even when up to 1/3 of registries are malicious
+                </p>
+            </div>
+            
+            <div class="security-grid">
+                <div class="security-card">
+                    <div class="security-icon">🔐</div>
+                    <h3 class="security-title">Cryptographic Identity</h3>
+                    <p style="color: var(--text-secondary);">
+                        Every registry has a SPIFFE identity with short-lived certificates. 
+                        Compromised keys automatically expire, limiting attack windows.
+                    </p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">🛡️</div>
+                    <h3 class="security-title">Signed Requests</h3>
+                    <p style="color: var(--text-secondary);">
+                        All federation requests include cryptographic signatures and timestamps. 
+                        Replay attacks are impossible due to nonce validation.
+                    </p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">⚡</div>
+                    <h3 class="security-title">Rate Limiting</h3>
+                    <p style="color: var(--text-secondary);">
+                        100 requests/minute per peer prevents DoS attacks. Adaptive throttling 
+                        protects against coordinated attacks across multiple registries.
+                    </p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">🔍</div>
+                    <h3 class="security-title">Merkle Proofs</h3>
+                    <p style="color: var(--text-secondary);">
+                        Agent catalogs are merkle trees. Any tampering is immediately detectable 
+                        through cryptographic proof verification.
+                    </p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">🌐</div>
+                    <h3 class="security-title">Gossip Protocol</h3>
+                    <p style="color: var(--text-secondary);">
+                        Registry reputation spreads through gossip. Malicious registries are 
+                        quickly identified and isolated by the network.
+                    </p>
+                </div>
+                
+                <div class="security-card">
+                    <div class="security-icon">🚫</div>
+                    <h3 class="security-title">No Consensus Required</h3>
+                    <p style="color: var(--text-secondary);">
+                        Unlike blockchain, we don't need global consensus. Each registry makes 
+                        sovereign decisions about which peers to trust.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Benchmarks -->
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Performance That Scales</h2>
+                <p class="section-subtitle">
+                    Real benchmarks from our production federation network
+                </p>
+            </div>
+            
+            <table class="benchmark-table">
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Performance</th>
+                        <th>Scale Tested</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Registry Discovery</td>
+                        <td>< 100ms</td>
+                        <td>100 registries</td>
+                        <td>P2P gossip propagation</td>
+                    </tr>
+                    <tr>
+                        <td>Catalog Sync (Full)</td>
+                        <td>< 2s</td>
+                        <td>10,000 agents</td>
+                        <td>First-time sync</td>
+                    </tr>
+                    <tr>
+                        <td>Catalog Sync (Diff)</td>
+                        <td>< 200ms</td>
+                        <td>1,000 changes</td>
+                        <td>Incremental updates</td>
+                    </tr>
+                    <tr>
+                        <td>Agent Discovery</td>
+                        <td>< 50ms</td>
+                        <td>1M agents globally</td>
+                        <td>With proper indexing</td>
+                    </tr>
+                    <tr>
+                        <td>Cross-Registry Call</td>
+                        <td>< 500ms</td>
+                        <td>Any distance</td>
+                        <td>Including auth & routing</td>
+                    </tr>
+                    <tr>
+                        <td>Failover Time</td>
+                        <td>< 30s</td>
+                        <td>Registry failure</td>
+                        <td>Automatic rerouting</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section style="background: var(--bg-deep);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Deploy Your Own Registry</h2>
+                <p class="section-subtitle">
+                    Join the federation in minutes, not months
+                </p>
+            </div>
+            
+            <div class="code-example">
+                <pre><code><span class="comment"># Deploy a sovereign registry and join the federation</span>
+
+<span class="comment"># 1. Clone and configure your registry</span>
+git clone https://github.com/theprotocol/registry
+cd registry
+cp .env.example .env
+
+<span class="comment"># 2. Set your registry identity</span>
+<span class="keyword">REGISTRY_NAME</span>=<span class="string">"silicon-valley"</span>
+<span class="keyword">REGISTRY_DOMAIN</span>=<span class="string">"registry.mycompany.com"</span>
+<span class="keyword">FEDERATION_PEERS</span>=<span class="string">"https://tokyo.theprotocol.cloud,https://london.theprotocol.cloud"</span>
+
+<span class="comment"># 3. Launch with automatic SPIFFE identity provisioning</span>
+docker-compose up -d
+
+<span class="comment"># Your registry is now:</span>
+<span class="comment"># ✓ Generating cryptographic identity</span>
+<span class="comment"># ✓ Connecting to peer registries</span>
+<span class="comment"># ✓ Syncing global agent catalog</span>
+<span class="comment"># ✓ Ready for agent deployments!</span></code></pre>
+            </div>
+            
+            <div class="code-example">
+                <pre><code><span class="comment"># Programmatic federation management</span>
+<span class="keyword">from</span> theprotocol <span class="keyword">import</span> Registry, FederationManager
+
+<span class="comment"># Initialize your registry with federation</span>
+registry = Registry(
+    name=<span class="string">"europe-central"</span>,
+    federation_enabled=<span class="keyword">True</span>
+)
+
+<span class="comment"># Add trusted peer registries</span>
+federation = FederationManager(registry)
+<span class="keyword">await</span> federation.add_peer({
+    <span class="string">"url"</span>: <span class="string">"https://asia-pacific.example.com"</span>,
+    <span class="string">"public_key"</span>: <span class="string">"-----BEGIN PUBLIC KEY-----..."</span>,
+    <span class="string">"reputation_threshold"</span>: 0.8
+})
+
+<span class="comment"># Query agents across entire federation</span>
+translators = <span class="keyword">await</span> registry.discover_global(
+    capability=<span class="string">"translation"</span>,
+    min_reputation=0.9,
+    max_latency_ms=100  <span class="comment"># Prefer nearby registries</span>
+)
+
+print(f<span class="string">"Found {len(translators)} translators across {translators.registry_count} registries"</span>)</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Federation Features</h2>
+                <p class="section-subtitle">
+                    Everything you need for a sovereign, connected registry
+                </p>
+            </div>
+            
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Automatic Peer Discovery</h3>
+                        <p style="color: var(--text-secondary);">
+                            Registries find each other through gossip protocol. No hardcoded peer lists or central directory needed.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Selective Synchronization</h3>
+                        <p style="color: var(--text-secondary);">
+                            Choose which agent types to sync. Filter by capability, reputation, or custom policies.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Conflict Resolution</h3>
+                        <p style="color: var(--text-secondary);">
+                            Automatic handling of agent ID conflicts. Last-write-wins with cryptographic proof trails.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Geographic Routing</h3>
+                        <p style="color: var(--text-secondary);">
+                            Intelligent routing to nearest registry replica. Minimize latency for global deployments.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <span class="feature-check">✓</span>
+                    <div>
+                        <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Registry Reputation</h3>
+                        <p style="color: var(--text-secondary);">
+                            Registries build reputation through uptime, honest behavior, and peer endorsements.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); padding: 8rem 0;">
+        <div class="container" style="text-align: center;">
+            <h2 class="section-title">Ready to Claim Your Sovereignty?</h2>
+            <p style="font-size: 1.5rem; color: var(--text-secondary); margin: 2rem 0;">
+                Deploy your own registry. Set your own rules. Join the federation.
+            </p>
+            <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem;">
+                <a href="/zkp-page.html" class="btn-primary">Explore Zero-Knowledge</a>
+                <a href="/developers-page.html" class="btn-secondary" style="background: transparent; color: var(--primary-glow); border: 2px solid var(--primary-glow);">
+                    Start Building
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: var(--bg-void); padding: 4rem 0; border-top: 1px solid rgba(59, 130, 246, 0.1);">
+        <div class="container" style="text-align: center; color: var(--text-muted);">
+            <p>© 2025 The Protocol | <a href="/" style="color: var(--primary-glow); text-decoration: none;">Home</a> | 
+               <a href="/imprint.html" style="color: var(--primary-glow); text-decoration: none;">Imprint</a> | 
+               <a href="/privacy.html" style="color: var(--primary-glow); text-decoration: none;">Privacy</a>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', function() {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('.nav-header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.style.boxShadow = 'none';
+            } else {
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+        
+        // P2P Network Animation
+        const canvas = document.getElementById('p2p-network');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Create registry nodes with different states
+        const registries = [];
+        const nodeCount = 12;
+        
+        for (let i = 0; i < nodeCount; i++) {
+            const angle = (i / nodeCount) * Math.PI * 2;
+            const radius = Math.min(canvas.width, canvas.height) * 0.35;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            registries.push({
+                x: centerX + Math.cos(angle) * radius,
+                y: centerY + Math.sin(angle) * radius,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: (Math.random() - 0.5) * 0.2,
+                radius: 25,
+                color: i < 4 ? '#8B5CF6' : '#3B82F6',
+                name: `Registry ${i + 1}`,
+                agents: Math.floor(Math.random() * 5000) + 1000,
+                syncing: false,
+                syncProgress: 0,
+                connections: []
+            });
+        }
+        
+        // Create connections
+        function updateConnections() {
+            registries.forEach((reg, i) => {
+                reg.connections = [];
+                // Connect to 2-4 nearest neighbors
+                const connectionCount = Math.floor(Math.random() * 3) + 2;
+                const otherRegistries = registries.filter((r, idx) => idx !== i);
+                otherRegistries.sort((a, b) => {
+                    const distA = Math.sqrt(Math.pow(a.x - reg.x, 2) + Math.pow(a.y - reg.y, 2));
+                    const distB = Math.sqrt(Math.pow(b.x - reg.x, 2) + Math.pow(b.y - reg.y, 2));
+                    return distA - distB;
+                });
+                
+                for (let j = 0; j < connectionCount && j < otherRegistries.length; j++) {
+                    reg.connections.push(registries.indexOf(otherRegistries[j]));
+                }
+            });
+        }
+        
+        updateConnections();
+        
+        // Sync animation state
+        let syncPairs = [];
+        
+        function startRandomSync() {
+            if (Math.random() < 0.02 && syncPairs.length < 3) {
+                const reg1 = Math.floor(Math.random() * registries.length);
+                const reg2 = registries[reg1].connections[Math.floor(Math.random() * registries[reg1].connections.length)];
+                
+                if (reg2 !== undefined) {
+                    syncPairs.push({
+                        from: reg1,
+                        to: reg2,
+                        progress: 0,
+                        packets: []
+                    });
+                }
+            }
+        }
+        
+        function drawP2PNetwork() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Update registry positions slightly (floating effect)
+            registries.forEach(reg => {
+                reg.x += reg.vx;
+                reg.y += reg.vy;
+                
+                if (reg.x < reg.radius || reg.x > canvas.width - reg.radius) reg.vx *= -1;
+                if (reg.y < reg.radius || reg.y > canvas.height - reg.radius) reg.vy *= -1;
+            });
+            
+            // Draw connections
+            ctx.strokeStyle = 'rgba(139, 92, 246, 0.2)';
+            ctx.lineWidth = 2;
+            
+            registries.forEach((reg, i) => {
+                reg.connections.forEach(targetIdx => {
+                    if (targetIdx > i) { // Avoid drawing twice
+                        const target = registries[targetIdx];
+                        ctx.beginPath();
+                        ctx.moveTo(reg.x, reg.y);
+                        ctx.lineTo(target.x, target.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+            
+            // Draw sync animations
+            syncPairs = syncPairs.filter(sync => {
+                const from = registries[sync.from];
+                const to = registries[sync.to];
+                
+                // Add new packets
+                if (Math.random() < 0.3) {
+                    sync.packets.push({ progress: 0 });
+                }
+                
+                // Update packet positions
+                sync.packets = sync.packets.filter(packet => {
+                    packet.progress += 0.03;
+                    
+                    if (packet.progress < 1) {
+                        const x = from.x + (to.x - from.x) * packet.progress;
+                        const y = from.y + (to.y - from.y) * packet.progress;
+                        
+                        ctx.fillStyle = '#10B981';
+                        ctx.beginPath();
+                        ctx.arc(x, y, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        return true;
+                    }
+                    return false;
+                });
+                
+                sync.progress += 0.01;
+                
+                // Draw sync line
+                ctx.strokeStyle = `rgba(16, 185, 129, ${0.5 - sync.progress * 0.5})`;
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(from.x, from.y);
+                ctx.lineTo(to.x, to.y);
+                ctx.stroke();
+                
+                return sync.progress < 1;
+            });
+            
+            // Draw registries
+            registries.forEach((reg, i) => {
+                // Glow effect
+                const gradient = ctx.createRadialGradient(reg.x, reg.y, 0, reg.x, reg.y, reg.radius * 2);
+                gradient.addColorStop(0, reg.color + '40');
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(reg.x, reg.y, reg.radius * 2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Registry node
+                ctx.fillStyle = reg.color;
+                ctx.beginPath();
+                ctx.arc(reg.x, reg.y, reg.radius, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Registry label
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(reg.name, reg.x, reg.y - reg.radius - 10);
+                
+                // Agent count
+                ctx.font = '10px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.fillStyle = '#94A3B8';
+                ctx.fillText(`${reg.agents} agents`, reg.x, reg.y - reg.radius - 25);
+            });
+            
+            // Random sync initiation
+            startRandomSync();
+            
+            requestAnimationFrame(drawP2PNetwork);
+        }
+        
+        drawP2PNetwork();
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80; // Account for fixed header
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

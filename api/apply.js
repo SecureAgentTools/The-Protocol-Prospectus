@@ -2,14 +2,13 @@ import nodemailer from 'nodemailer';
 
 // Create reusable transporter object using Proton Mail SMTP
 const transporter = nodemailer.createTransport({
-  host: "smtp.protonmail.ch",
-  port: 587,
-  secure: false, // This must be false for STARTTLS
-  requireTLS: true, // Force STARTTLS
+  host: 'smtp.protonmail.ch',
+  port: 465,
+  secure: true, // true for 465, false for other ports
   auth: {
     user: process.env.MAIL_USERNAME,
-    pass: process.env.MAIL_PASSWORD,
-  },
+    pass: process.env.MAIL_PASSWORD
+  }
 });
 
 export default async function handler(req, res) {
@@ -80,12 +79,12 @@ export default async function handler(req, res) {
             </div>
             
             <div class="signature">
-              <p style="margin: 0 0 10px 0;"><strong>The Protocol Team</strong></p>
+              <p style="margin: 0 0 10px 0;"><strong>The AgentVault Project Team</strong></p>
               <p style="margin: 0; font-size: 14px;">Building the Economic Infrastructure for Autonomous AI</p>
               <p style="margin: 10px 0 0 0; font-size: 13px;">
                 <em>"Where Compute Has Value"</em><br>
                 <a href="https://www.linkedin.com/in/raphaeljeziorny/">LinkedIn</a> | 
-                onboarding.contact@theprotocol.cloud
+                AgentVault@proton.me
               </p>
               <p style="margin: 15px 0 0 0; font-size: 12px; color: #999;">
                 This email contains confidential information regarding The Protocol's founding partnership program. 
@@ -100,8 +99,8 @@ export default async function handler(req, res) {
 
     // Send email using nodemailer
     const mailOptions = {
-      from: `"The Protocol" <${process.env.MAIL_USERNAME}>`,
-      to: process.env.MAIL_USERNAME,
+      from: process.env.MAIL_USERNAME,
+      to: 'AgentVault@proton.me',
       subject: `New Founding Charter Application: ${name} - ${company}`,
       html: emailHtml
     };

@@ -5,86 +5,355 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Impressum - The Protocol</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
             line-height: 1.6;
-            color: #333;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link.nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta::after {
+            display: none;
+        }
+
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 968px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+        }
+
+        /* Main Content */
+        .main-content {
             max-width: 800px;
             margin: 0 auto;
-            padding: 40px 20px;
-            background-color: #f5f5f5;
+            padding: 120px 20px 60px;
+            background: rgba(15, 23, 42, 0.3);
+            min-height: 100vh;
         }
+
         h1 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3B82F6;
-            padding-bottom: 10px;
-            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.3);
         }
+
         h2 {
-            color: #34495e;
-            margin-top: 30px;
-            margin-bottom: 15px;
+            color: var(--text-bright);
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
         }
+
         p {
-            margin-bottom: 15px;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
         }
+
         a {
-            color: #3B82F6;
+            color: var(--primary-glow);
             text-decoration: none;
+            transition: color 0.3s ease;
         }
+
         a:hover {
+            color: var(--secondary-glow);
             text-decoration: underline;
         }
-        .back-link {
-            display: inline-block;
-            margin-bottom: 30px;
-            color: #7f8c8d;
-        }
+
         .address {
-            margin-left: 20px;
-            margin-bottom: 20px;
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid var(--primary-glow);
+            border-radius: 0.5rem;
+        }
+
+        .address p {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-void);
+            padding: 4rem 0;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer-content a {
+            color: var(--primary-glow);
+            text-decoration: none;
         }
     </style>
 </head>
 <body>
-    <a href="/" class="back-link">← Zurück zur Startseite</a>
-    
-    <h1>Impressum</h1>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
+                    <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
+                    <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="/#economic-model" class="nav-link">Economics</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-    <h2>Angaben gemäß § 5 TMG</h2>
-    <div class="address">
+    <div class="main-content">
+        <h1>Impressum</h1>
+
+        <h2>Angaben gemäß § 5 TMG</h2>
+        <div class="address">
+            <p>
+                Raphael Jeziorny<br>
+                Richard-Strauß-Straße 6<br>
+                83395 Freilassing<br>
+                Deutschland
+            </p>
+        </div>
+
+        <h2>Kontakt</h2>
+        <p>E-Mail: <a href="mailto:onboarding.contact@theprotocol.cloud">onboarding.contact@theprotocol.cloud</a></p>
+
+        <h2>Redaktionell verantwortlich</h2>
+        <div class="address">
+            <p>
+                Raphael Jeziorny<br>
+                Richard-Strauß-Straße 6<br>
+                83395 Freilassing<br>
+                Deutschland
+            </p>
+        </div>
+
+        <h2>EU-Streitschlichtung</h2>
         <p>
-            Raphael Jeziorny<br>
-            Richard-Strauß-Straße. 6<br>
-            83395 Freilassing<br>
-            Deutschland
+            Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
+            <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>.<br>
+            Unsere E-Mail-Adresse finden Sie oben im Impressum.
+        </p>
+
+        <h2>Verbraucherstreitbeilegung/Universalschlichtungsstelle</h2>
+        <p>
+            Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer 
+            Verbraucherschlichtungsstelle teilzunehmen.
         </p>
     </div>
 
-    <h2>Kontakt</h2>
-    <p>E-Mail: <a href="mailto:onboarding.contact@theprotocol.cloud">onboarding.contact@theprotocol.cloud</a></p>
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>© 2025 The Protocol | <a href="/">Home</a> | <a href="/privacy.html">Privacy</a></p>
+        </div>
+    </footer>
 
-    <h2>Redaktionell verantwortlich</h2>
-    <div class="address">
-        <p>
-            Raphael Jeziorny<br>
-            Richard-Strauß-Straße.6<br>
-            83395 Freilassing<br>
-            Deutschland
-        </p>
-    </div>
-
-    <h2>EU-Streitschlichtung</h2>
-    <p>
-        Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit: 
-        <a href="https://ec.europa.eu/consumers/odr/" target="_blank" rel="noopener noreferrer">https://ec.europa.eu/consumers/odr/</a>.<br>
-        Unsere E-Mail-Adresse finden Sie oben im Impressum.
-    </p>
-
-    <h2>Verbraucherstreitbeilegung/Universalschlichtungsstelle</h2>
-    <p>
-        Wir sind nicht bereit oder verpflichtet, an Streitbeilegungsverfahren vor einer 
-        Verbraucherschlichtungsstelle teilzunehmen.
-    </p>
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', function() {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('.nav-header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.style.boxShadow = 'none';
+            } else {
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
 </body>
 </html>

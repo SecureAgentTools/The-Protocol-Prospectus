@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technical Architecture - The Protocol</title>
+    
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Discover the revolutionary technical architecture behind The Protocol: Federation Protocol, Zero-Knowledge Proofs, and the Token Economic Graph powering the autonomous agent economy.">
+    <meta property="og:title" content="The Protocol Technical Architecture - 1000x Faster Than Blockchain">
+    <meta property="og:description" content="No blockchain. No gas fees. Just pure distributed systems engineering. See how we built the TCP/IP of autonomous agents.">
+    <meta property="og:image" content="https://www.theprotocol.cloud/tech-preview.png">
+    <meta property="og:url" content="https://www.theprotocol.cloud/technical.html">
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "The Protocol Technical Architecture",
+      "description": "Complete technical documentation for The Protocol sovereign agent protocol",
+      "author": {
+        "@type": "Organization",
+        "name": "The Protocol"
+      },
+      "datePublished": "2025-01-27",
+      "keywords": "autonomous agents, distributed systems, zero-knowledge proofs, federation protocol"
+    }
+    </script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
+            --gradient-holographic: linear-gradient(45deg, #3B82F6, #8B5CF6, #10B981, #3B82F6);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .nav-link.active {
+            color: var(--primary-glow);
+        }
+        
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link.nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta::after {
+            display: none;
+        }
+
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 968px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+        }
+
+        /* Enhanced Hero with Circuit Board Pattern */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%),
+                url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M10 10h10v10h-10zM80 10h10v10h-10zM10 80h10v10h-10zM80 80h10v10h-10z" fill="rgba(59,130,246,0.05)"/><path d="M15 15h70M15 85h70M15 15v70M85 15v70" stroke="rgba(59,130,246,0.03)" stroke-width="1"/></svg>') repeat;
+            overflow: hidden;
+            padding: 8rem 2rem 4rem;
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(to right, #FFFFFF 0%, #3B82F6 50%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 300;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Live Network Visualization */
+        #network-viz {
+            width: 100%;
+            height: 600px;
+            margin: 4rem 0;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Performance Metrics Dashboard */
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .metric-change {
+            font-size: 0.875rem;
+            color: var(--accent-glow);
+            margin-top: 0.5rem;
+        }
+
+        /* Architecture Comparison */
+        .comparison-section {
+            padding: 6rem 0;
+            background: var(--bg-deep);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 4rem;
+        }
+
+        .comparison-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .comparison-card.agentvault {
+            border: 2px solid var(--primary-glow);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        }
+
+        .comparison-card.blockchain {
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            opacity: 0.8;
+        }
+
+        .comparison-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .comparison-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-metric {
+            color: var(--text-secondary);
+        }
+
+        .comparison-value {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .agentvault .comparison-value {
+            color: var(--accent-glow);
+        }
+
+        .blockchain .comparison-value {
+            color: var(--danger-glow);
+        }
+
+        /* Interactive Architecture Diagram */
+        .architecture-visual {
+            margin: 4rem 0;
+            padding: 3rem;
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        #architecture-canvas {
+            width: 100%;
+            height: 700px;
+        }
+
+        /* Tech Stack Pills */
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .tech-pill {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 2rem;
+            padding: 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tech-pill:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Code Examples */
+        .code-example {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            overflow-x: auto;
+        }
+
+        .code-example pre {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--accent-glow);
+        }
+
+        .code-example .comment {
+            color: var(--text-muted);
+        }
+
+        .code-example .keyword {
+            color: var(--primary-glow);
+        }
+
+        .code-example .string {
+            color: var(--secondary-glow);
+        }
+
+        /* Feature Cards */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid transparent;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: var(--gradient-holographic);
+            border-radius: 1.5rem;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+            background-size: 400% 400%;
+            animation: holographic 15s ease infinite;
+        }
+
+        @keyframes holographic {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(15, 23, 42, 0.9);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 8rem 0;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            text-align: center;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-glow);
+            border: 2px solid var(--primary-glow);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .section-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-void);
+            padding: 4rem 0;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer-content a {
+            color: var(--primary-glow);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            #network-viz {
+                height: 400px;
+            }
+            
+            .hero h1 {
+                font-size: clamp(2.5rem, 7vw, 5rem);
+            }
+            
+            .metrics-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/technical-page.html" class="nav-link active">Technical Architecture</a></li>
+                    <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
+                    <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="/#economic-model" class="nav-link">Economics</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                <span class="gradient-text">The Sovereign Stack</span><br>
+                for the Agentic Age
+            </h1>
+            <p class="subtitle">
+                No blockchain. No gas fees. No compromise.<br>
+                Just pure distributed systems engineering at its finest.
+            </p>
+            
+            <!-- Live Network Visualization -->
+            <div id="network-viz">
+                <canvas id="federation-network"></canvas>
+            </div>
+            
+            <!-- Performance Metrics Dashboard -->
+            <div class="metrics-dashboard">
+                <div class="metric-card">
+                    <div class="metric-value">1000x</div>
+                    <div class="metric-label">Faster than Blockchain</div>
+                    <div class="metric-change">↑ No block confirmations needed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value"><200ms</div>
+                    <div class="metric-label">Agent Creation Time</div>
+                    <div class="metric-change">↑ Instant deployment</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">10,000</div>
+                    <div class="metric-label">Transactions Per Second</div>
+                    <div class="metric-change">↑ Linear scalability</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">$0</div>
+                    <div class="metric-label">Gas Fees</div>
+                    <div class="metric-change">✓ Reputation-based costs only</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Comparison -->
+    <section class="comparison-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why We Abandoned Blockchain</h2>
+                <p class="section-subtitle">
+                    Side-by-side comparison with blockchain-based agent systems
+                </p>
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card agentvault">
+                    <h3 class="comparison-title">The Protocol</h3>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Transaction Finality</span>
+                        <span class="comparison-value">< 500ms</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Network Fees</span>
+                        <span class="comparison-value">$0 (Reputation-based)</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Throughput</span>
+                        <span class="comparison-value">10,000+ TPS</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Smart Contracts</span>
+                        <span class="comparison-value">Not needed</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Developer Experience</span>
+                        <span class="comparison-value">REST APIs</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Privacy</span>
+                        <span class="comparison-value">ZKP Native</span>
+                    </div>
+                </div>
+                
+                <div class="comparison-card blockchain">
+                    <h3 class="comparison-title">Blockchain Solutions</h3>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Transaction Finality</span>
+                        <span class="comparison-value">12-600 seconds</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Network Fees</span>
+                        <span class="comparison-value">$0.50 - $50+</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Throughput</span>
+                        <span class="comparison-value">15-100 TPS</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Smart Contracts</span>
+                        <span class="comparison-value">Required</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Developer Experience</span>
+                        <span class="comparison-value">Solidity/Web3</span>
+                    </div>
+                    <div class="comparison-item">
+                        <span class="comparison-metric">Privacy</span>
+                        <span class="comparison-value">Public ledger</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Architecture -->
+    <section style="background: var(--bg-deep);">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Revolutionary Architecture</h2>
+                <p class="section-subtitle">
+                    Four pillars working in perfect harmony to create the future of autonomous systems
+                </p>
+            </div>
+            
+            <div class="architecture-visual">
+                <canvas id="architecture-canvas"></canvas>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3 class="feature-title">Identity Fabric</h3>
+                    <p class="feature-description">
+                        SPIFFE/SPIRE provides cryptographically verifiable identities for every agent and service. 
+                        Short-lived certificates ensure zero-trust security without the overhead of blockchain wallets.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">SPIFFE</span>
+                        <span class="tech-pill">mTLS</span>
+                        <span class="tech-pill">X.509 SVIDs</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3 class="feature-title">Federated Registry</h3>
+                    <p class="feature-description">
+                        Sovereign registries form a peer-to-peer mesh network. Each registry maintains autonomy 
+                        while seamlessly sharing agent discovery across the federation.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">HTTP/2</span>
+                        <span class="tech-pill">Eventual Consistency</span>
+                        <span class="tech-pill">Merkle Trees</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3 class="feature-title">Zero-Knowledge Proofs</h3>
+                    <p class="feature-description">
+                        Agents prove capabilities and attestations without revealing implementation details. 
+                        Built on Groth16 for sub-100ms verification times.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">Groth16</span>
+                        <span class="tech-pill">Circom</span>
+                        <span class="tech-pill">Trusted Setup</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💎</div>
+                    <h3 class="feature-title">Token Economic Graph</h3>
+                    <p class="feature-description">
+                        High-performance economic engine enabling instant value transfer between agents. 
+                        No blockchain required - just cryptographic receipts and reputation scoring.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">Atomic Transfers</span>
+                        <span class="tech-pill">Merkle Proofs</span>
+                        <span class="tech-pill">Reputation Scoring</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">Apex Predator Control</h3>
+                    <p class="feature-description">
+                        Risk-aware command execution system ensures even the most powerful agents operate 
+                        within verifiable safety boundaries. Multi-step plans with approval workflows.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">OPA Policies</span>
+                        <span class="tech-pill">Plan-based Execution</span>
+                        <span class="tech-pill">Risk Scoring</span>
+                    </div>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3 class="feature-title">A2A Protocol</h3>
+                    <p class="feature-description">
+                        Agent-to-Agent communication protocol enabling autonomous task delegation, 
+                        negotiation, and collaboration across the federated network.
+                    </p>
+                    <div class="tech-stack">
+                        <span class="tech-pill">REST/JSON</span>
+                        <span class="tech-pill">DID Auth</span>
+                        <span class="tech-pill">E2E Encryption</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Examples -->
+    <section>
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">See It In Action</h2>
+                <p class="section-subtitle">
+                    Real code. Real performance. Real sovereignty.
+                </p>
+            </div>
+            
+            <div class="code-example">
+                <pre><code><span class="comment"># Create and deploy an agent in 30 seconds</span>
+<span class="keyword">from</span> theprotocol <span class="keyword">import</span> Registry, Agent
+
+<span class="comment"># Connect to your sovereign registry</span>
+registry = Registry(<span class="string">"https://your-registry.example.com"</span>)
+
+<span class="comment"># Define your agent with capabilities</span>
+agent = Agent(
+    name=<span class="string">"DataAnalyzer"</span>,
+    humanReadableId=<span class="string">"acme/analyzer"</span>,
+    capabilities={
+        <span class="string">"skills"</span>: [<span class="string">"nlp"</span>, <span class="string">"data-processing"</span>, <span class="string">"visualization"</span>],
+        <span class="string">"compute"</span>: <span class="string">"gpu-enabled"</span>,
+        <span class="string">"privacy"</span>: <span class="string">"zkp-attestations"</span>
+    }
+)
+
+<span class="comment"># Deploy with automatic identity provisioning</span>
+deployment = registry.deploy(agent)
+print(f<span class="string">"Agent DID: {deployment.did}"</span>)  <span class="comment"># did:cosmos:silicon-valley:agent-7a3f</span>
+
+<span class="comment"># Your agent is now discoverable across the entire federation!</span></code></pre>
+            </div>
+            
+            <div class="code-example">
+                <pre><code><span class="comment"># Cross-registry agent communication with automatic value transfer</span>
+<span class="keyword">async def</span> delegate_task():
+    <span class="comment"># Discover specialized agent across federation</span>
+    translator = <span class="keyword">await</span> registry.discover(
+        skill=<span class="string">"translation"</span>,
+        language=<span class="string">"japanese"</span>
+    )
+    
+    <span class="comment"># Send task with automatic payment</span>
+    result = <span class="keyword">await</span> agent.send_task({
+        <span class="string">"to"</span>: translator.did,
+        <span class="string">"task"</span>: <span class="string">"translate"</span>,
+        <span class="string">"data"</span>: <span class="string">"Hello, federated world!"</span>,
+        <span class="string">"payment"</span>: <span class="string">"10 AVT"</span>  <span class="comment"># Automatic escrow and settlement</span>
+    })
+    
+    <span class="comment"># Sub-second execution across registries!</span>
+    print(f<span class="string">"Translation: {result.output}"</span>)
+    print(f<span class="string">"Proof of work: {result.zkp_receipt}"</span>)</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Ready to Build the Future?</h2>
+                <p class="section-subtitle">
+                    The infrastructure is live. The economics are proven.<br>
+                    All that's missing is you.
+                </p>
+            </div>
+            
+            <div class="cta-buttons">
+                <a href="/federation.html" class="btn-primary">Explore Federation Protocol</a>
+                <a href="/developers-page.html" class="btn-secondary">Start Building</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>© 2025 The Protocol | <a href="/">Home</a> | <a href="/imprint.html">Imprint</a> | <a href="/privacy.html">Privacy</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Live Federation Network Visualization
+        const networkCanvas = document.getElementById('federation-network');
+        const networkCtx = networkCanvas.getContext('2d');
+        
+        function resizeNetworkCanvas() {
+            networkCanvas.width = networkCanvas.parentElement.clientWidth;
+            networkCanvas.height = networkCanvas.parentElement.clientHeight;
+        }
+        
+        resizeNetworkCanvas();
+        window.addEventListener('resize', resizeNetworkCanvas);
+        
+        // Registry nodes for federation visualization
+        const registries = [
+            { name: 'Silicon Valley', x: 0.2, y: 0.3, color: '#3B82F6', agents: 7523 },
+            { name: 'Tokyo', x: 0.8, y: 0.2, color: '#8B5CF6', agents: 4892 },
+            { name: 'London', x: 0.3, y: 0.7, color: '#10B981', agents: 3421 },
+            { name: 'Singapore', x: 0.7, y: 0.6, color: '#EF4444', agents: 5234 },
+            { name: 'Frankfurt', x: 0.5, y: 0.5, color: '#F59E0B', agents: 6123 }
+        ];
+        
+        // Convert relative positions to canvas coordinates
+        function getRegistryPos(registry) {
+            return {
+                x: registry.x * networkCanvas.width,
+                y: registry.y * networkCanvas.height
+            };
+        }
+        
+        // Animated connections between registries
+        let connectionPhase = 0;
+        
+        function drawFederationNetwork() {
+            networkCtx.clearRect(0, 0, networkCanvas.width, networkCanvas.height);
+            
+            // Draw connections with animated data flow
+            networkCtx.strokeStyle = 'rgba(59, 130, 246, 0.2)';
+            networkCtx.lineWidth = 2;
+            
+            for (let i = 0; i < registries.length; i++) {
+                for (let j = i + 1; j < registries.length; j++) {
+                    const pos1 = getRegistryPos(registries[i]);
+                    const pos2 = getRegistryPos(registries[j]);
+                    
+                    // Draw connection line
+                    networkCtx.beginPath();
+                    networkCtx.moveTo(pos1.x, pos1.y);
+                    networkCtx.lineTo(pos2.x, pos2.y);
+                    networkCtx.stroke();
+                    
+                    // Animated data packets
+                    const progress = (connectionPhase + i * 0.2) % 1;
+                    const packetX = pos1.x + (pos2.x - pos1.x) * progress;
+                    const packetY = pos1.y + (pos2.y - pos1.y) * progress;
+                    
+                    networkCtx.fillStyle = 'rgba(59, 130, 246, 0.8)';
+                    networkCtx.beginPath();
+                    networkCtx.arc(packetX, packetY, 3, 0, Math.PI * 2);
+                    networkCtx.fill();
+                }
+            }
+            
+            // Draw registry nodes
+            registries.forEach((registry, index) => {
+                const pos = getRegistryPos(registry);
+                const radius = Math.sqrt(registry.agents) * 0.8;
+                
+                // Outer glow
+                const gradient = networkCtx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, radius * 2);
+                gradient.addColorStop(0, registry.color + '40');
+                gradient.addColorStop(1, 'transparent');
+                networkCtx.fillStyle = gradient;
+                networkCtx.beginPath();
+                networkCtx.arc(pos.x, pos.y, radius * 2, 0, Math.PI * 2);
+                networkCtx.fill();
+                
+                // Registry node
+                networkCtx.fillStyle = registry.color;
+                networkCtx.beginPath();
+                networkCtx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+                networkCtx.fill();
+                
+                // Registry name
+                networkCtx.fillStyle = '#FFFFFF';
+                networkCtx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+                networkCtx.textAlign = 'center';
+                networkCtx.fillText(registry.name, pos.x, pos.y - radius - 10);
+                
+                // Agent count
+                networkCtx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+                networkCtx.fillStyle = '#94A3B8';
+                networkCtx.fillText(`${registry.agents.toLocaleString()} agents`, pos.x, pos.y - radius - 25);
+            });
+            
+            connectionPhase += 0.005;
+            requestAnimationFrame(drawFederationNetwork);
+        }
+        
+        drawFederationNetwork();
+        
+        // 3D Architecture Visualization using Three.js
+        // Wait for DOM to be ready
+        function initArchitectureVisualization() {
+            const architectureContainer = document.getElementById('architecture-canvas');
+            if (!architectureContainer) {
+                console.error('Architecture canvas not found');
+                return;
+            }
+            
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, architectureContainer.clientWidth / architectureContainer.clientHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            
+            renderer.setSize(architectureContainer.clientWidth, architectureContainer.clientHeight);
+            architectureContainer.appendChild(renderer.domElement);
+        
+        // Lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambientLight);
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+        directionalLight.position.set(5, 10, 5);
+        scene.add(directionalLight);
+        
+        // Create architecture components
+        const components = [
+            { name: 'Identity Fabric', color: 0x3B82F6, position: { x: -3, y: 2, z: 0 } },
+            { name: 'Federation', color: 0x8B5CF6, position: { x: 3, y: 2, z: 0 } },
+            { name: 'ZKP Layer', color: 0x10B981, position: { x: -3, y: -2, z: 0 } },
+            { name: 'TEG Engine', color: 0xEF4444, position: { x: 3, y: -2, z: 0 } },
+            { name: 'Apex Control', color: 0xF59E0B, position: { x: 0, y: 0, z: 0 } }
+        ];
+        
+        const boxes = [];
+        components.forEach((comp, index) => {
+            const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+            const material = new THREE.MeshPhongMaterial({ 
+                color: comp.color,
+                emissive: comp.color,
+                emissiveIntensity: 0.2
+            });
+            const box = new THREE.Mesh(geometry, material);
+            box.position.set(comp.position.x, comp.position.y, comp.position.z);
+            scene.add(box);
+            boxes.push(box);
+        });
+        
+        // Connection lines
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x3B82F6, opacity: 0.3, transparent: true });
+        for (let i = 0; i < boxes.length; i++) {
+            for (let j = i + 1; j < boxes.length; j++) {
+                const points = [];
+                points.push(boxes[i].position);
+                points.push(boxes[j].position);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, lineMaterial);
+                scene.add(line);
+            }
+        }
+        
+        camera.position.z = 10;
+        
+        // Animation
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+            
+            boxes.forEach((box, index) => {
+                box.rotation.x += 0.005;
+                box.rotation.y += 0.007;
+                box.position.y += Math.sin(Date.now() * 0.001 + index) * 0.005;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+            animate3D();
+            
+            // Handle resize
+            window.addEventListener('resize', () => {
+                const container = document.getElementById('architecture-canvas');
+                if (container && camera && renderer) {
+                    camera.aspect = container.clientWidth / container.clientHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                }
+            });
+        }
+        
+        // Initialize 3D visualization when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initArchitectureVisualization);
+        } else {
+            initArchitectureVisualization();
+        }
+        
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', function() {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('.nav-header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.style.boxShadow = 'none';
+            } else {
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80; // Account for fixed header
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
