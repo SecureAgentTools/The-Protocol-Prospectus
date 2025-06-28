@@ -1381,301 +1381,372 @@ print(f<span class="string">"Agent DID: {deployment.did}"</span>)  <span class="
             architectureContainer.innerHTML = '';
             
             const scene = new THREE.Scene();
-            scene.fog = new THREE.Fog(0x000000, 10, 30);
+            scene.fog = new THREE.Fog(0x000511, 15, 50);
             
-            const camera = new THREE.PerspectiveCamera(75, containerWidth / containerHeight, 0.1, 1000);
+            const camera = new THREE.PerspectiveCamera(60, containerWidth / containerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
             
             renderer.setSize(containerWidth, containerHeight);
-            renderer.setClearColor(0x000000, 0);
+            renderer.setClearColor(0x000511, 1);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
             architectureContainer.appendChild(renderer.domElement);
             console.log('Renderer created and appended successfully');
             
-            // Enhanced Lighting Setup
-            const ambientLight = new THREE.AmbientLight(0x1a1a2e, 0.4);
+            // Enhanced Dramatic Lighting Setup
+            const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.3);
             scene.add(ambientLight);
             
-            // Key light
-            const keyLight = new THREE.DirectionalLight(0x3B82F6, 0.8);
-            keyLight.position.set(5, 10, 5);
+            // Key lights for dramatic effect
+            const keyLight = new THREE.DirectionalLight(0x4080ff, 1.5);
+            keyLight.position.set(10, 15, 10);
             keyLight.castShadow = true;
             keyLight.shadow.camera.near = 0.1;
             keyLight.shadow.camera.far = 50;
-            keyLight.shadow.camera.left = -15;
-            keyLight.shadow.camera.right = 15;
-            keyLight.shadow.camera.top = 15;
-            keyLight.shadow.camera.bottom = -15;
+            keyLight.shadow.camera.left = -20;
+            keyLight.shadow.camera.right = 20;
+            keyLight.shadow.camera.top = 20;
+            keyLight.shadow.camera.bottom = -20;
+            keyLight.shadow.mapSize.width = 2048;
+            keyLight.shadow.mapSize.height = 2048;
             scene.add(keyLight);
             
-            // Fill light
-            const fillLight = new THREE.DirectionalLight(0x8B5CF6, 0.4);
-            fillLight.position.set(-5, 5, -5);
-            scene.add(fillLight);
+            // Rim light for edge highlighting
+            const rimLight = new THREE.DirectionalLight(0x8B5CF6, 0.8);
+            rimLight.position.set(-10, 5, -10);
+            scene.add(rimLight);
             
-            // Point lights for glow effects
-            const pointLight1 = new THREE.PointLight(0x3B82F6, 1, 20);
-            pointLight1.position.set(0, 5, 0);
-            scene.add(pointLight1);
+            // Colored point lights for gem glow
+            const pointLights = [];
+            const lightColors = [0x3B82F6, 0x8B5CF6, 0x10B981, 0xF59E0B, 0xEF4444];
+            lightColors.forEach((color, i) => {
+                const light = new THREE.PointLight(color, 2, 25);
+                pointLights.push(light);
+                scene.add(light);
+            });
             
-            const pointLight2 = new THREE.PointLight(0x8B5CF6, 0.5, 15);
-            pointLight2.position.set(-5, -5, 5);
-            scene.add(pointLight2);
-            
-            // Helper function to create glow texture
-            function createGlowTexture(color) {
+            // Helper function to create glow sprite
+            function createGlowSprite(color, size = 5) {
                 const canvas = document.createElement('canvas');
-                canvas.width = 64;
-                canvas.height = 64;
+                canvas.width = 128;
+                canvas.height = 128;
                 const context = canvas.getContext('2d');
                 
-                const gradient = context.createRadialGradient(32, 32, 0, 32, 32, 32);
+                const gradient = context.createRadialGradient(64, 64, 0, 64, 64, 64);
                 gradient.addColorStop(0, 'rgba(255,255,255,1)');
-                gradient.addColorStop(0.2, 'rgba(255,255,255,0.8)');
-                gradient.addColorStop(0.4, 'rgba(255,255,255,0.3)');
+                gradient.addColorStop(0.1, 'rgba(255,255,255,0.9)');
+                gradient.addColorStop(0.3, 'rgba(255,255,255,0.5)');
+                gradient.addColorStop(0.6, 'rgba(255,255,255,0.1)');
                 gradient.addColorStop(1, 'rgba(255,255,255,0)');
                 
                 context.fillStyle = gradient;
-                context.fillRect(0, 0, 64, 64);
+                context.fillRect(0, 0, 128, 128);
                 
-                return canvas;
+                const texture = new THREE.CanvasTexture(canvas);
+                const spriteMaterial = new THREE.SpriteMaterial({
+                    map: texture,
+                    color: color,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const sprite = new THREE.Sprite(spriteMaterial);
+                sprite.scale.setScalar(size);
+                return sprite;
             }
+
         
-            // Create architecture components with enhanced visuals
+            // Create architecture components with gem-like visuals
             const components = [
-                { name: 'Identity Fabric', color: 0x3B82F6, icon: '🔐', position: { x: -4, y: 2.5, z: 0 }, scale: 1.2 },
-                { name: 'Federation', color: 0x8B5CF6, icon: '🌐', position: { x: 4, y: 2.5, z: 0 }, scale: 1.2 },
-                { name: 'ZKP Layer', color: 0x10B981, icon: '🛡️', position: { x: -4, y: -2.5, z: 0 }, scale: 1.1 },
-                { name: 'TEG Engine', color: 0xEF4444, icon: '💎', position: { x: 4, y: -2.5, z: 0 }, scale: 1.1 },
-                { name: 'Apex Control', color: 0xF59E0B, icon: '🎯', position: { x: 0, y: 0, z: 0 }, scale: 1.5 }
+                { name: 'Identity Fabric', color: 0x3B82F6, icon: '🔐', position: { x: -5, y: 2, z: 0 }, scale: 1.3, rotation: {x: 0.3, y: 0.5, z: 0} },
+                { name: 'Federation', color: 0x8B5CF6, icon: '🌐', position: { x: 5, y: 2, z: 0 }, scale: 1.3, rotation: {x: -0.3, y: -0.5, z: 0} },
+                { name: 'ZKP Layer', color: 0x10B981, icon: '🛡️', position: { x: -5, y: -2, z: 0 }, scale: 1.2, rotation: {x: 0.5, y: -0.3, z: 0.2} },
+                { name: 'TEG Engine', color: 0xEF4444, icon: '💎', position: { x: 5, y: -2, z: 0 }, scale: 1.2, rotation: {x: -0.5, y: 0.3, z: -0.2} },
+                { name: 'Apex Control', color: 0xF59E0B, icon: '🎯', position: { x: 0, y: 0, z: 2 }, scale: 1.6, rotation: {x: 0, y: 0, z: 0} }
             ];
             
-            const boxes = [];
-            const boxGroup = new THREE.Group();
-            const glowSprites = [];
+            const gems = [];
+            const gemGroup = new THREE.Group();
             
-            // Create base platform
-            const platformGeometry = new THREE.CylinderGeometry(8, 8, 0.2, 32);
-            const platformMaterial = new THREE.MeshPhongMaterial({ 
-                color: 0x1a1a2e,
+            // Create starfield background
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsCount = 2000;
+            const starPositions = new Float32Array(starsCount * 3);
+            const starColors = new Float32Array(starsCount * 3);
+            const starSizes = new Float32Array(starsCount);
+            
+            for (let i = 0; i < starsCount; i++) {
+                const i3 = i * 3;
+                starPositions[i3] = (Math.random() - 0.5) * 100;
+                starPositions[i3 + 1] = (Math.random() - 0.5) * 100;
+                starPositions[i3 + 2] = (Math.random() - 0.5) * 100;
+                
+                // Varied star colors
+                const color = new THREE.Color();
+                color.setHSL(Math.random() * 0.2 + 0.5, 0.5, Math.random() * 0.8 + 0.2);
+                starColors[i3] = color.r;
+                starColors[i3 + 1] = color.g;
+                starColors[i3 + 2] = color.b;
+                
+                starSizes[i] = Math.random() * 2;
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(starColors, 3));
+            starsGeometry.setAttribute('size', new THREE.BufferAttribute(starSizes, 1));
+            
+            const starsMaterial = new THREE.PointsMaterial({
+                size: 0.1,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                sizeAttenuation: true
+            });
+            
+            const starField = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(starField);
+            
+            // Create floating platform
+            const platformRadius = 10;
+            const platformGeometry = new THREE.RingGeometry(platformRadius * 0.8, platformRadius, 64);
+            const platformMaterial = new THREE.MeshPhongMaterial({
+                color: 0x0a0a1a,
+                transparent: true,
+                opacity: 0.3,
+                side: THREE.DoubleSide,
                 emissive: 0x3B82F6,
-                emissiveIntensity: 0.1,
-                metalness: 0.8,
-                roughness: 0.2
+                emissiveIntensity: 0.05
             });
             const platform = new THREE.Mesh(platformGeometry, platformMaterial);
-            platform.position.y = -4;
-            platform.receiveShadow = true;
-            boxGroup.add(platform);
+            platform.rotation.x = -Math.PI / 2;
+            platform.position.y = -5;
+            gemGroup.add(platform);
             
-            // Create grid on platform
-            const gridHelper = new THREE.GridHelper(16, 32, 0x3B82F6, 0x1a1a2e);
-            gridHelper.position.y = -3.9;
-            boxGroup.add(gridHelper);
+            // Create energy field lines on platform
+            const lineCount = 12;
+            for (let i = 0; i < lineCount; i++) {
+                const angle = (i / lineCount) * Math.PI * 2;
+                const innerRadius = 2;
+                const outerRadius = platformRadius * 0.9;
+                
+                const points = [];
+                points.push(new THREE.Vector3(Math.cos(angle) * innerRadius, -5, Math.sin(angle) * innerRadius));
+                points.push(new THREE.Vector3(Math.cos(angle) * outerRadius, -5, Math.sin(angle) * outerRadius));
+                
+                const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+                const lineMaterial = new THREE.LineBasicMaterial({
+                    color: 0x3B82F6,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                const line = new THREE.Line(lineGeometry, lineMaterial);
+                gemGroup.add(line);
+            }
             
             components.forEach((comp, index) => {
-                const componentGroup = new THREE.Group();
+                const individualGemGroup = new THREE.Group();
                 
-                // Main geometry - using different shapes for variety
-                let geometry;
-                if (index === 4) { // Apex Control - central octahedron
-                    geometry = new THREE.OctahedronGeometry(1.2 * comp.scale, 0);
-                } else if (index % 2 === 0) { // Even indices - dodecahedron
-                    geometry = new THREE.DodecahedronGeometry(0.8 * comp.scale, 0);
-                } else { // Odd indices - icosahedron
-                    geometry = new THREE.IcosahedronGeometry(0.9 * comp.scale, 0);
+                // Use different geometries for variety
+                let gemGeometry;
+                if (index === 4) { // Central Apex Control - larger, more complex
+                    gemGeometry = new THREE.IcosahedronGeometry(comp.scale, 1);
+                } else if (index % 2 === 0) {
+                    gemGeometry = new THREE.OctahedronGeometry(comp.scale, 0);
+                } else {
+                    gemGeometry = new THREE.DodecahedronGeometry(comp.scale, 0);
                 }
                 
-                // Main material with enhanced properties
-                const material = new THREE.MeshPhongMaterial({ 
+                // Crystal material with glass-like properties
+                const gemMaterial = new THREE.MeshPhysicalMaterial({
                     color: comp.color,
-                    emissive: comp.color,
-                    emissiveIntensity: 0.5,
-                    metalness: 0.3,
-                    roughness: 0.4,
+                    metalness: 0.2,
+                    roughness: 0.1,
+                    transmission: 0.8,
                     transparent: true,
-                    opacity: 0.9
+                    opacity: 0.9,
+                    reflectivity: 0.9,
+                    refractionRatio: 0.98,
+                    clearcoat: 1,
+                    clearcoatRoughness: 0,
+                    emissive: comp.color,
+                    emissiveIntensity: 0.2
                 });
-                const mainMesh = new THREE.Mesh(geometry, material);
-                mainMesh.castShadow = true;
-                componentGroup.add(mainMesh);
                 
-                // Inner core with brighter emission
-                const coreGeometry = geometry.clone();
-                const coreMaterial = new THREE.MeshBasicMaterial({ 
+                const gem = new THREE.Mesh(gemGeometry, gemMaterial);
+                gem.castShadow = true;
+                gem.receiveShadow = true;
+                
+                // Apply initial rotation
+                gem.rotation.x = comp.rotation.x;
+                gem.rotation.y = comp.rotation.y;
+                gem.rotation.z = comp.rotation.z;
+                
+                individualGemGroup.add(gem);
+                
+                // Inner glow core with matching geometry type
+                let coreGeometry;
+                if (index === 4) {
+                    coreGeometry = new THREE.IcosahedronGeometry(comp.scale * 0.4, 1);
+                } else if (index % 2 === 0) {
+                    coreGeometry = new THREE.OctahedronGeometry(comp.scale * 0.4, 0);
+                } else {
+                    coreGeometry = new THREE.DodecahedronGeometry(comp.scale * 0.4, 0);
+                }
+                const coreMaterial = new THREE.MeshBasicMaterial({
                     color: 0xFFFFFF,
                     transparent: true,
-                    opacity: 0.3
+                    opacity: 0.7
                 });
                 const core = new THREE.Mesh(coreGeometry, coreMaterial);
-                core.scale.setScalar(0.7);
-                componentGroup.add(core);
+                individualGemGroup.add(core);
                 
-                // Outer shell with wireframe
-                const shellGeometry = geometry.clone();
-                const shellMaterial = new THREE.MeshBasicMaterial({ 
+                // Outer wireframe for extra detail
+                let wireframeGeometry;
+                if (index === 4) {
+                    wireframeGeometry = new THREE.IcosahedronGeometry(comp.scale * 1.1, 1);
+                } else if (index % 2 === 0) {
+                    wireframeGeometry = new THREE.OctahedronGeometry(comp.scale * 1.1, 0);
+                } else {
+                    wireframeGeometry = new THREE.DodecahedronGeometry(comp.scale * 1.1, 0);
+                }
+                const wireframeMaterial = new THREE.MeshBasicMaterial({
                     color: comp.color,
                     wireframe: true,
                     transparent: true,
                     opacity: 0.2
                 });
-                const shell = new THREE.Mesh(shellGeometry, shellMaterial);
-                shell.scale.setScalar(1.3);
-                componentGroup.add(shell);
+                const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+                individualGemGroup.add(wireframe);
                 
-                // Add floating ring around component
-                const ringGeometry = new THREE.TorusGeometry(1.5 * comp.scale, 0.1, 8, 32);
-                const ringMaterial = new THREE.MeshBasicMaterial({ 
+                // Energy particles around gem
+                const particleCount = 20;
+                const particlesGeometry = new THREE.BufferGeometry();
+                const particlePositions = new Float32Array(particleCount * 3);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const angle = (i / particleCount) * Math.PI * 2;
+                    const radius = comp.scale * 2 + Math.random() * 0.5;
+                    particlePositions[i * 3] = Math.cos(angle) * radius;
+                    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * comp.scale;
+                    particlePositions[i * 3 + 2] = Math.sin(angle) * radius;
+                }
+                
+                particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+                
+                const particlesMaterial = new THREE.PointsMaterial({
                     color: comp.color,
+                    size: 0.1,
                     transparent: true,
-                    opacity: 0.4
+                    opacity: 0.6,
+                    blending: THREE.AdditiveBlending
                 });
-                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-                ring.rotation.x = Math.PI / 2;
-                componentGroup.add(ring);
                 
-                // Add glow effect using sprites
-                const glowTexture = new THREE.CanvasTexture(createGlowTexture(comp.color));
-                const glowMaterial = new THREE.SpriteMaterial({
-                    map: glowTexture,
-                    color: comp.color,
-                    blending: THREE.AdditiveBlending,
-                    transparent: true,
-                    opacity: 0.5
-                });
-                const glowSprite = new THREE.Sprite(glowMaterial);
-                glowSprite.scale.setScalar(4 * comp.scale);
-                componentGroup.add(glowSprite);
+                const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+                individualGemGroup.add(particles);
                 
-                // Position the component group
-                componentGroup.position.set(comp.position.x, comp.position.y, comp.position.z);
-                boxGroup.add(componentGroup);
+                // Add multiple glow sprites for enhanced effect
+                const glowSprite1 = createGlowSprite(comp.color, comp.scale * 4);
+                individualGemGroup.add(glowSprite1);
                 
-                boxes.push({ 
-                    mesh: mainMesh, 
-                    group: componentGroup,
+                const glowSprite2 = createGlowSprite(0xFFFFFF, comp.scale * 2);
+                glowSprite2.material.opacity = 0.3;
+                individualGemGroup.add(glowSprite2);
+                
+                // Position light at gem location
+                if (pointLights[index]) {
+                    pointLights[index].position.set(comp.position.x, comp.position.y, comp.position.z);
+                }
+                
+                // Position the individual gem group
+                individualGemGroup.position.set(comp.position.x, comp.position.y, comp.position.z);
+                gemGroup.add(individualGemGroup);
+                
+                gems.push({
+                    mesh: gem,
+                    group: individualGemGroup,
                     component: comp,
-                    ring: ring,
-                    shell: shell,
-                    core: core
+                    core: core,
+                    wireframe: wireframe,
+                    particles: particles,
+                    particlesGeometry: particlesGeometry
                 });
             });
             
-            scene.add(boxGroup);
+            scene.add(gemGroup);
             
-            // Add particle field background for depth
-            const starGeometry = new THREE.BufferGeometry();
-            const starCount = 1000;
-            const positions = new Float32Array(starCount * 3);
-            const colors = new Float32Array(starCount * 3);
-            
-            for (let i = 0; i < starCount * 3; i += 3) {
-                positions[i] = (Math.random() - 0.5) * 50;
-                positions[i + 1] = (Math.random() - 0.5) * 50;
-                positions[i + 2] = (Math.random() - 0.5) * 50;
-                
-                const color = Math.random();
-                colors[i] = color * 0.5 + 0.5;
-                colors[i + 1] = color * 0.7 + 0.3;
-                colors[i + 2] = 1;
-            }
-            
-            starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-            starGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            
-            const starMaterial = new THREE.PointsMaterial({
-                size: 0.05,
-                vertexColors: true,
+            // Create energy beams between gems
+            const beamMaterial = new THREE.MeshBasicMaterial({
+                color: 0x3B82F6,
                 transparent: true,
-                opacity: 0.8,
-                blending: THREE.AdditiveBlending
+                opacity: 0.1,
+                side: THREE.DoubleSide
             });
             
-            const stars = new THREE.Points(starGeometry, starMaterial);
-            scene.add(stars);
-        
-            // Enhanced connection system with curved paths
-            const connections = [];
-            const particles = [];
-            const connectionMaterial = new THREE.LineBasicMaterial({ 
-                color: 0x3B82F6, 
-                opacity: 0.15, 
-                transparent: true,
-                linewidth: 2
-            });
-            
-            // Create connections between components
-            for (let i = 0; i < boxes.length; i++) {
-                for (let j = i + 1; j < boxes.length; j++) {
-                    const start = boxes[i].group.position;
-                    const end = boxes[j].group.position;
-                    
-                    // Create curved path for connection
-                    const mid = new THREE.Vector3(
-                        (start.x + end.x) / 2,
-                        (start.y + end.y) / 2 + 1,
-                        (start.z + end.z) / 2 + 2
-                    );
-                    
-                    const curve = new THREE.QuadraticBezierCurve3(start, mid, end);
-                    const points = curve.getPoints(50);
-                    const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-                    const line = new THREE.Line(lineGeometry, connectionMaterial);
-                    boxGroup.add(line);
-                    connections.push({ line, curve });
-                    
-                    // Create multiple particles per connection for data flow effect
-                    for (let k = 0; k < 3; k++) {
-                        const particleGroup = new THREE.Group();
+            const beams = [];
+            for (let i = 0; i < gems.length; i++) {
+                for (let j = i + 1; j < gems.length; j++) {
+                    if (Math.abs(i - j) === 1 || (i === 0 && j === gems.length - 1) || (i === gems.length - 1 && j === 0)) {
+                        const startPos = gems[i].component.position;
+                        const endPos = gems[j].component.position;
+                        const start = new THREE.Vector3(startPos.x, startPos.y, startPos.z);
+                        const end = new THREE.Vector3(endPos.x, endPos.y, endPos.z);
                         
-                        // Energy particle core
-                        const particleGeometry = new THREE.SphereGeometry(0.08, 12, 12);
-                        const particleMaterial = new THREE.MeshBasicMaterial({
-                            color: 0x00D4FF,
-                            transparent: true,
-                            opacity: 0.9
-                        });
-                        const particleCore = new THREE.Mesh(particleGeometry, particleMaterial);
-                        particleGroup.add(particleCore);
+                        const distance = start.distanceTo(end);
+                        const beamGeometry = new THREE.CylinderGeometry(0.02, 0.02, distance, 8);
+                        const beam = new THREE.Mesh(beamGeometry, beamMaterial);
                         
-                        // Particle glow
-                        const glowGeometry = new THREE.SphereGeometry(0.2, 8, 8);
-                        const glowMaterial = new THREE.MeshBasicMaterial({
-                            color: boxes[i].component.color,
-                            transparent: true,
-                            opacity: 0.2
-                        });
-                        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-                        particleGroup.add(glow);
+                        // Position and orient the beam
+                        const midpoint = new THREE.Vector3().addVectors(start, end).multiplyScalar(0.5);
+                        beam.position.copy(midpoint);
                         
-                        // Particle trail
-                        const trailGeometry = new THREE.ConeGeometry(0.05, 0.5, 4);
-                        const trailMaterial = new THREE.MeshBasicMaterial({
-                            color: 0x3B82F6,
-                            transparent: true,
-                            opacity: 0.3
-                        });
-                        const trail = new THREE.Mesh(trailGeometry, trailMaterial);
-                        trail.position.z = -0.25;
-                        trail.rotation.x = Math.PI / 2;
-                        particleGroup.add(trail);
+                        const direction = new THREE.Vector3().subVectors(end, start).normalize();
+                        const axis = new THREE.Vector3(0, 1, 0);
+                        const quaternion = new THREE.Quaternion().setFromUnitVectors(axis, direction);
+                        beam.quaternion.copy(quaternion);
                         
-                        boxGroup.add(particleGroup);
-                        
-                        particles.push({
-                            particle: particleGroup,
-                            curve: curve,
-                            progress: (k / 3) + Math.random() * 0.3,
-                            speed: 0.005 + Math.random() * 0.005,
-                            trail: trail
-                        });
+                        gemGroup.add(beam);
+                        beams.push({ mesh: beam, start: i, end: j });
                     }
                 }
             }
+        
+            // Create flowing energy particles
+            const flowParticles = [];
+            const flowParticleCount = 100;
+            
+            for (let i = 0; i < flowParticleCount; i++) {
+                const particleGeometry = new THREE.SphereGeometry(0.05, 6, 6);
+                const particleMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00D4FF,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                
+                // Random initial position
+                particle.position.x = (Math.random() - 0.5) * 20;
+                particle.position.y = (Math.random() - 0.5) * 10;
+                particle.position.z = (Math.random() - 0.5) * 20;
+                
+                // Random velocity
+                particle.userData = {
+                    velocity: new THREE.Vector3(
+                        (Math.random() - 0.5) * 0.02,
+                        (Math.random() - 0.5) * 0.02,
+                        (Math.random() - 0.5) * 0.02
+                    ),
+                    lifespan: Math.random() * 2 + 1
+                };
+                
+                gemGroup.add(particle);
+                flowParticles.push(particle);
+            }
             
             // Set camera position for optimal view
-            camera.position.set(0, 5, 15);
+            camera.position.set(0, 3, 20);
             camera.lookAt(0, 0, 0);
             
             // Mouse interaction variables
@@ -1700,77 +1771,105 @@ print(f<span class="string">"Agent DID: {deployment.did}"</span>)  <span class="
                 requestAnimationFrame(animate3D);
                 
                 // Smooth camera rotation based on mouse
-                targetRotationY = mouseX * 0.5;
-                targetRotationX = -mouseY * 0.3;
-                boxGroup.rotation.y += (targetRotationY - boxGroup.rotation.y) * 0.05;
-                boxGroup.rotation.x += (targetRotationX - boxGroup.rotation.x) * 0.05;
+                targetRotationY = mouseX * 0.3;
+                targetRotationX = -mouseY * 0.2;
+                gemGroup.rotation.y += (targetRotationY - gemGroup.rotation.y) * 0.05;
+                gemGroup.rotation.x += (targetRotationX - gemGroup.rotation.x) * 0.05;
                 
-                // Animate components
-                boxes.forEach((boxData, index) => {
+                // Animate gem components
+                gems.forEach((gemData, index) => {
                     const time = Date.now() * 0.001;
                     
-                    // Rotate main mesh
-                    boxData.mesh.rotation.x += 0.002;
-                    boxData.mesh.rotation.y += 0.003;
-                    
-                    // Counter-rotate shell for effect
-                    boxData.shell.rotation.x -= 0.001;
-                    boxData.shell.rotation.y -= 0.002;
+                    // Slow rotation for gems
+                    gemData.mesh.rotation.y += 0.005;
+                    gemData.mesh.rotation.x += 0.002;
                     
                     // Float animation
-                    boxData.group.position.y = boxData.component.position.y + Math.sin(time + index * 0.5) * 0.2;
+                    gemData.group.position.y = gemData.component.position.y + Math.sin(time * 0.5 + index) * 0.3;
                     
                     // Pulse core
-                    const corePulse = 0.7 + Math.sin(time * 2 + index) * 0.1;
-                    boxData.core.scale.setScalar(corePulse);
+                    const corePulse = 0.5 + Math.sin(time * 2 + index) * 0.1;
+                    gemData.core.scale.setScalar(corePulse);
                     
-                    // Rotate ring
-                    boxData.ring.rotation.z += 0.01;
-                    boxData.ring.rotation.x = Math.PI / 2 + Math.sin(time + index) * 0.1;
+                    // Wireframe rotation effect
+                    const wireframeScale = 1.1 + Math.sin(time * 1.5 + index * 0.5) * 0.05;
+                    gemData.wireframe.scale.setScalar(wireframeScale);
+                    gemData.wireframe.rotation.y -= 0.002;
                     
-                    // Ring pulse
-                    const ringScale = 1 + Math.sin(time * 1.5 + index) * 0.1;
-                    boxData.ring.scale.setScalar(ringScale);
-                });
-                
-                // Animate particles along curved paths
-                particles.forEach((particleData, index) => {
-                    particleData.progress += particleData.speed;
-                    if (particleData.progress > 1) {
-                        particleData.progress = 0;
+                    // Rotate energy particles
+                    gemData.particles.rotation.y += 0.01;
+                    
+                    // Update particle positions for orbital motion
+                    const positions = gemData.particlesGeometry.attributes.position.array;
+                    const particleCount = positions.length / 3;
+                    
+                    for (let i = 0; i < particleCount; i++) {
+                        const angle = (i / particleCount) * Math.PI * 2 + time * 0.5;
+                        const radius = gemData.component.scale * 2 + Math.sin(time * 2 + i) * 0.5;
+                        positions[i * 3] = Math.cos(angle) * radius;
+                        positions[i * 3 + 2] = Math.sin(angle) * radius;
                     }
                     
-                    // Get position on curve
-                    const point = particleData.curve.getPoint(particleData.progress);
-                    particleData.particle.position.copy(point);
+                    gemData.particlesGeometry.attributes.position.needsUpdate = true;
                     
-                    // Orient trail based on movement direction
-                    if (particleData.progress > 0.01) {
-                        const prevPoint = particleData.curve.getPoint(particleData.progress - 0.01);
-                        const direction = new THREE.Vector3().subVectors(point, prevPoint).normalize();
-                        particleData.particle.lookAt(point.clone().add(direction));
+                    // Update point light intensity
+                    if (pointLights[index]) {
+                        pointLights[index].intensity = 2 + Math.sin(time * 3 + index) * 0.5;
                     }
-                    
-                    // Pulse and scale effect
-                    const pulseScale = 0.8 + Math.sin(Date.now() * 0.005 + index) * 0.2;
-                    particleData.particle.scale.setScalar(pulseScale);
-                    
-                    // Fade in/out at edges
-                    const edgeFade = Math.sin(particleData.progress * Math.PI);
-                    particleData.particle.children[0].material.opacity = 0.9 * edgeFade;
-                    particleData.particle.children[1].material.opacity = 0.2 * edgeFade;
                 });
                 
-                // Animate point lights
-                const time = Date.now() * 0.001;
-                pointLight1.position.x = Math.sin(time * 0.7) * 10;
-                pointLight1.position.z = Math.cos(time * 0.7) * 10;
-                pointLight2.position.x = Math.cos(time * 0.5) * 8;
-                pointLight2.position.z = Math.sin(time * 0.5) * 8;
+                // Animate energy beams
+                beams.forEach((beam, index) => {
+                    const time = Date.now() * 0.001;
+                    beam.mesh.material.opacity = 0.05 + Math.sin(time * 2 + index) * 0.03;
+                });
                 
-                // Rotate star field
-                stars.rotation.y += 0.0001;
-                stars.rotation.x += 0.00005;
+                // Animate flow particles
+                const currentTime = Date.now() * 0.001;
+                flowParticles.forEach((particle, index) => {
+                    // Update position
+                    particle.position.add(particle.userData.velocity);
+                    
+                    // Apply attraction to nearest gem
+                    let nearestDist = Infinity;
+                    let nearestGem = null;
+                    
+                    gems.forEach(gem => {
+                        const dist = particle.position.distanceTo(gem.group.position);
+                        if (dist < nearestDist) {
+                            nearestDist = dist;
+                            nearestGem = gem;
+                        }
+                    });
+                    
+                    if (nearestGem && nearestDist < 10) {
+                        const attraction = nearestGem.group.position.clone().sub(particle.position).normalize().multiplyScalar(0.001);
+                        particle.userData.velocity.add(attraction);
+                    }
+                    
+                    // Respawn if too far
+                    if (particle.position.length() > 15) {
+                        particle.position.x = (Math.random() - 0.5) * 20;
+                        particle.position.y = (Math.random() - 0.5) * 10;
+                        particle.position.z = (Math.random() - 0.5) * 20;
+                        particle.userData.velocity = new THREE.Vector3(
+                            (Math.random() - 0.5) * 0.02,
+                            (Math.random() - 0.5) * 0.02,
+                            (Math.random() - 0.5) * 0.02
+                        );
+                    }
+                    
+                    // Fade based on lifespan
+                    particle.material.opacity = 0.8 * Math.sin(currentTime + index);
+                });
+                
+                // Rotate star field slowly
+                starField.rotation.y += 0.0001;
+                starField.rotation.x += 0.00005;
+                
+                // Update platform glow
+                const platformTime = Date.now() * 0.001;
+                platform.material.emissiveIntensity = 0.05 + Math.sin(platformTime) * 0.02;
                 
                 renderer.render(scene, camera);
             }
