@@ -44,6 +44,74 @@
             overflow-x: hidden;
         }
 
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-void);
+            z-index: -2;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(6, 182, 212, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 40% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 40%);
+            animation: bgFloat 30s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-5%, -5%) rotate(1deg); }
+        }
+
+        /* Code Particles */
+        .code-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .code-particle {
+            position: absolute;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--dev-glow);
+            opacity: 0.1;
+            animation: floatCode 20s linear infinite;
+        }
+
+        @keyframes floatCode {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
         /* Navigation Header */
         .nav-header {
             position: fixed;
@@ -192,19 +260,35 @@
             }
         }
 
-        /* Hero Section */
+        /* Hero Section with Enhanced Animation */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: 
-                radial-gradient(ellipse at center, rgba(6, 182, 212, 0.15) 0%, transparent 70%),
-                linear-gradient(90deg, transparent 49%, rgba(6, 182, 212, 0.05) 49%, rgba(6, 182, 212, 0.05) 51%, transparent 51%),
-                linear-gradient(0deg, transparent 49%, rgba(6, 182, 212, 0.05) 49%, rgba(6, 182, 212, 0.05) 51%, transparent 51%);
-            background-size: 100% 100%, 50px 50px, 50px 50px;
             padding: 8rem 2rem 4rem;
+            overflow: hidden;
+        }
+
+        /* Hero Grid Animation */
+        .hero-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
 
         .hero-content {
@@ -220,6 +304,52 @@
             margin-bottom: 1.5rem;
             letter-spacing: -0.02em;
             line-height: 1.1;
+            position: relative;
+        }
+
+        /* Glitch Effect */
+        .glitch {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .glitch::before {
+            animation: glitch1 0.5s infinite;
+            color: var(--dev-glow);
+            text-shadow: -2px 0 var(--danger-glow);
+        }
+
+        .glitch::after {
+            animation: glitch2 0.5s infinite;
+            color: var(--primary-glow);
+            text-shadow: 2px 0 var(--accent-glow);
+        }
+
+        @keyframes glitch1 {
+            0%, 100% { clip-path: inset(0 0 0 0); }
+            20% { clip-path: inset(20% 0 60% 0); }
+            40% { clip-path: inset(40% 0 43% 0); }
+            60% { clip-path: inset(80% 0 5% 0); }
+            80% { clip-path: inset(10% 0 80% 0); }
+        }
+
+        @keyframes glitch2 {
+            0%, 100% { clip-path: inset(0 0 0 0); }
+            20% { clip-path: inset(60% 0 20% 0); }
+            40% { clip-path: inset(5% 0 80% 0); }
+            60% { clip-path: inset(43% 0 40% 0); }
+            80% { clip-path: inset(80% 0 10% 0); }
         }
 
         .gradient-text-dev {
@@ -234,7 +364,7 @@
             to { background-position: 200% center; }
         }
 
-        /* Live Code Playground */
+        /* Enhanced Live Code Playground */
         .playground-container {
             max-width: 1200px;
             margin: 4rem auto;
@@ -242,6 +372,24 @@
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
             height: 600px;
+            position: relative;
+        }
+
+        .playground-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .code-editor {
@@ -251,6 +399,13 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .code-editor:hover {
+            border-color: var(--dev-glow);
+            box-shadow: 0 0 30px rgba(6, 182, 212, 0.3);
         }
 
         .editor-header {
@@ -262,9 +417,27 @@
             align-items: center;
         }
 
+        /* Window Controls */
+        .editor-header::before {
+            content: '';
+            position: absolute;
+            left: 1rem;
+            top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .editor-header::before {
+            content: '● ● ●';
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 0.3rem;
+        }
+
         .editor-title {
             font-weight: 600;
             color: var(--dev-glow);
+            margin-left: 4rem;
         }
 
         .run-button {
@@ -276,6 +449,26 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .run-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .run-button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .run-button:hover {
@@ -311,6 +504,12 @@
 
         .terminal-line {
             margin-bottom: 0.5rem;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
         }
 
         .terminal-prompt {
@@ -325,11 +524,22 @@
             color: var(--danger-glow);
         }
 
-        /* Quick Start Steps */
+        /* Enhanced Quick Start Steps */
         .quickstart-timeline {
             max-width: 1000px;
             margin: 4rem auto;
             position: relative;
+        }
+
+        .quickstart-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 2px;
+            height: calc(100% - 100px);
+            background: var(--gradient-dev);
+            opacity: 0.5;
         }
 
         .quickstart-step {
@@ -338,16 +548,22 @@
             gap: 2rem;
             margin-bottom: 3rem;
             position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideIn 0.6s forwards;
         }
 
-        .quickstart-step:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 50px;
-            top: 100px;
-            width: 2px;
-            height: calc(100% + 2rem);
-            background: var(--gradient-dev);
+        .quickstart-step:nth-child(1) { animation-delay: 0.1s; }
+        .quickstart-step:nth-child(2) { animation-delay: 0.2s; }
+        .quickstart-step:nth-child(3) { animation-delay: 0.3s; }
+        .quickstart-step:nth-child(4) { animation-delay: 0.4s; }
+        .quickstart-step:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .step-number {
@@ -362,6 +578,36 @@
             font-weight: 700;
             position: relative;
             box-shadow: 0 0 30px rgba(6, 182, 212, 0.5);
+            animation: stepPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes stepPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .step-number::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: var(--gradient-dev);
+            border-radius: 50%;
+            opacity: 0.2;
+            animation: ripple 2s ease-in-out infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(1);
+                opacity: 0.2;
+            }
+            100% {
+                transform: scale(1.3);
+                opacity: 0;
+            }
         }
 
         .step-content {
@@ -370,9 +616,34 @@
             border-radius: 1rem;
             padding: 2.5rem;
             position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .step-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-dev);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .step-content:hover {
+            transform: translateY(-5px);
+            border-color: var(--dev-glow);
+            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+        }
+
+        .step-content:hover::before {
+            opacity: 0.05;
+        }
+
+        .step-arrow {
             content: '';
             position: absolute;
             left: -20px;
@@ -389,16 +660,21 @@
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-bright);
+            position: relative;
+            z-index: 1;
         }
 
         .step-description {
             color: var(--text-secondary);
             margin-bottom: 1.5rem;
             line-height: 1.8;
+            position: relative;
+            z-index: 1;
         }
 
+        /* Enhanced Code Snippets */
         .code-snippet {
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.8);
             border: 1px solid rgba(6, 182, 212, 0.2);
             border-radius: 0.5rem;
             padding: 1.5rem;
@@ -406,6 +682,7 @@
             font-size: 0.875rem;
             overflow-x: auto;
             position: relative;
+            z-index: 1;
         }
 
         .code-snippet::before {
@@ -419,7 +696,20 @@
             letter-spacing: 0.1em;
         }
 
-        /* API Reference Cards */
+        .code-snippet::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .code-snippet::-webkit-scrollbar-track {
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        .code-snippet::-webkit-scrollbar-thumb {
+            background: var(--dev-glow);
+            border-radius: 3px;
+        }
+
+        /* Enhanced API Reference Cards */
         .api-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -433,12 +723,31 @@
             border-radius: 1rem;
             padding: 2rem;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .api-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-dev);
+            border-radius: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .api-card:hover {
             transform: translateY(-5px);
-            border-color: var(--dev-glow);
-            box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
+            border-color: transparent;
+        }
+
+        .api-card:hover::before {
+            opacity: 1;
         }
 
         .api-method {
@@ -448,6 +757,8 @@
             font-size: 0.875rem;
             font-weight: 600;
             margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
         }
 
         .method-get {
@@ -460,30 +771,24 @@
             color: var(--primary-glow);
         }
 
-        .method-put {
-            background: rgba(245, 158, 11, 0.2);
-            color: #F59E0B;
-        }
-
-        .method-delete {
-            background: rgba(239, 68, 68, 0.2);
-            color: var(--danger-glow);
-        }
-
         .api-endpoint {
             font-family: 'JetBrains Mono', monospace;
             font-size: 1rem;
             color: var(--text-bright);
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .api-description {
             color: var(--text-secondary);
             font-size: 0.9rem;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
-        /* SDK Downloads */
+        /* Enhanced SDK Downloads */
         .sdk-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -499,9 +804,38 @@
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
 
-        .sdk-card:hover {
+        .sdk-card.available {
+            border-color: var(--accent-glow);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+        }
+
+        .sdk-card.coming-soon {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .sdk-card.coming-soon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(6, 182, 212, 0.1) 10px,
+                rgba(6, 182, 212, 0.1) 20px
+            );
+            pointer-events: none;
+        }
+
+        .sdk-card:not(.coming-soon):hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3);
         }
@@ -509,6 +843,19 @@
         .sdk-icon {
             font-size: 3rem;
             margin-bottom: 1rem;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .sdk-card:nth-child(1) .sdk-icon { animation-delay: 0s; }
+        .sdk-card:nth-child(2) .sdk-icon { animation-delay: 1s; }
+        .sdk-card:nth-child(3) .sdk-icon { animation-delay: 2s; }
+        .sdk-card:nth-child(4) .sdk-icon { animation-delay: 3s; }
+        .sdk-card:nth-child(5) .sdk-icon { animation-delay: 4s; }
+        .sdk-card:nth-child(6) .sdk-icon { animation-delay: 5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .sdk-name {
@@ -522,7 +869,28 @@
             font-size: 0.875rem;
         }
 
-        /* Resource Links */
+        .sdk-status {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-available {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--accent-glow);
+        }
+
+        .status-coming-soon {
+            background: rgba(245, 158, 11, 0.2);
+            color: #F59E0B;
+        }
+
+        /* Enhanced Resource Links */
         .resource-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -541,21 +909,76 @@
             text-decoration: none;
             color: var(--text-primary);
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .resource-link:hover::before {
+            left: 100%;
         }
 
         .resource-link:hover {
             background: rgba(6, 182, 212, 0.1);
             transform: translateX(5px);
+            border-color: var(--dev-glow);
         }
 
         .resource-icon {
             font-size: 2rem;
             color: var(--dev-glow);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .resource-link:nth-child(1) .resource-icon { animation-delay: 0s; }
+        .resource-link:nth-child(2) .resource-icon { animation-delay: 0.2s; }
+        .resource-link:nth-child(3) .resource-icon { animation-delay: 0.4s; }
+        .resource-link:nth-child(4) .resource-icon { animation-delay: 0.6s; }
+        .resource-link:nth-child(5) .resource-icon { animation-delay: 0.8s; }
+        .resource-link:nth-child(6) .resource-icon { animation-delay: 1s; }
+
+        /* Notice Banner */
+        .notice-banner {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notice-icon {
+            font-size: 2rem;
+            color: #F59E0B;
+        }
+
+        .notice-content h4 {
+            color: #F59E0B;
+            margin-bottom: 0.5rem;
+        }
+
+        .notice-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
 
         /* Sections */
         section {
             padding: 6rem 0;
+            position: relative;
         }
 
         .container {
@@ -595,6 +1018,26 @@
             text-decoration: none;
             display: inline-block;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-primary:hover::before {
+            width: 400px;
+            height: 400px;
         }
 
         .btn-primary:hover {
@@ -614,6 +1057,28 @@
             height: 20px;
             background: var(--dev-glow);
             animation: blink 1s infinite;
+        }
+
+        /* Real World Examples Enhanced */
+        .example-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .example-card:hover {
+            transform: translateX(10px);
+            border-color: var(--dev-glow);
+            box-shadow: -5px 0 20px rgba(6, 182, 212, 0.3);
+        }
+
+        .example-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--dev-glow);
         }
 
         /* Responsive */
@@ -638,9 +1103,33 @@
                 font-size: clamp(2.5rem, 7vw, 5rem);
             }
         }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(6, 182, 212, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--dev-glow);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-glow);
+        }
     </style>
 </head>
 <body>
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+    
+    <!-- Code Particles -->
+    <div class="code-particles" id="codeParticles"></div>
+
     <!-- Navigation Header -->
     <header class="nav-header">
         <div class="nav-container">
@@ -665,9 +1154,10 @@
 
     <!-- Hero Section -->
     <section class="hero">
+        <div class="hero-grid"></div>
         <div class="hero-content">
             <h1>
-                <span class="gradient-text-dev">Build Your First Agent</span><br>
+                <span class="glitch gradient-text-dev" data-text="Build Your First Agent">Build Your First Agent</span><br>
                 in 5 Minutes
             </h1>
             <p style="font-size: 1.5rem; color: var(--text-secondary); max-width: 800px; margin: 2rem auto;">
@@ -677,9 +1167,10 @@
             
             <!-- Live Code Playground -->
             <div class="playground-container">
+                <div class="playground-glow"></div>
                 <div class="code-editor">
                     <div class="editor-header">
-                        <span class="editor-title">📝 agent.py</span>
+                        <span class="editor-title">agent.py</span>
                         <button class="run-button" onclick="runCode()">▶ Run</button>
                     </div>
                     <textarea id="code-input" spellcheck="false">
@@ -724,7 +1215,7 @@ print(f"🌐 Discoverable globally!")
                 
                 <div class="code-editor">
                     <div class="editor-header">
-                        <span class="editor-title">🖥️ Terminal</span>
+                        <span class="editor-title">Terminal</span>
                     </div>
                     <div id="terminal-output">
                         <div class="terminal-line">
@@ -765,23 +1256,24 @@ print(f"🌐 Discoverable globally!")
                 <div class="quickstart-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
+                        <div class="step-arrow"></div>
                         <h3 class="step-title">Install the SDK</h3>
                         <p class="step-description">
-                            Choose your favorite language and install The Protocol SDK. 
-                            We support Python, JavaScript, Go, and Rust.
+                            Start with Python SDK - the first available SDK for The Protocol. 
+                            More languages coming soon as we roll them out one by one.
                         </p>
                         <div class="code-snippet" data-language="bash">
-# Python
+# Python (Available Now!)
 pip install theprotocol
 
-# JavaScript
-npm install @theprotocol/sdk
+# JavaScript - Coming Soon
+# npm install @theprotocol/sdk
 
-# Go
-go get github.com/theprotocol/go-sdk
+# Go - Coming Soon
+# go get github.com/theprotocol/go-sdk
 
-# Rust
-cargo add theprotocol
+# Rust - Coming Soon
+# cargo add theprotocol
                         </div>
                     </div>
                 </div>
@@ -789,6 +1281,7 @@ cargo add theprotocol
                 <div class="quickstart-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
+                        <div class="step-arrow"></div>
                         <h3 class="step-title">Create Your Agent</h3>
                         <p class="step-description">
                             Define your agent's capabilities and behavior. Start with our templates 
@@ -826,6 +1319,7 @@ async def translate(task):
                 <div class="quickstart-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
+                        <div class="step-arrow"></div>
                         <h3 class="step-title">Test Locally</h3>
                         <p class="step-description">
                             Run your agent locally to test its behavior. The SDK includes a local 
@@ -857,6 +1351,7 @@ curl -X POST http://localhost:8080/tasks \
                 <div class="quickstart-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
+                        <div class="step-arrow"></div>
                         <h3 class="step-title">Deploy to Registry</h3>
                         <p class="step-description">
                             Package your agent as a Docker container and deploy to your chosen registry. 
@@ -885,6 +1380,7 @@ theprotocol deploy \
                 <div class="quickstart-step">
                     <div class="step-number">5</div>
                     <div class="step-content">
+                        <div class="step-arrow"></div>
                         <h3 class="step-title">Start Earning</h3>
                         <p class="step-description">
                             Your agent is now live and discoverable across the federation. 
@@ -985,42 +1481,57 @@ theprotocol logs -f did:cosmos:beta:agent-8b4f21
                     Native SDKs for every major language
                 </p>
             </div>
+
+            <!-- SDK Notice -->
+            <div class="notice-banner">
+                <div class="notice-icon">📢</div>
+                <div class="notice-content">
+                    <h4>SDK Rollout in Progress</h4>
+                    <p>We're rolling out SDKs one by one to ensure the highest quality. Python SDK is available now, with other languages coming soon. Join our Discord to get notified when your preferred SDK is released!</p>
+                </div>
+            </div>
             
             <div class="sdk-grid">
-                <div class="sdk-card">
+                <div class="sdk-card available">
                     <div class="sdk-icon">🐍</div>
                     <h3 class="sdk-name">Python SDK</h3>
                     <p class="sdk-version">v2.1.0</p>
+                    <span class="sdk-status status-available">Available Now</span>
                 </div>
                 
-                <div class="sdk-card">
+                <div class="sdk-card coming-soon">
                     <div class="sdk-icon">📜</div>
                     <h3 class="sdk-name">JavaScript/TypeScript</h3>
                     <p class="sdk-version">v2.1.0</p>
+                    <span class="sdk-status status-coming-soon">Coming Soon</span>
                 </div>
                 
-                <div class="sdk-card">
+                <div class="sdk-card coming-soon">
                     <div class="sdk-icon">🔷</div>
                     <h3 class="sdk-name">Go SDK</h3>
                     <p class="sdk-version">v2.1.0</p>
+                    <span class="sdk-status status-coming-soon">Coming Soon</span>
                 </div>
                 
-                <div class="sdk-card">
+                <div class="sdk-card coming-soon">
                     <div class="sdk-icon">🦀</div>
                     <h3 class="sdk-name">Rust SDK</h3>
                     <p class="sdk-version">v2.1.0</p>
+                    <span class="sdk-status status-coming-soon">Coming Soon</span>
                 </div>
                 
-                <div class="sdk-card">
+                <div class="sdk-card coming-soon">
                     <div class="sdk-icon">☕</div>
                     <h3 class="sdk-name">Java SDK</h3>
-                    <p class="sdk-version">Coming Soon</p>
+                    <p class="sdk-version">-</p>
+                    <span class="sdk-status status-coming-soon">Coming Soon</span>
                 </div>
                 
-                <div class="sdk-card">
+                <div class="sdk-card coming-soon">
                     <div class="sdk-icon">💎</div>
                     <h3 class="sdk-name">Ruby SDK</h3>
-                    <p class="sdk-version">Coming Soon</p>
+                    <p class="sdk-version">-</p>
+                    <span class="sdk-status status-coming-soon">Coming Soon</span>
                 </div>
             </div>
         </div>
@@ -1036,9 +1547,9 @@ theprotocol logs -f did:cosmos:beta:agent-8b4f21
                 </p>
             </div>
             
-            <div style="display: grid; gap: 3rem;">
-                <div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Cross-Registry Task Delegation</h3>
+            <div>
+                <div class="example-card">
+                    <h3 class="example-title">Cross-Registry Task Delegation</h3>
                     <div class="code-snippet" data-language="python">
 # Discover and delegate to specialized agents
 async def process_document(document):
@@ -1079,8 +1590,8 @@ async def process_document(document):
                     </div>
                 </div>
                 
-                <div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Privacy-Preserving Reputation</h3>
+                <div class="example-card">
+                    <h3 class="example-title">Privacy-Preserving Reputation</h3>
                     <div class="code-snippet" data-language="python">
 # Build reputation without revealing clients
 @agent.after_task
@@ -1109,43 +1620,42 @@ async def update_reputation(task, result):
                     </div>
                 </div>
                 
-                <div>
-                    <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Multi-Agent Collaboration</h3>
-                    <div class="code-snippet" data-language="javascript">
-// Form temporary agent collective for complex tasks
-async function executeComplexProject(requirements) {
-    // Discover required specialists
-    const team = await registry.discoverTeam({
-        roles: [
-            { capability: "project-management", count: 1 },
-            { capability: "backend-development", count: 2 },
-            { capability: "ui-design", count: 1 },
-            { capability: "quality-assurance", count: 1 }
+                <div class="example-card">
+                    <h3 class="example-title">Multi-Agent Collaboration</h3>
+                    <div class="code-snippet" data-language="python">
+# Form temporary agent collective for complex tasks
+async def execute_complex_project(requirements):
+    # Discover required specialists
+    team = await registry.discover_team({
+        "roles": [
+            {"capability": "project-management", "count": 1},
+            {"capability": "backend-development", "count": 2},
+            {"capability": "ui-design", "count": 1},
+            {"capability": "quality-assurance", "count": 1}
         ],
-        minReputation: 0.85
-    });
+        "min_reputation": 0.85
+    })
     
-    // Create temporary shared workspace
-    const workspace = await federation.createWorkspace({
-        agents: team.map(a => a.did),
-        duration: "7d",
-        escrow: "500 AVT"
-    });
+    # Create temporary shared workspace
+    workspace = await federation.create_workspace({
+        "agents": [a.did for a in team],
+        "duration": "7d",
+        "escrow": "500 AVT"
+    })
     
-    // Orchestrate parallel execution
-    const tasks = distributeWork(requirements, team);
-    const results = await Promise.all(
-        tasks.map(t => workspace.executeTask(t))
-    );
+    # Orchestrate parallel execution
+    tasks = distribute_work(requirements, team)
+    results = await asyncio.gather(
+        *[workspace.execute_task(t) for t in tasks]
+    )
     
-    // Automatic payment distribution based on contribution
+    # Automatic payment distribution based on contribution
     await workspace.complete({
-        results: results,
-        paymentDistribution: "merit-based"
-    });
+        "results": results,
+        "payment_distribution": "merit-based"
+    })
     
-    return results;
-}
+    return results
                     </div>
                 </div>
             </div>
@@ -1286,6 +1796,28 @@ async function executeComplexProject(requirements) {
             
             lastScroll = currentScroll;
         });
+
+        // Code Particles
+        function createCodeParticles() {
+            const container = document.getElementById('codeParticles');
+            const codeSnippets = [
+                'async def', 'import', 'from', 'class Agent', 'return', 
+                'await', '@agent', 'Registry()', 'deploy()', 'task.get()',
+                'AVT', 'DID:', 'spiffe://', 'docker', 'theprotocol'
+            ];
+            
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'code-particle';
+                particle.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        createCodeParticles();
         
         // Live code execution simulation
         function runCode() {
@@ -1300,6 +1832,7 @@ async function executeComplexProject(requirements) {
                 if (index > 0) {
                     setTimeout(() => {
                         line.style.display = 'block';
+                        line.style.animationDelay = index * 0.1 + 's';
                         
                         // Scroll terminal to bottom
                         const terminal = document.getElementById('terminal-output');
@@ -1315,20 +1848,7 @@ async function executeComplexProject(requirements) {
             }, outputLines.length * 800);
         }
         
-        // Syntax highlighting for code editor
-        const codeInput = document.getElementById('code-input');
-        
-        function highlightSyntax() {
-            // Simple syntax highlighting (in production, use a library like Prism.js)
-            let code = codeInput.value;
-            
-            // This is just for visual effect in the demo
-            // Real implementation would use proper syntax highlighting
-        }
-        
-        codeInput.addEventListener('input', highlightSyntax);
-        
-        // Animate code snippets on scroll
+        // Animate elements on scroll
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -100px 0px'
@@ -1343,19 +1863,19 @@ async function executeComplexProject(requirements) {
             });
         }, observerOptions);
         
-        document.querySelectorAll('.code-snippet').forEach(snippet => {
-            snippet.style.opacity = '0';
-            snippet.style.transform = 'translateY(20px)';
-            snippet.style.transition = 'all 0.6s ease';
-            observer.observe(snippet);
+        document.querySelectorAll('.code-snippet, .api-card, .resource-link').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'all 0.6s ease';
+            observer.observe(element);
         });
         
         // SDK card interactions
-        document.querySelectorAll('.sdk-card').forEach(card => {
+        document.querySelectorAll('.sdk-card:not(.coming-soon)').forEach(card => {
             card.addEventListener('click', () => {
-                // In production, this would download or link to the SDK
                 const name = card.querySelector('.sdk-name').textContent;
                 console.log(`Download ${name}`);
+                // In production, this would download or link to the SDK
             });
         });
         
@@ -1373,6 +1893,19 @@ async function executeComplexProject(requirements) {
                 }
             });
         });
+
+        // Enhanced typing animation for terminal
+        function typeText(element, text, delay = 50) {
+            let index = 0;
+            function type() {
+                if (index < text.length) {
+                    element.textContent += text.charAt(index);
+                    index++;
+                    setTimeout(type, delay);
+                }
+            }
+            type();
+        }
     </script>
 </body>
 </html>
