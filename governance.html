@@ -19,6 +19,91 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --warning-glow: #F59E0B;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
+            --gradient-rainbow: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-void);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+
+        .loading-logo {
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--gradient-accent);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 1.5s ease infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .loading-bar {
+            width: 200px;
+            height: 4px;
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 2px;
+            margin: 2rem auto;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: var(--gradient-accent);
+            width: 0%;
+            animation: load 1.5s ease-out forwards;
+        }
+
+        @keyframes load {
+            to { width: 100%; }
+        }
+
         /* Navigation Header */
         .nav-header {
             position: fixed;
@@ -30,6 +115,11 @@
             border-bottom: 1px solid rgba(59, 130, 246, 0.2);
             z-index: 1000;
             transition: all 0.3s ease;
+        }
+
+        .nav-header.scrolled {
+            background: rgba(10, 10, 10, 0.98);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
 
         .nav-container {
@@ -51,6 +141,11 @@
             background-clip: text;
             text-decoration: none;
             letter-spacing: -0.02em;
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
         }
 
         .nav-menu {
@@ -95,11 +190,31 @@
             padding: 0.75rem 1.5rem;
             border-radius: 0.5rem;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link.nav-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
         .nav-link.nav-cta:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .nav-link.nav-cta::after {
@@ -113,6 +228,8 @@
             border-radius: 0.5rem;
             transition: all 0.3s ease;
             font-weight: 600;
+            position: relative;
+            overflow: hidden;
         }
 
         .nav-link.nav-dev-portal:hover {
@@ -178,39 +295,9 @@
             }
         }
 
-        :root {
-            --primary-glow: #3B82F6;
-            --secondary-glow: #8B5CF6;
-            --accent-glow: #10B981;
-            --danger-glow: #EF4444;
-            --bg-void: #000000;
-            --bg-deep: #0a0a0a;
-            --bg-dark: #0F172A;
-            --bg-card: rgba(15, 23, 42, 0.6);
-            --text-bright: #FFFFFF;
-            --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --text-muted: #475569;
-            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
-            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-void);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
-        /* Hero Section */
+        /* Hero Section with Enhanced Governance Animation */
         .hero {
-            min-height: 60vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -221,43 +308,84 @@
             padding-top: 120px;
         }
 
-        /* Animated Governance Background */
-        .governance-bg {
+        /* Animated Governance Network Background */
+        .governance-network {
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0.15;
+            top: 0;
+            left: 0;
         }
 
-        .governance-bg::before {
-            content: '';
+        .governance-network canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Floating Governance Orbs */
+        .gov-orb {
             position: absolute;
-            width: 300px;
-            height: 300px;
-            border: 2px solid var(--accent-glow);
             border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: pulse-ring 4s ease-in-out infinite;
+            filter: blur(60px);
+            animation: float-orb 25s infinite ease-in-out;
         }
 
-        .governance-bg::after {
-            content: '';
-            position: absolute;
+        .gov-orb-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+        }
+
+        .gov-orb-2 {
             width: 400px;
             height: 400px;
-            border: 1px solid var(--primary-glow);
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation: pulse-ring 4s ease-in-out infinite 1s;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -8s;
         }
 
-        @keyframes pulse-ring {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.6; }
+        .gov-orb-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+            top: 50%;
+            left: 30%;
+            animation-delay: -16s;
+        }
+
+        @keyframes float-orb {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+            50% {
+                transform: translate(-30px, 30px) scale(0.95);
+            }
+            75% {
+                transform: translate(40px, 20px) scale(1.05);
+            }
+        }
+
+        /* Crystalline Pattern Overlay */
+        .crystalline-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(16, 185, 129, 0.1) 35px, rgba(16, 185, 129, 0.1) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(59, 130, 246, 0.1) 35px, rgba(59, 130, 246, 0.1) 70px);
+            animation: crystalline-shift 20s linear infinite;
+        }
+
+        @keyframes crystalline-shift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(70px, 70px); }
         }
 
         .hero-content {
@@ -265,6 +393,18 @@
             z-index: 10;
             max-width: 1000px;
             width: 100%;
+            animation: hero-enter 1s ease-out;
+        }
+
+        @keyframes hero-enter {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .hero h1 {
@@ -275,16 +415,28 @@
             line-height: 1.1;
         }
 
-        .hero h1 .gradient-text {
-            background: linear-gradient(to right, #FFFFFF 0%, #10B981 50%, #3B82F6 100%);
+        /* Holographic Text Effect */
+        .holographic-text {
+            background: linear-gradient(
+                to right,
+                #00ff88 0%,
+                #00ffff 15%,
+                #ff00ff 30%,
+                #ff0088 45%,
+                #00ff88 60%,
+                #00ffff 75%,
+                #ff00ff 90%,
+                #00ff88 100%
+            );
+            background-size: 200% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
+            animation: holographic-shift 4s linear infinite;
+            text-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
         }
 
-        @keyframes shine {
+        @keyframes holographic-shift {
             to { background-position: 200% center; }
         }
 
@@ -297,6 +449,24 @@
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
+            opacity: 0;
+            animation: fade-in-up 1s ease 0.5s forwards;
+        }
+
+        @keyframes fade-in-up {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Voting Flow Visualization */
+        .voting-visualization {
+            margin-top: 4rem;
+            height: 300px;
+            position: relative;
+            opacity: 0;
+            animation: fade-in-up 1s ease 0.8s forwards;
         }
 
         /* Section Styles */
@@ -324,6 +494,26 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+            animation: pulse-line 2s ease infinite;
+        }
+
+        @keyframes pulse-line {
+            0%, 100% { width: 100px; opacity: 1; }
+            50% { width: 150px; opacity: 0.7; }
         }
 
         .section-subtitle {
@@ -335,9 +525,20 @@
             line-height: 1.8;
         }
 
-        /* Pledge Section */
+        /* Enhanced Pledge Section with Particle Effects */
         .pledge-section {
             background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pledge-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
         }
 
         .pledge-card {
@@ -349,15 +550,58 @@
             max-width: 900px;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 50px rgba(16, 185, 129, 0.2),
+                inset 0 0 50px rgba(16, 185, 129, 0.05);
+            transition: all 0.5s ease;
+        }
+
+        .pledge-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 10px 60px rgba(16, 185, 129, 0.3),
+                inset 0 0 60px rgba(16, 185, 129, 0.1);
         }
 
         .pledge-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-accent);
+            border-radius: 1.5rem;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+
+        .pledge-card:hover::before {
+            opacity: 1;
+            animation: rotate-gradient 4s linear infinite;
+        }
+
+        @keyframes rotate-gradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pledge-card::after {
             content: '📜';
             position: absolute;
-            top: -20px;
-            right: 20px;
-            font-size: 4rem;
-            opacity: 0.1;
+            top: -40px;
+            right: 40px;
+            font-size: 8rem;
+            opacity: 0.05;
+            transform: rotate(-15deg);
+            animation: float-icon 4s ease infinite;
+        }
+
+        @keyframes float-icon {
+            0%, 100% { transform: rotate(-15deg) translateY(0); }
+            50% { transform: rotate(-15deg) translateY(-20px); }
         }
 
         .pledge-title {
@@ -388,9 +632,26 @@
             color: var(--text-secondary);
         }
 
-        /* Principles Section */
+        /* Enhanced Principles Section with 3D Cards */
         .principles-section {
             background: var(--bg-deep);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .principles-section::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="hex-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><polygon points="50,10 90,35 90,75 50,100 10,75 10,35" fill="none" stroke="rgba(16, 185, 129, 0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23hex-pattern)"/></svg>');
+            opacity: 0.5;
+            animation: hex-drift 30s linear infinite;
+        }
+
+        @keyframes hex-drift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 0); }
         }
 
         .principles-grid {
@@ -398,32 +659,63 @@
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
             margin-top: 3rem;
+            position: relative;
+            z-index: 1;
         }
 
         .principle-card {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.8);
             border: 1px solid transparent;
             border-radius: 1rem;
             padding: 2.5rem;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+
+        .principle-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .principle-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px) rotateX(5deg) scale(1.02);
             border-color: var(--accent-glow);
-            background: rgba(15, 23, 42, 0.8);
+            background: rgba(15, 23, 42, 0.95);
+            box-shadow: 
+                0 20px 40px rgba(16, 185, 129, 0.3),
+                0 0 60px rgba(16, 185, 129, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .principle-card:hover::before {
+            opacity: 1;
         }
 
         .principle-number {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            font-size: 3rem;
+            font-size: 4rem;
             font-weight: 900;
             opacity: 0.1;
             color: var(--accent-glow);
+            animation: number-pulse 3s ease infinite;
+        }
+
+        @keyframes number-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.1; }
+            50% { transform: scale(1.1); opacity: 0.2; }
         }
 
         .principle-icon {
@@ -436,6 +728,51 @@
             justify-content: center;
             margin-bottom: 1.5rem;
             font-size: 1.5rem;
+            position: relative;
+            animation: icon-float 3s ease infinite;
+        }
+
+        .principle-card:nth-child(1) .principle-icon { animation-delay: 0s; }
+        .principle-card:nth-child(2) .principle-icon { animation-delay: 0.5s; }
+        .principle-card:nth-child(3) .principle-icon { animation-delay: 1s; }
+        .principle-card:nth-child(4) .principle-icon { animation-delay: 1.5s; }
+        .principle-card:nth-child(5) .principle-icon { animation-delay: 2s; }
+        .principle-card:nth-child(6) .principle-icon { animation-delay: 2.5s; }
+
+        @keyframes icon-float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        .principle-icon::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .principle-card:hover .principle-icon::after {
+            animation: icon-shine 0.6s ease;
+        }
+
+        @keyframes icon-shine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+                opacity: 0;
+            }
         }
 
         .principle-title {
@@ -450,9 +787,43 @@
             line-height: 1.8;
         }
 
-        /* Governance Structure Section */
+        /* Enhanced Governance Structure with Live Visualization */
         .structure-section {
             background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-dark) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .structure-visualization {
+            width: 100%;
+            height: 600px;
+            margin: 3rem 0;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 0 50px rgba(59, 130, 246, 0.2),
+                inset 0 0 50px rgba(59, 130, 246, 0.1);
+        }
+
+        .structure-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .visualization-title {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            z-index: 10;
         }
 
         .structure-diagram {
@@ -462,12 +833,27 @@
             padding: 3rem;
             margin: 3rem 0;
             position: relative;
+            backdrop-filter: blur(10px);
         }
 
         .structure-level {
             margin-bottom: 3rem;
             padding-bottom: 3rem;
             border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            opacity: 0;
+            transform: translateX(-30px);
+            animation: slide-in 0.6s ease forwards;
+        }
+
+        .structure-level:nth-child(1) { animation-delay: 0.1s; }
+        .structure-level:nth-child(2) { animation-delay: 0.2s; }
+        .structure-level:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes slide-in {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .structure-level:last-child {
@@ -495,6 +881,14 @@
             align-items: center;
             justify-content: center;
             font-size: 1.25rem;
+            position: relative;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+            animation: pulse-glow 2s ease infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
+            50% { box-shadow: 0 0 50px rgba(59, 130, 246, 0.8); }
         }
 
         .level-description {
@@ -515,11 +909,29 @@
             border-radius: 0.5rem;
             padding: 1.5rem;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .member-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .member-card:hover {
             transform: translateX(5px);
             border-color: rgba(59, 130, 246, 0.5);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .member-card:hover::before {
+            left: 100%;
         }
 
         .member-type {
@@ -533,14 +945,50 @@
             color: var(--text-secondary);
         }
 
-        /* Roadmap Section */
+        /* Enhanced Roadmap with Animated Timeline */
         .roadmap-section {
             background: var(--bg-void);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .roadmap-section::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            opacity: 0.5;
         }
 
         .roadmap-timeline {
             position: relative;
             margin-top: 4rem;
+            z-index: 1;
+        }
+
+        .roadmap-timeline::before {
+            content: '';
+            position: absolute;
+            left: 200px;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--accent-glow), var(--primary-glow), var(--secondary-glow));
+            border-radius: 2px;
+            animation: timeline-grow 2s ease forwards;
+        }
+
+        @keyframes timeline-grow {
+            from {
+                transform: scaleY(0);
+                transform-origin: top;
+            }
+            to {
+                transform: scaleY(1);
+            }
         }
 
         .roadmap-phase {
@@ -549,6 +997,21 @@
             gap: 3rem;
             margin-bottom: 4rem;
             position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: phase-in 0.8s ease forwards;
+        }
+
+        .roadmap-phase:nth-child(1) { animation-delay: 0.2s; }
+        .roadmap-phase:nth-child(2) { animation-delay: 0.4s; }
+        .roadmap-phase:nth-child(3) { animation-delay: 0.6s; }
+        .roadmap-phase:nth-child(4) { animation-delay: 0.8s; }
+
+        @keyframes phase-in {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .phase-time {
@@ -573,6 +1036,14 @@
             border-radius: 1rem;
             padding: 2rem;
             position: relative;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .phase-content:hover {
+            transform: translateX(10px);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
         }
 
         .phase-content::before {
@@ -586,6 +1057,19 @@
             background: var(--accent-glow);
             border-radius: 50%;
             border: 4px solid var(--bg-void);
+            box-shadow: 0 0 20px var(--accent-glow);
+            animation: node-pulse 2s ease infinite;
+        }
+
+        @keyframes node-pulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px var(--accent-glow);
+                transform: translateY(-50%) scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 40px var(--accent-glow);
+                transform: translateY(-50%) scale(1.1);
+            }
         }
 
         .phase-title {
@@ -610,6 +1094,12 @@
             position: relative;
             margin-bottom: 0.5rem;
             color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .phase-milestones li:hover {
+            color: var(--text-primary);
+            transform: translateX(5px);
         }
 
         .phase-milestones li::before {
@@ -617,18 +1107,47 @@
             position: absolute;
             left: 0;
             color: var(--accent-glow);
+            animation: check-bounce 2s ease infinite;
         }
 
-        /* CTA Section */
+        @keyframes check-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Enhanced CTA Section */
         .cta-section {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            background: 
+                radial-gradient(ellipse at center, rgba(16, 185, 129, 0.2) 0%, transparent 70%),
+                linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
             padding: 5rem 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            right: -100px;
+            bottom: -100px;
+            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(16, 185, 129, 0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            animation: grid-move 20s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
         }
 
         .cta-content {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .cta-title {
@@ -667,10 +1186,27 @@
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.3s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.05);
             box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
         }
 
@@ -686,11 +1222,33 @@
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-secondary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
         }
 
         .btn-secondary:hover {
             background: rgba(16, 185, 129, 0.1);
-            transform: translateY(-2px);
+            transform: translateY(-2px) scale(1.05);
+            border-color: var(--text-bright);
+            color: var(--text-bright);
+        }
+
+        .btn-secondary:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         /* Footer */
@@ -698,6 +1256,23 @@
             background: var(--bg-void);
             padding: 4rem 0 2rem;
             border-top: 1px solid rgba(59, 130, 246, 0.1);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-primary);
+            animation: footer-glow 3s ease infinite;
+        }
+
+        @keyframes footer-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
         .footer-content {
@@ -748,6 +1323,10 @@
                 gap: 1rem;
             }
 
+            .roadmap-timeline::before {
+                display: none;
+            }
+
             .phase-time {
                 text-align: left;
                 margin-bottom: 1rem;
@@ -767,215 +1346,229 @@
                 width: 100%;
                 text-align: center;
             }
+
+            .structure-visualization {
+                height: 400px;
+            }
+
+            .voting-visualization {
+                height: 200px;
+            }
         }
-    
-/* Dropdown Specific Styles */
-.nav-dropdown {
-    position: relative;
-}
 
-.nav-dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-}
+        /* Dropdown Specific Styles */
+        .nav-dropdown {
+            position: relative;
+        }
 
-.dropdown-arrow {
-    transition: transform 0.3s ease;
-}
+        .nav-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
 
-.nav-dropdown:hover .dropdown-arrow,
-.nav-dropdown.active .dropdown-arrow {
-    transform: rotate(180deg);
-}
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
 
-.nav-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 220px;
-    background: rgba(10, 10, 10, 0.98);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 0.75rem;
-    padding: 0.5rem 0;
-    margin-top: 1rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(-10px);
-    transition: all 0.3s ease;
-    list-style: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
+        .nav-dropdown:hover .dropdown-arrow,
+        .nav-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
 
-.nav-dropdown-menu::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12px;
-    height: 12px;
-    background: rgba(10, 10, 10, 0.98);
-    border-top: 1px solid rgba(59, 130, 246, 0.2);
-    border-left: 1px solid rgba(59, 130, 246, 0.2);
-    transform: translateX(-50%) rotate(45deg);
-}
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 220px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.5rem 0;
+            margin-top: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(-10px);
+            transition: all 0.3s ease;
+            list-style: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
 
-.nav-dropdown:hover .nav-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-}
+        .nav-dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: rgba(10, 10, 10, 0.98);
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+            border-left: 1px solid rgba(59, 130, 246, 0.2);
+            transform: translateX(-50%) rotate(45deg);
+        }
 
-.nav-dropdown-link {
-    display: block;
-    padding: 0.75rem 1.5rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
+        .nav-dropdown:hover .nav-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
 
-.nav-dropdown-link:hover {
-    color: var(--text-bright);
-    background: rgba(59, 130, 246, 0.1);
-}
+        .nav-dropdown-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
 
-/* Mobile Dropdown */
-@media (max-width: 968px) {
-    .nav-dropdown-toggle {
-        width: 100%;
-        justify-content: space-between;
-    }
+        .nav-dropdown-link:hover {
+            color: var(--text-bright);
+            background: rgba(59, 130, 246, 0.1);
+        }
 
-    .nav-dropdown-menu {
-        position: static;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        display: none;
-        width: 100%;
-        margin-top: 0.5rem;
-        margin-left: 1rem;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-    }
+        /* Mobile Dropdown */
+        @media (max-width: 968px) {
+            .nav-dropdown-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
 
-    .nav-dropdown-menu::before {
-        display: none;
-    }
+            .nav-dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                display: none;
+                width: 100%;
+                margin-top: 0.5rem;
+                margin-left: 1rem;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+            }
 
-    .nav-dropdown.active .nav-dropdown-menu {
-        display: block;
-    }
+            .nav-dropdown-menu::before {
+                display: none;
+            }
 
-    .nav-dropdown-link {
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-    }
-}
-/* Footer Styles */
-.footer-links {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
+            .nav-dropdown.active .nav-dropdown-menu {
+                display: block;
+            }
 
-.footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-weight: 500;
-}
+            .nav-dropdown-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
 
-.footer-links a:hover {
-    color: var(--primary-glow);
-}
+        /* Intersection Observer Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
 
-.footer-legal {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(59, 130, 246, 0.1);
-    text-align: center;
-}
-
-.footer-legal p a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-legal p a:hover {
-    color: var(--primary-glow);
-}
-</style>
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loading-logo">Governance</div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Navigation Header -->
     <header class="nav-header">
-    <div class="nav-container">
-        <a href="/" class="nav-logo">The Protocol</a>
-        <nav>
-            <ul class="nav-menu" id="navMenu">
-                <li class="nav-dropdown">
-                    <a href="#" class="nav-link nav-dropdown-toggle">
-                        Ecosystem
-                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
-                            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
-                        </svg>
-                    </a>
-                    <ul class="nav-dropdown-menu">
-                        <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
-                        <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
-                        <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
-                        <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
-                        <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
-                    </ul>
-                </li>
-                <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
-                <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
-            </ul>
-            <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
-    </div>
-</header>
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            Ecosystem
+                            <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </a>
+                        <ul class="nav-dropdown-menu">
+                            <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
+                            <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
+                            <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
+                            <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
+                            <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="governance-bg"></div>
+        <!-- Animated Governance Network Background -->
+        <div class="governance-network">
+            <canvas id="governanceCanvas"></canvas>
+        </div>
+        
+        <!-- Crystalline Pattern Overlay -->
+        <div class="crystalline-overlay"></div>
+        
+        <!-- Floating Governance Orbs -->
+        <div class="gov-orb gov-orb-1"></div>
+        <div class="gov-orb gov-orb-2"></div>
+        <div class="gov-orb gov-orb-3"></div>
         
         <div class="hero-content">
             <h1>
-                <span class="gradient-text">Governance & Stewardship</span><br>
+                <span class="holographic-text">Governance & Stewardship</span><br>
                 Built for Perpetual Decentralization
             </h1>
             <p class="subtitle">
                 The Protocol is designed to outlive its creators. Our stewardship model ensures 
                 that no single entity—not even us—can control the future of autonomous commerce.
             </p>
+            
+            <!-- Voting Flow Visualization -->
+            <div class="voting-visualization">
+                <canvas id="votingCanvas"></canvas>
+            </div>
         </div>
     </section>
 
     <!-- Pledge Section -->
     <section class="pledge-section">
+        <div class="pledge-particles">
+            <canvas id="pledgeParticles"></canvas>
+        </div>
+        
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2 class="section-title">Our Pledge to the Community</h2>
             </div>
             
-            <div class="pledge-card">
+            <div class="pledge-card fade-in">
                 <h3 class="pledge-title">The Stewardship Pledge</h3>
                 <div class="pledge-content">
                     <p>
@@ -1019,14 +1612,14 @@
     <!-- Principles Section -->
     <section class="principles-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2 class="section-title">Core Governance Principles</h2>
                 <p class="section-subtitle">
                     The immutable principles that guide every governance decision.
                 </p>
             </div>
             
-            <div class="principles-grid">
+            <div class="principles-grid fade-in">
                 <div class="principle-card">
                     <span class="principle-number">1</span>
                     <div class="principle-icon">⚖️</div>
@@ -1093,14 +1686,20 @@
     <!-- Governance Structure Section -->
     <section class="structure-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2 class="section-title">The Governance Structure</h2>
                 <p class="section-subtitle">
                     A three-tier system designed for balance, expertise, and representation.
                 </p>
             </div>
             
-            <div class="structure-diagram">
+            <!-- Live Governance Structure Visualization -->
+            <div class="structure-visualization fade-in">
+                <div class="visualization-title">LIVE GOVERNANCE HIERARCHY</div>
+                <canvas id="structureCanvas" class="structure-canvas"></canvas>
+            </div>
+            
+            <div class="structure-diagram fade-in">
                 <div class="structure-level">
                     <div class="level-title">
                         <div class="level-icon">👥</div>
@@ -1186,14 +1785,14 @@
     <!-- Roadmap Section -->
     <section class="roadmap-section">
         <div class="container">
-            <div class="section-header">
+            <div class="section-header fade-in">
                 <h2 class="section-title">The Path to Full Decentralization</h2>
                 <p class="section-subtitle">
                     A clear, time-bound roadmap to progressive decentralization.
                 </p>
             </div>
             
-            <div class="roadmap-timeline">
+            <div class="roadmap-timeline fade-in">
                 <div class="roadmap-phase">
                     <div class="phase-time">
                         <div class="phase-label">Phase 1</div>
@@ -1277,7 +1876,7 @@
     <!-- CTA Section -->
     <section class="cta-section">
         <div class="container">
-            <div class="cta-content">
+            <div class="cta-content fade-in">
                 <h2 class="cta-title">Shape the Future of Autonomous Commerce</h2>
                 <p class="cta-description">
                     Join us in building a governance model that ensures The Protocol remains 
@@ -1293,28 +1892,597 @@
 
     <!-- Footer -->
     <footer>
-    <div class="container">
-        <div class="footer-links">
-            <a href="/terms.html">Terms of Service</a>
-            <a href="/privacy.html">Privacy Policy</a>
-            <a href="/dpa.html">Data Processing Agreement</a>
-            <a href="/cookies.html">Cookie Policy</a>
-            <a href="/disclaimer.html">Risk Notice</a>
-            <a href="/sla.html">Enterprise SLA</a>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/cookies.html">Cookie Policy</a>
+                <a href="/disclaimer.html">Risk Notice</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
+            <div class="footer-content">
+                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
+            </div>
+            <div class="footer-legal">
+                <p>
+                    <a href="/imprint.html">Impressum</a> | 
+                    <a href="/privacy.html">Datenschutzerklärung</a>
+                </p>
+            </div>
         </div>
-        <div class="footer-content">
-            <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
-        </div>
-        <div class="footer-legal">
-            <p>
-                <a href="/imprint.html">Impressum</a> | 
-                <a href="/privacy.html">Datenschutzerklärung</a>
-            </p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
     <script>
+        // Loading Screen
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loadingScreen = document.getElementById('loadingScreen');
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 1500);
+        });
+
+        // Enhanced Governance Network Animation
+        const govCanvas = document.getElementById('governanceCanvas');
+        const govCtx = govCanvas.getContext('2d');
+        
+        function resizeGovCanvas() {
+            govCanvas.width = window.innerWidth;
+            govCanvas.height = window.innerHeight;
+        }
+        
+        resizeGovCanvas();
+        window.addEventListener('resize', resizeGovCanvas);
+        
+        // Governance nodes representing different stakeholders
+        const govNodes = [];
+        const connections = [];
+        const proposals = [];
+        const votes = [];
+        const nodeCount = 40;
+        
+        // Create governance nodes
+        for (let i = 0; i < nodeCount; i++) {
+            const angle = (i / nodeCount) * Math.PI * 2;
+            const radius = 150 + Math.random() * 100;
+            const centerX = govCanvas.width / 2;
+            const centerY = govCanvas.height / 2;
+            
+            govNodes.push({
+                x: centerX + Math.cos(angle) * radius,
+                y: centerY + Math.sin(angle) * radius,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                radius: 5 + Math.random() * 5,
+                type: i < 10 ? 'council' : i < 20 ? 'technical' : 'community',
+                color: i < 10 ? '#10B981' : i < 20 ? '#3B82F6' : '#8B5CF6',
+                influence: Math.random(),
+                voting: false,
+                voteProgress: 0,
+                pulsePhase: Math.random() * Math.PI * 2
+            });
+        }
+        
+        // Create connections between nodes
+        for (let i = 0; i < govNodes.length; i++) {
+            for (let j = i + 1; j < govNodes.length; j++) {
+                const distance = Math.sqrt(
+                    Math.pow(govNodes[i].x - govNodes[j].x, 2) + 
+                    Math.pow(govNodes[i].y - govNodes[j].y, 2)
+                );
+                
+                if (distance < 150 && Math.random() < 0.3) {
+                    connections.push({
+                        from: i,
+                        to: j,
+                        strength: Math.random() * 0.5 + 0.5,
+                        active: false
+                    });
+                }
+            }
+        }
+        
+        // Create proposal animations
+        function createProposal() {
+            if (Math.random() < 0.02) {
+                const originNode = Math.floor(Math.random() * nodeCount);
+                proposals.push({
+                    x: govNodes[originNode].x,
+                    y: govNodes[originNode].y,
+                    radius: 0,
+                    maxRadius: 200,
+                    opacity: 1,
+                    color: govNodes[originNode].color
+                });
+                
+                // Trigger voting animation
+                setTimeout(() => {
+                    govNodes.forEach((node, i) => {
+                        if (Math.random() < 0.7) {
+                            setTimeout(() => {
+                                votes.push({
+                                    from: i,
+                                    to: originNode,
+                                    progress: 0,
+                                    color: node.color,
+                                    approve: Math.random() < 0.8
+                                });
+                            }, Math.random() * 1000);
+                        }
+                    });
+                }, 500);
+            }
+        }
+        
+        function drawGovernanceNetwork() {
+            govCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            govCtx.fillRect(0, 0, govCanvas.width, govCanvas.height);
+            
+            // Draw connections
+            connections.forEach(conn => {
+                const from = govNodes[conn.from];
+                const to = govNodes[conn.to];
+                
+                govCtx.strokeStyle = `rgba(59, 130, 246, ${conn.strength * 0.2})`;
+                govCtx.lineWidth = conn.strength * 2;
+                govCtx.beginPath();
+                govCtx.moveTo(from.x, from.y);
+                govCtx.lineTo(to.x, to.y);
+                govCtx.stroke();
+            });
+            
+            // Update and draw proposals
+            proposals.forEach((proposal, index) => {
+                proposal.radius += 2;
+                proposal.opacity -= 0.005;
+                
+                if (proposal.opacity > 0) {
+                    govCtx.strokeStyle = proposal.color + Math.floor(proposal.opacity * 255).toString(16).padStart(2, '0');
+                    govCtx.lineWidth = 3;
+                    govCtx.beginPath();
+                    govCtx.arc(proposal.x, proposal.y, proposal.radius, 0, Math.PI * 2);
+                    govCtx.stroke();
+                } else {
+                    proposals.splice(index, 1);
+                }
+            });
+            
+            // Update and draw votes
+            votes.forEach((vote, index) => {
+                const from = govNodes[vote.from];
+                const to = govNodes[vote.to];
+                
+                vote.progress += 0.03;
+                
+                if (vote.progress < 1) {
+                    const x = from.x + (to.x - from.x) * vote.progress;
+                    const y = from.y + (to.y - from.y) * vote.progress;
+                    
+                    // Vote particle
+                    const particleColor = vote.approve ? '#10B981' : '#EF4444';
+                    govCtx.fillStyle = particleColor;
+                    govCtx.beginPath();
+                    govCtx.arc(x, y, 3, 0, Math.PI * 2);
+                    govCtx.fill();
+                    
+                    // Glow effect
+                    const glowGradient = govCtx.createRadialGradient(x, y, 0, x, y, 10);
+                    glowGradient.addColorStop(0, particleColor + '80');
+                    glowGradient.addColorStop(1, particleColor + '00');
+                    govCtx.fillStyle = glowGradient;
+                    govCtx.beginPath();
+                    govCtx.arc(x, y, 10, 0, Math.PI * 2);
+                    govCtx.fill();
+                } else {
+                    votes.splice(index, 1);
+                }
+            });
+            
+            // Update and draw nodes
+            govNodes.forEach((node, i) => {
+                // Update position
+                node.x += node.vx;
+                node.y += node.vy;
+                
+                // Bounce off edges
+                if (node.x < 0 || node.x > govCanvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > govCanvas.height) node.vy *= -1;
+                
+                // Keep nodes in bounds
+                node.x = Math.max(0, Math.min(govCanvas.width, node.x));
+                node.y = Math.max(0, Math.min(govCanvas.height, node.y));
+                
+                // Draw node glow
+                const pulseScale = 1 + Math.sin(Date.now() * 0.001 + node.pulsePhase) * 0.2;
+                const glowGradient = govCtx.createRadialGradient(
+                    node.x, node.y, 0,
+                    node.x, node.y, node.radius * 3 * pulseScale
+                );
+                glowGradient.addColorStop(0, node.color + '40');
+                glowGradient.addColorStop(1, 'transparent');
+                govCtx.fillStyle = glowGradient;
+                govCtx.beginPath();
+                govCtx.arc(node.x, node.y, node.radius * 3 * pulseScale, 0, Math.PI * 2);
+                govCtx.fill();
+                
+                // Draw node
+                govCtx.fillStyle = node.color;
+                govCtx.beginPath();
+                govCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                govCtx.fill();
+                
+                // Inner bright spot
+                govCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+                govCtx.beginPath();
+                govCtx.arc(node.x - node.radius * 0.3, node.y - node.radius * 0.3, node.radius * 0.3, 0, Math.PI * 2);
+                govCtx.fill();
+            });
+            
+            // Create new proposals
+            createProposal();
+            
+            requestAnimationFrame(drawGovernanceNetwork);
+        }
+        
+        drawGovernanceNetwork();
+        
+        // Voting Flow Visualization
+        const votingCanvas = document.getElementById('votingCanvas');
+        const votingCtx = votingCanvas.getContext('2d');
+        
+        function resizeVotingCanvas() {
+            votingCanvas.width = votingCanvas.parentElement.clientWidth;
+            votingCanvas.height = 300;
+        }
+        
+        resizeVotingCanvas();
+        window.addEventListener('resize', resizeVotingCanvas);
+        
+        // Voting flow animation
+        const votingNodes = [
+            { name: 'Proposal', x: 0.1, y: 0.5, color: '#8B5CF6' },
+            { name: 'Discussion', x: 0.3, y: 0.3, color: '#3B82F6' },
+            { name: 'Voting', x: 0.5, y: 0.5, color: '#F59E0B' },
+            { name: 'Consensus', x: 0.7, y: 0.3, color: '#10B981' },
+            { name: 'Execution', x: 0.9, y: 0.5, color: '#10B981' }
+        ];
+        
+        const flowParticles = [];
+        
+        function createFlowParticle() {
+            if (Math.random() < 0.05) {
+                const startNode = Math.floor(Math.random() * (votingNodes.length - 1));
+                flowParticles.push({
+                    from: startNode,
+                    to: startNode + 1,
+                    progress: 0,
+                    trail: []
+                });
+            }
+        }
+        
+        function drawVotingFlow() {
+            votingCtx.clearRect(0, 0, votingCanvas.width, votingCanvas.height);
+            
+            // Draw connections
+            for (let i = 0; i < votingNodes.length - 1; i++) {
+                const from = votingNodes[i];
+                const to = votingNodes[i + 1];
+                
+                const fromX = from.x * votingCanvas.width;
+                const fromY = from.y * votingCanvas.height;
+                const toX = to.x * votingCanvas.width;
+                const toY = to.y * votingCanvas.height;
+                
+                // Draw connection line
+                const gradient = votingCtx.createLinearGradient(fromX, fromY, toX, toY);
+                gradient.addColorStop(0, from.color + '40');
+                gradient.addColorStop(1, to.color + '40');
+                
+                votingCtx.strokeStyle = gradient;
+                votingCtx.lineWidth = 2;
+                votingCtx.setLineDash([5, 5]);
+                votingCtx.beginPath();
+                votingCtx.moveTo(fromX, fromY);
+                votingCtx.lineTo(toX, toY);
+                votingCtx.stroke();
+                votingCtx.setLineDash([]);
+            }
+            
+            // Update and draw flow particles
+            flowParticles.forEach((particle, index) => {
+                const from = votingNodes[particle.from];
+                const to = votingNodes[particle.to];
+                
+                const fromX = from.x * votingCanvas.width;
+                const fromY = from.y * votingCanvas.height;
+                const toX = to.x * votingCanvas.width;
+                const toY = to.y * votingCanvas.height;
+                
+                particle.progress += 0.02;
+                
+                if (particle.progress < 1) {
+                    const x = fromX + (toX - fromX) * particle.progress;
+                    const y = fromY + (toY - fromY) * particle.progress;
+                    
+                    // Add to trail
+                    particle.trail.push({ x, y });
+                    if (particle.trail.length > 15) {
+                        particle.trail.shift();
+                    }
+                    
+                    // Draw trail
+                    particle.trail.forEach((point, idx) => {
+                        votingCtx.fillStyle = `rgba(16, 185, 129, ${0.5 * (idx / particle.trail.length)})`;
+                        votingCtx.beginPath();
+                        votingCtx.arc(point.x, point.y, 2, 0, Math.PI * 2);
+                        votingCtx.fill();
+                    });
+                    
+                    // Draw particle
+                    votingCtx.fillStyle = '#10B981';
+                    votingCtx.beginPath();
+                    votingCtx.arc(x, y, 4, 0, Math.PI * 2);
+                    votingCtx.fill();
+                } else {
+                    flowParticles.splice(index, 1);
+                }
+            });
+            
+            // Draw nodes
+            votingNodes.forEach((node, i) => {
+                const x = node.x * votingCanvas.width;
+                const y = node.y * votingCanvas.height;
+                
+                // Node glow
+                const glowGradient = votingCtx.createRadialGradient(x, y, 0, x, y, 40);
+                glowGradient.addColorStop(0, node.color + '30');
+                glowGradient.addColorStop(1, 'transparent');
+                votingCtx.fillStyle = glowGradient;
+                votingCtx.beginPath();
+                votingCtx.arc(x, y, 40, 0, Math.PI * 2);
+                votingCtx.fill();
+                
+                // Node circle
+                votingCtx.fillStyle = node.color;
+                votingCtx.beginPath();
+                votingCtx.arc(x, y, 20, 0, Math.PI * 2);
+                votingCtx.fill();
+                
+                // Node label
+                votingCtx.fillStyle = '#FFFFFF';
+                votingCtx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+                votingCtx.textAlign = 'center';
+                votingCtx.fillText(node.name, x, y + 40);
+            });
+            
+            createFlowParticle();
+            requestAnimationFrame(drawVotingFlow);
+        }
+        
+        drawVotingFlow();
+        
+        // Pledge Particles Animation
+        const pledgeCanvas = document.getElementById('pledgeParticles');
+        const pledgeCtx = pledgeCanvas.getContext('2d');
+        
+        function resizePledgeCanvas() {
+            pledgeCanvas.width = pledgeCanvas.parentElement.clientWidth;
+            pledgeCanvas.height = pledgeCanvas.parentElement.clientHeight;
+        }
+        
+        resizePledgeCanvas();
+        window.addEventListener('resize', resizePledgeCanvas);
+        
+        const pledgeParticles = [];
+        const particleCount = 100;
+        
+        for (let i = 0; i < particleCount; i++) {
+            pledgeParticles.push({
+                x: Math.random() * pledgeCanvas.width,
+                y: Math.random() * pledgeCanvas.height,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                radius: Math.random() * 2 + 1,
+                opacity: Math.random() * 0.5 + 0.5
+            });
+        }
+        
+        function drawPledgeParticles() {
+            pledgeCtx.clearRect(0, 0, pledgeCanvas.width, pledgeCanvas.height);
+            
+            pledgeParticles.forEach((particle) => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                // Wrap around edges
+                if (particle.x < 0) particle.x = pledgeCanvas.width;
+                if (particle.x > pledgeCanvas.width) particle.x = 0;
+                if (particle.y < 0) particle.y = pledgeCanvas.height;
+                if (particle.y > pledgeCanvas.height) particle.y = 0;
+                
+                pledgeCtx.fillStyle = `rgba(16, 185, 129, ${particle.opacity})`;
+                pledgeCtx.beginPath();
+                pledgeCtx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                pledgeCtx.fill();
+            });
+            
+            requestAnimationFrame(drawPledgeParticles);
+        }
+        
+        drawPledgeParticles();
+        
+        // Governance Structure Visualization
+        const structureCanvas = document.getElementById('structureCanvas');
+        const structureCtx = structureCanvas.getContext('2d');
+        
+        function resizeStructureCanvas() {
+            structureCanvas.width = structureCanvas.parentElement.clientWidth;
+            structureCanvas.height = 600;
+        }
+        
+        resizeStructureCanvas();
+        window.addEventListener('resize', resizeStructureCanvas);
+        
+        // Three-tier governance structure
+        const tiers = [
+            {
+                name: 'Protocol Council',
+                y: 0.2,
+                nodes: 8,
+                color: '#10B981',
+                radius: 80
+            },
+            {
+                name: 'Technical Committee',
+                y: 0.5,
+                nodes: 12,
+                color: '#3B82F6',
+                radius: 120
+            },
+            {
+                name: 'Community Forum',
+                y: 0.8,
+                nodes: 20,
+                color: '#8B5CF6',
+                radius: 160
+            }
+        ];
+        
+        const structureNodes = [];
+        const structureConnections = [];
+        let rotationAngle = 0;
+        
+        // Create nodes for each tier
+        tiers.forEach((tier, tierIndex) => {
+            const centerX = structureCanvas.width / 2;
+            const centerY = tier.y * structureCanvas.height;
+            
+            for (let i = 0; i < tier.nodes; i++) {
+                const angle = (i / tier.nodes) * Math.PI * 2;
+                structureNodes.push({
+                    tier: tierIndex,
+                    x: centerX + Math.cos(angle) * tier.radius,
+                    y: centerY + Math.sin(angle) * tier.radius * 0.5,
+                    baseX: centerX,
+                    baseY: centerY,
+                    angle: angle,
+                    radius: tier.radius,
+                    color: tier.color,
+                    size: 8 - tierIndex * 2,
+                    pulsePhase: Math.random() * Math.PI * 2
+                });
+            }
+        });
+        
+        // Create connections between tiers
+        structureNodes.forEach((node, i) => {
+            if (node.tier < tiers.length - 1) {
+                // Connect to nodes in the next tier
+                const nextTierNodes = structureNodes.filter(n => n.tier === node.tier + 1);
+                const connectionsCount = 2 + Math.floor(Math.random() * 2);
+                
+                for (let j = 0; j < connectionsCount; j++) {
+                    const targetNode = nextTierNodes[Math.floor(Math.random() * nextTierNodes.length)];
+                    structureConnections.push({
+                        from: i,
+                        to: structureNodes.indexOf(targetNode),
+                        strength: Math.random() * 0.5 + 0.5,
+                        pulseOffset: Math.random() * Math.PI * 2
+                    });
+                }
+            }
+        });
+        
+        function drawGovernanceStructure() {
+            structureCtx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+            structureCtx.fillRect(0, 0, structureCanvas.width, structureCanvas.height);
+            
+            // Update rotation
+            rotationAngle += 0.001;
+            
+            // Update node positions
+            structureNodes.forEach(node => {
+                const newAngle = node.angle + rotationAngle;
+                node.x = node.baseX + Math.cos(newAngle) * node.radius;
+                node.y = node.baseY + Math.sin(newAngle) * node.radius * 0.5;
+            });
+            
+            // Draw connections with pulse effect
+            structureConnections.forEach(conn => {
+                const from = structureNodes[conn.from];
+                const to = structureNodes[conn.to];
+                
+                const pulse = Math.sin(Date.now() * 0.001 + conn.pulseOffset) * 0.5 + 0.5;
+                
+                structureCtx.strokeStyle = `rgba(59, 130, 246, ${conn.strength * 0.3 * pulse})`;
+                structureCtx.lineWidth = conn.strength * 3;
+                structureCtx.beginPath();
+                structureCtx.moveTo(from.x, from.y);
+                structureCtx.lineTo(to.x, to.y);
+                structureCtx.stroke();
+                
+                // Data flow particles
+                if (Math.random() < 0.01) {
+                    const progress = (Date.now() * 0.0005 + conn.pulseOffset) % 1;
+                    const x = from.x + (to.x - from.x) * progress;
+                    const y = from.y + (to.y - from.y) * progress;
+                    
+                    structureCtx.fillStyle = '#10B981';
+                    structureCtx.beginPath();
+                    structureCtx.arc(x, y, 3, 0, Math.PI * 2);
+                    structureCtx.fill();
+                }
+            });
+            
+            // Draw tier labels
+            tiers.forEach((tier, i) => {
+                const centerX = structureCanvas.width / 2;
+                const centerY = tier.y * structureCanvas.height;
+                
+                structureCtx.fillStyle = tier.color;
+                structureCtx.font = 'bold 18px -apple-system, BlinkMacSystemFont, sans-serif';
+                structureCtx.textAlign = 'center';
+                structureCtx.fillText(tier.name, centerX, centerY);
+            });
+            
+            // Draw nodes with enhanced effects
+            structureNodes.forEach(node => {
+                const pulse = Math.sin(Date.now() * 0.002 + node.pulsePhase) * 0.3 + 1;
+                
+                // Node glow
+                const glowGradient = structureCtx.createRadialGradient(
+                    node.x, node.y, 0,
+                    node.x, node.y, node.size * 3 * pulse
+                );
+                glowGradient.addColorStop(0, node.color + '60');
+                glowGradient.addColorStop(1, 'transparent');
+                structureCtx.fillStyle = glowGradient;
+                structureCtx.beginPath();
+                structureCtx.arc(node.x, node.y, node.size * 3 * pulse, 0, Math.PI * 2);
+                structureCtx.fill();
+                
+                // Node core
+                structureCtx.fillStyle = node.color;
+                structureCtx.beginPath();
+                structureCtx.arc(node.x, node.y, node.size, 0, Math.PI * 2);
+                structureCtx.fill();
+                
+                // Inner light
+                structureCtx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                structureCtx.beginPath();
+                structureCtx.arc(node.x - node.size * 0.3, node.y - node.size * 0.3, node.size * 0.3, 0, Math.PI * 2);
+                structureCtx.fill();
+            });
+            
+            requestAnimationFrame(drawGovernanceStructure);
+        }
+        
+        drawGovernanceStructure();
+        
         // Mobile Navigation Toggle
         const navToggle = document.getElementById('navToggle');
         const navMenu = document.getElementById('navMenu');
@@ -1354,13 +2522,31 @@
         window.addEventListener('scroll', () => {
             const currentScroll = window.pageYOffset;
             
-            if (currentScroll <= 0) {
-                header.style.boxShadow = 'none';
+            if (currentScroll > 50) {
+                header.classList.add('scrolled');
             } else {
-                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+                header.classList.remove('scrolled');
             }
             
             lastScroll = currentScroll;
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
         });
 
         // Developer Portal button placeholder
@@ -1369,25 +2555,25 @@
             alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
         });
 
-// Mobile Dropdown Toggle
-const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-const dropdown = document.querySelector('.nav-dropdown');
+        // Mobile Dropdown Toggle
+        const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+        const dropdown = document.querySelector('.nav-dropdown');
 
-if (dropdownToggle) {
-    dropdownToggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 968) {
-            e.preventDefault();
-            dropdown.classList.toggle('active');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 968) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
         }
-    });
-}
 
-// Prevent dropdown from closing on desktop when hovering
-if (window.innerWidth > 968 && dropdownToggle) {
-    dropdownToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-    });
-}
+        // Prevent dropdown from closing on desktop when hovering
+        if (window.innerWidth > 968 && dropdownToggle) {
+            dropdownToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+            });
+        }
     </script>
 </body>
 </html>
