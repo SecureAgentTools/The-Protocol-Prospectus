@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Attestation Network - Decentralized Trust Layer | The Protocol</title>
     
-    <!-- Open Graph / LinkedIn Meta Tags -->
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Immutable, cryptographically-signed proof of registry integrity. The foundation for trillion-dollar autonomous commerce.">
     <meta property="og:title" content="The Attestation Network: Decentralized Notary for the Agent Economy">
-    <meta property="og:description" content="Immutable, cryptographically-signed proof of registry integrity. The foundation for trillion-dollar autonomous commerce.">
-    <meta property="og:image" content="https://www.theprotocol.cloud/preview.png">
+    <meta property="og:description" content="Witness and verify registry states with cryptographic certainty. Enable dispute resolution and compliance at protocol level.">
+    <meta property="og:image" content="https://www.theprotocol.cloud/attestation-preview.png">
     <meta property="og:url" content="https://www.theprotocol.cloud/attestation.html">
     <meta property="og:type" content="website">
     
@@ -19,6 +20,177 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --attestation-glow: #FBBF24;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-attestation: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+            --gradient-trust: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-security: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-void);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-spinner {
+            width: 100px;
+            height: 100px;
+            position: relative;
+        }
+
+        .loading-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top-color: var(--attestation-glow);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top-color: var(--primary-glow);
+            animation-duration: 0.8s;
+            animation-direction: reverse;
+        }
+
+        .loading-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-top-color: var(--accent-glow);
+            animation-duration: 0.6s;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Three.js Canvas */
+        #attestation-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+        }
+
+        /* Animated Background */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-void);
+            z-index: -4;
+            overflow: hidden;
+        }
+
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 40%);
+            animation: bgFloat 40s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-2%, -2%) rotate(1deg); }
+            50% { transform: translate(2%, -1%) rotate(-1deg); }
+            75% { transform: translate(-1%, 2%) rotate(0.5deg); }
+        }
+
+        /* Attestation Particles */
+        .attestation-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        .attestation-particle {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: floatAttestation 30s linear infinite;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        @keyframes floatAttestation {
+            0% {
+                transform: translateY(100vh) translateZ(0) rotate(0deg) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.1;
+                transform: scale(1);
+            }
+            90% {
+                opacity: 0.1;
+            }
+            100% {
+                transform: translateY(-100vh) translateZ(100px) rotate(720deg) scale(0.5);
+                opacity: 0;
+            }
+        }
+
         /* Navigation Header */
         .nav-header {
             position: fixed;
@@ -27,7 +199,7 @@
             right: 0;
             background: rgba(10, 10, 10, 0.95);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
             z-index: 1000;
             transition: all 0.3s ease;
         }
@@ -87,6 +259,15 @@
 
         .nav-link:hover::after {
             width: 100%;
+        }
+
+        .nav-link.active {
+            color: var(--attestation-glow);
+        }
+
+        .nav-link.active::after {
+            width: 100%;
+            background: var(--gradient-attestation);
         }
 
         .nav-link.nav-cta {
@@ -152,7 +333,7 @@
                 gap: 1.5rem;
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
-                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+                border-bottom: 1px solid rgba(251, 191, 36, 0.2);
                 max-height: calc(100vh - 80px);
                 overflow-y: auto;
             }
@@ -178,47 +359,15 @@
             }
         }
 
-        :root {
-            --primary-glow: #3B82F6;
-            --secondary-glow: #8B5CF6;
-            --accent-glow: #10B981;
-            --danger-glow: #EF4444;
-            --bg-void: #000000;
-            --bg-deep: #0a0a0a;
-            --bg-dark: #0F172A;
-            --bg-card: rgba(15, 23, 42, 0.6);
-            --text-bright: #FFFFFF;
-            --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --text-muted: #475569;
-            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
-            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-void);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
-        }
-
         /* Enhanced Hero Section */
         .hero {
-            min-height: 60vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            padding: 8rem 2rem 4rem;
             overflow: hidden;
-            padding: 2rem;
-            padding-top: 120px;
         }
 
         /* Animated Bank Vault Background */
@@ -226,19 +375,107 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0.1;
-            background-image: 
-                radial-gradient(circle at 20% 50%, var(--primary-glow) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, var(--secondary-glow) 0%, transparent 50%),
-                radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%);
-            animation: vaultPulse 20s ease-in-out infinite;
+            overflow: hidden;
+            z-index: -1;
         }
 
-        @keyframes vaultPulse {
-            0%, 100% { transform: scale(1) rotate(0deg); }
-            25% { transform: scale(1.05) rotate(1deg); }
-            50% { transform: scale(1) rotate(-1deg); }
-            75% { transform: scale(1.05) rotate(0deg); }
+        .vault-ring {
+            position: absolute;
+            border: 2px solid;
+            border-radius: 50%;
+            opacity: 0.1;
+            animation: vaultRotate 30s linear infinite;
+        }
+
+        .vault-ring:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-color: var(--attestation-glow);
+            animation-duration: 25s;
+        }
+
+        .vault-ring:nth-child(2) {
+            width: 800px;
+            height: 800px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-color: var(--primary-glow);
+            animation-duration: 35s;
+            animation-direction: reverse;
+        }
+
+        .vault-ring:nth-child(3) {
+            width: 1000px;
+            height: 1000px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-color: var(--secondary-glow);
+            animation-duration: 45s;
+        }
+
+        @keyframes vaultRotate {
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* Floating Trust Symbols */
+        .trust-symbols {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .trust-symbol {
+            position: absolute;
+            font-size: 4rem;
+            opacity: 0.05;
+            animation: floatSymbol 20s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+
+        @keyframes floatSymbol {
+            0%, 100% {
+                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translateY(-30px) translateX(20px) rotate(90deg) scale(1.1);
+            }
+            50% {
+                transform: translateY(20px) translateX(-30px) rotate(180deg) scale(0.9);
+            }
+            75% {
+                transform: translateY(-20px) translateX(-20px) rotate(270deg) scale(1.05);
+            }
+        }
+
+        .trust-symbol:nth-child(1) { 
+            top: 10%; 
+            left: 10%; 
+            color: var(--attestation-glow);
+            animation-delay: 0s;
+        }
+        .trust-symbol:nth-child(2) { 
+            top: 20%; 
+            right: 15%; 
+            color: var(--primary-glow);
+            animation-delay: 5s;
+        }
+        .trust-symbol:nth-child(3) { 
+            bottom: 25%; 
+            left: 15%; 
+            color: var(--accent-glow);
+            animation-delay: 10s;
+        }
+        .trust-symbol:nth-child(4) { 
+            bottom: 15%; 
+            right: 20%; 
+            color: var(--secondary-glow);
+            animation-delay: 15s;
         }
 
         .hero-content {
@@ -246,6 +483,31 @@
             z-index: 10;
             max-width: 1000px;
             width: 100%;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4rem 2rem;
+            border-radius: 2rem;
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-attestation);
+            border-radius: 2rem;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .hero-content:hover::before {
+            opacity: 0.1;
         }
 
         .hero h1 {
@@ -256,13 +518,30 @@
             line-height: 1.1;
         }
 
-        .hero h1 .gradient-text {
-            background: linear-gradient(to right, #FFFFFF 0%, #8B5CF6 50%, #3B82F6 100%);
+        /* Enhanced Gradient Text with Glow */
+        .gradient-text {
+            background: linear-gradient(to right, #FFFFFF 0%, #FBBF24 25%, #8B5CF6 50%, #3B82F6 75%, #FFFFFF 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             background-size: 200% auto;
-            animation: shine 3s linear infinite;
+            animation: shine 4s linear infinite;
+            position: relative;
+            display: inline-block;
+        }
+
+        .gradient-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: var(--gradient-attestation);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: blur(20px);
+            opacity: 0.5;
         }
 
         @keyframes shine {
@@ -278,6 +557,77 @@
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        /* Animated Hero CTA */
+        .hero-cta-group {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .hero-cta {
+            background: var(--gradient-attestation);
+            color: var(--bg-void);
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .hero-cta::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .hero-cta:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .hero-cta:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.7);
+        }
+
+        .hero-cta-secondary {
+            background: transparent;
+            color: var(--attestation-glow);
+            border: 2px solid var(--attestation-glow);
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-cta-secondary:hover {
+            background: rgba(251, 191, 36, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
         }
 
         /* Section Styles */
@@ -301,10 +651,11 @@
             font-size: clamp(2rem, 4vw, 3rem);
             font-weight: 800;
             margin-bottom: 1rem;
-            background: var(--gradient-primary);
+            background: var(--gradient-attestation);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
         }
 
         .section-subtitle {
@@ -316,19 +667,42 @@
             line-height: 1.8;
         }
 
-        /* Core Concept Section */
+        /* Enhanced Core Concept Section */
         .concept-section {
             background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(251, 191, 36, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(251, 191, 36, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: gridSlide 60s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes gridSlide {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
         }
 
         .concept-card {
             background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            border: 1px solid rgba(251, 191, 36, 0.3);
             border-radius: 1.5rem;
             padding: 3rem;
             margin-bottom: 3rem;
             position: relative;
             overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
         }
 
         .concept-card::before {
@@ -338,7 +712,20 @@
             left: 0;
             width: 100%;
             height: 4px;
-            background: var(--gradient-primary);
+            background: var(--gradient-attestation);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .concept-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .concept-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--attestation-glow);
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
         }
 
         .concept-title {
@@ -346,6 +733,20 @@
             font-weight: 700;
             margin-bottom: 1.5rem;
             color: var(--text-bright);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .concept-icon {
+            font-size: 2.5rem;
+            animation: pulse 2s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px var(--attestation-glow));
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
         }
 
         .concept-content {
@@ -355,18 +756,51 @@
         }
 
         .highlight-text {
-            color: var(--primary-glow);
+            color: var(--attestation-glow);
             font-weight: 600;
+            text-shadow: 0 0 10px currentColor;
         }
 
-        /* Process Flow Section */
+        /* Enhanced Process Flow Section */
         .process-section {
             background: var(--bg-deep);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .process-section::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: processPulse 10s ease-in-out infinite;
+        }
+
+        @keyframes processPulse {
+            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
         }
 
         .process-timeline {
             position: relative;
             margin-top: 4rem;
+            z-index: 1;
+        }
+
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50px;
+            top: 50px;
+            width: 2px;
+            height: calc(100% - 100px);
+            background: var(--gradient-attestation);
+            opacity: 0.5;
+            box-shadow: 0 0 20px var(--attestation-glow);
         }
 
         .process-step {
@@ -375,13 +809,28 @@
             gap: 2rem;
             margin-bottom: 3rem;
             position: relative;
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideIn 0.6s forwards;
+        }
+
+        .process-step:nth-child(1) { animation-delay: 0.1s; }
+        .process-step:nth-child(2) { animation-delay: 0.2s; }
+        .process-step:nth-child(3) { animation-delay: 0.3s; }
+        .process-step:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .step-number {
-            background: var(--gradient-primary);
+            background: var(--gradient-attestation);
             border-radius: 50%;
-            width: 80px;
-            height: 80px;
+            width: 100px;
+            height: 100px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -389,6 +838,14 @@
             font-weight: 700;
             position: relative;
             margin: 0 auto;
+            color: var(--bg-void);
+            box-shadow: 0 0 50px rgba(251, 191, 36, 0.7);
+            animation: stepFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes stepFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
         }
 
         .step-number::after {
@@ -399,7 +856,7 @@
             transform: translateX(-50%);
             width: 2px;
             height: 3rem;
-            background: linear-gradient(to bottom, var(--primary-glow) 0%, transparent 100%);
+            background: linear-gradient(to bottom, var(--attestation-glow) 0%, transparent 100%);
         }
 
         .process-step:last-child .step-number::after {
@@ -408,9 +865,48 @@
 
         .step-content {
             background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(251, 191, 36, 0.2);
             border-radius: 1rem;
-            padding: 2rem;
+            padding: 2.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .step-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gradient-attestation);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .step-content:hover {
+            transform: translateY(-5px);
+            border-color: var(--attestation-glow);
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.4);
+        }
+
+        .step-content:hover::before {
+            opacity: 0.05;
+        }
+
+        .step-arrow {
+            position: absolute;
+            left: -20px;
+            top: 40px;
+            width: 0;
+            height: 0;
+            border-top: 10px solid transparent;
+            border-bottom: 10px solid transparent;
+            border-right: 20px solid rgba(251, 191, 36, 0.2);
+            filter: drop-shadow(0 0 10px var(--attestation-glow));
         }
 
         .step-title {
@@ -418,6 +914,19 @@
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-bright);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .step-icon {
+            font-size: 1.5rem;
+            color: var(--attestation-glow);
+            animation: spin 4s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .step-description {
@@ -426,21 +935,51 @@
             margin-bottom: 1rem;
         }
 
+        /* Enhanced Code Block */
         .code-block {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(251, 191, 36, 0.2);
             border-radius: 0.5rem;
-            padding: 1rem;
+            padding: 1.5rem;
             margin-top: 1rem;
-            font-family: 'Courier New', monospace;
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
             font-size: 0.875rem;
             color: var(--accent-glow);
             overflow-x: auto;
+            position: relative;
+            box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.1);
         }
 
-        /* Benefits Section */
+        .code-block::before {
+            content: 'ATTESTATION';
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: var(--attestation-glow);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.5;
+        }
+
+        .code-block::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .code-block::-webkit-scrollbar-track {
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        .code-block::-webkit-scrollbar-thumb {
+            background: var(--attestation-glow);
+            border-radius: 3px;
+        }
+
+        /* Enhanced Benefits Section */
         .benefits-section {
             background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-dark) 100%);
+            position: relative;
+            overflow: hidden;
         }
 
         .benefits-grid {
@@ -458,24 +997,52 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--gradient-trust);
+            border-radius: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
         }
 
         .benefit-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-glow);
-            background: rgba(15, 23, 42, 0.8);
+            transform: translateY(-10px) scale(1.02);
+            border-color: transparent;
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
+        }
+
+        .benefit-card:hover::before {
+            opacity: 1;
         }
 
         .benefit-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient-accent);
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-trust);
             border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            font-size: 2rem;
+            position: relative;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(5deg); }
         }
 
         .benefit-title {
@@ -483,23 +1050,30 @@
             font-weight: 700;
             margin-bottom: 0.5rem;
             color: var(--text-bright);
+            position: relative;
+            z-index: 1;
         }
 
         .benefit-description {
             color: var(--text-secondary);
             line-height: 1.8;
+            position: relative;
+            z-index: 1;
         }
 
-        /* Key Holders Section */
+        /* Enhanced Key Holders Section */
         .keyholders-section {
             background: var(--bg-void);
             position: relative;
+            overflow: hidden;
         }
 
         .keyholders-intro {
             text-align: center;
             max-width: 900px;
             margin: 0 auto 4rem;
+            font-size: 1.125rem;
+            line-height: 1.8;
         }
 
         .keyholders-grid {
@@ -510,23 +1084,57 @@
         }
 
         .keyholder-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border: 1px solid rgba(251, 191, 36, 0.2);
             border-radius: 1rem;
-            padding: 2rem;
+            padding: 2.5rem;
             text-align: center;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            cursor: pointer;
+        }
+
+        .keyholder-card::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 70%);
+            transition: all 0.5s ease;
+            transform: translate(-50%, -50%);
+        }
+
+        .keyholder-card:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .keyholder-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(59, 130, 246, 0.5);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--attestation-glow);
+            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
         }
 
         .keyholder-icon {
-            font-size: 3rem;
+            font-size: 4rem;
             margin-bottom: 1rem;
+            animation: keyPulse 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px currentColor);
+        }
+
+        @keyframes keyPulse {
+            0%, 100% { 
+                transform: scale(1) rotate(0deg); 
+                filter: drop-shadow(0 0 30px currentColor);
+            }
+            50% { 
+                transform: scale(1.1) rotate(5deg); 
+                filter: drop-shadow(0 0 50px currentColor);
+            }
         }
 
         .keyholder-type {
@@ -534,34 +1142,178 @@
             font-weight: 700;
             color: var(--text-bright);
             margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
         }
 
         .keyholder-example {
             color: var(--text-secondary);
             font-size: 0.875rem;
             line-height: 1.6;
+            position: relative;
+            z-index: 1;
         }
 
-        /* CTA Section */
-        .cta-section {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-            padding: 5rem 0;
+        /* Interactive Attestation Demo */
+        .demo-section {
+            background: linear-gradient(to bottom, var(--bg-dark) 0%, var(--bg-deep) 100%);
+            padding: 6rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            backdrop-filter: blur(20px);
+            position: relative;
+        }
+
+        .demo-header {
             text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .demo-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-attestation);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .demo-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            color: var(--text-bright);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .demo-input:focus {
+            outline: none;
+            border-color: var(--attestation-glow);
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+
+        .demo-button {
+            background: var(--gradient-attestation);
+            color: var(--bg-void);
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
+        }
+
+        .demo-result {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-glow);
+            min-height: 150px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-result.success {
+            animation: successGlow 1s ease;
+        }
+
+        @keyframes successGlow {
+            0% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+            50% { box-shadow: 0 0 50px rgba(16, 185, 129, 0.5); }
+            100% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Enhanced CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 8rem 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .cta-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--attestation-glow);
+            border-radius: 50%;
+            animation: ctaFloat 20s linear infinite;
+        }
+
+        @keyframes ctaFloat {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh) translateX(100px);
+                opacity: 0;
+            }
         }
 
         .cta-content {
             max-width: 800px;
             margin: 0 auto;
+            position: relative;
+            z-index: 1;
         }
 
         .cta-title {
             font-size: clamp(2rem, 4vw, 3rem);
             font-weight: 800;
             margin-bottom: 1.5rem;
-            background: var(--gradient-primary);
+            background: var(--gradient-attestation);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-shadow: 0 0 60px rgba(251, 191, 36, 0.5);
         }
 
         .cta-description {
@@ -579,48 +1331,54 @@
         }
 
         .btn-primary {
-            background: var(--gradient-primary);
-            color: var(--text-bright);
+            background: var(--gradient-attestation);
+            color: var(--bg-void);
             padding: 1rem 2.5rem;
             font-size: 1.125rem;
-            font-weight: 600;
+            font-weight: 700;
             border: none;
             border-radius: 0.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 20px 60px rgba(251, 191, 36, 0.8);
         }
 
         .btn-secondary {
             background: transparent;
-            color: var(--primary-glow);
+            color: var(--attestation-glow);
             padding: 1rem 2.5rem;
             font-size: 1.125rem;
             font-weight: 600;
-            border: 2px solid var(--primary-glow);
+            border: 2px solid var(--attestation-glow);
             border-radius: 0.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-secondary:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(251, 191, 36, 0.1);
             transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(251, 191, 36, 0.5);
         }
 
         /* Footer */
         footer {
             background: var(--bg-void);
             padding: 4rem 0 2rem;
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            border-top: 1px solid rgba(251, 191, 36, 0.1);
         }
 
         .footer-content {
@@ -645,17 +1403,18 @@
         }
 
         .footer-links a:hover {
-            color: var(--primary-glow);
+            color: var(--attestation-glow);
+            text-shadow: 0 0 10px currentColor;
         }
 
         .footer-legal {
             margin-top: 2rem;
             padding-top: 2rem;
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            border-top: 1px solid rgba(251, 191, 36, 0.1);
         }
 
         .footer-legal a {
-            color: var(--primary-glow);
+            color: var(--attestation-glow);
             text-decoration: none;
             transition: color 0.3s ease;
         }
@@ -664,8 +1423,142 @@
             color: var(--secondary-glow);
         }
 
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--attestation-glow);
+            border-radius: 5px;
+            box-shadow: 0 0 10px var(--attestation-glow);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-glow);
+        }
+
+        /* Dropdown Styles */
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-dropdown:hover .dropdown-arrow,
+        .nav-dropdown.active .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 220px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.5rem 0;
+            margin-top: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(-10px);
+            transition: all 0.3s ease;
+            list-style: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-dropdown-menu::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: rgba(10, 10, 10, 0.98);
+            border-top: 1px solid rgba(251, 191, 36, 0.2);
+            border-left: 1px solid rgba(251, 191, 36, 0.2);
+            transform: translateX(-50%) rotate(45deg);
+        }
+
+        .nav-dropdown:hover .nav-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .nav-dropdown-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .nav-dropdown-link:hover {
+            color: var(--text-bright);
+            background: rgba(251, 191, 36, 0.1);
+        }
+
+        /* Mobile Dropdown */
+        @media (max-width: 968px) {
+            .nav-dropdown-toggle {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .nav-dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                display: none;
+                width: 100%;
+                margin-top: 0.5rem;
+                margin-left: 1rem;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+            }
+
+            .nav-dropdown-menu::before {
+                display: none;
+            }
+
+            .nav-dropdown.active .nav-dropdown-menu {
+                display: block;
+            }
+
+            .nav-dropdown-link {
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+            }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+
             .process-step {
                 grid-template-columns: 60px 1fr;
                 gap: 1rem;
@@ -687,209 +1580,100 @@
                 width: 100%;
                 text-align: center;
             }
+
+            .trust-symbol {
+                font-size: 3rem;
+            }
         }
-    
-/* Dropdown Specific Styles */
-.nav-dropdown {
-    position: relative;
-}
-
-.nav-dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-}
-
-.dropdown-arrow {
-    transition: transform 0.3s ease;
-}
-
-.nav-dropdown:hover .dropdown-arrow,
-.nav-dropdown.active .dropdown-arrow {
-    transform: rotate(180deg);
-}
-
-.nav-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 220px;
-    background: rgba(10, 10, 10, 0.98);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 0.75rem;
-    padding: 0.5rem 0;
-    margin-top: 1rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(-10px);
-    transition: all 0.3s ease;
-    list-style: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.nav-dropdown-menu::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12px;
-    height: 12px;
-    background: rgba(10, 10, 10, 0.98);
-    border-top: 1px solid rgba(59, 130, 246, 0.2);
-    border-left: 1px solid rgba(59, 130, 246, 0.2);
-    transform: translateX(-50%) rotate(45deg);
-}
-
-.nav-dropdown:hover .nav-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-}
-
-.nav-dropdown-link {
-    display: block;
-    padding: 0.75rem 1.5rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.nav-dropdown-link:hover {
-    color: var(--text-bright);
-    background: rgba(59, 130, 246, 0.1);
-}
-
-/* Mobile Dropdown */
-@media (max-width: 968px) {
-    .nav-dropdown-toggle {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .nav-dropdown-menu {
-        position: static;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        display: none;
-        width: 100%;
-        margin-top: 0.5rem;
-        margin-left: 1rem;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-    }
-
-    .nav-dropdown-menu::before {
-        display: none;
-    }
-
-    .nav-dropdown.active .nav-dropdown-menu {
-        display: block;
-    }
-
-    .nav-dropdown-link {
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-    }
-}
-/* Footer Styles */
-.footer-links {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-weight: 500;
-}
-
-.footer-links a:hover {
-    color: var(--primary-glow);
-}
-
-.footer-legal {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(59, 130, 246, 0.1);
-    text-align: center;
-}
-
-.footer-legal p a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-legal p a:hover {
-    color: var(--primary-glow);
-}
-</style>
+    </style>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-spinner">
+            <div class="loading-ring"></div>
+            <div class="loading-ring"></div>
+            <div class="loading-ring"></div>
+        </div>
+    </div>
+
+    <!-- Three.js Canvas -->
+    <canvas id="attestation-canvas"></canvas>
+
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+
+    <!-- Attestation Particles -->
+    <div class="attestation-particles" id="attestationParticles"></div>
+
     <!-- Navigation Header -->
     <header class="nav-header">
-    <div class="nav-container">
-        <a href="/" class="nav-logo">The Protocol</a>
-        <nav>
-            <ul class="nav-menu" id="navMenu">
-                <li class="nav-dropdown">
-                    <a href="#" class="nav-link nav-dropdown-toggle">
-                        Ecosystem
-                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
-                            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
-                        </svg>
-                    </a>
-                    <ul class="nav-dropdown-menu">
-                        <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
-                        <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
-                        <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
-                        <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
-                        <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
-                    </ul>
-                </li>
-                <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
-                <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
-            </ul>
-            <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
-    </div>
-</header>
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            Ecosystem
+                            <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </a>
+                        <ul class="nav-dropdown-menu">
+                            <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
+                            <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
+                            <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
+                            <li><a href="/attestation.html" class="nav-dropdown-link active">Attestation Network</a></li>
+                            <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="vault-bg"></div>
+        <div class="vault-bg">
+            <div class="vault-ring"></div>
+            <div class="vault-ring"></div>
+            <div class="vault-ring"></div>
+        </div>
+        
+        <div class="trust-symbols">
+            <div class="trust-symbol">🔐</div>
+            <div class="trust-symbol">✨</div>
+            <div class="trust-symbol">🛡️</div>
+            <div class="trust-symbol">⚡</div>
+        </div>
         
         <div class="hero-content">
             <h1>
-                <span class="gradient-text">The Attestation Network</span><br>
-                A Decentralized Notary for the Agent Economy
+                <span class="gradient-text" data-text="The Attestation Network">The Attestation Network</span><br>
+                <span style="font-size: 0.7em; font-weight: 600;">A Decentralized Notary for the Agent Economy</span>
             </h1>
             <p class="subtitle">
                 Your registry's cryptographic integrity, witnessed by a consortium of neutral parties. 
                 This is how we enable trillion-dollar autonomous commerce with protocol-level trust.
             </p>
+            <div class="hero-cta-group">
+                <a href="#demo" class="hero-cta">Try Live Demo</a>
+                <a href="#process" class="hero-cta-secondary">Learn How It Works</a>
+            </div>
         </div>
     </section>
 
     <!-- Core Concept Section -->
     <section class="concept-section">
+        <div class="concept-grid-bg"></div>
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Beyond Federation: The Trust Layer</h2>
@@ -900,7 +1684,10 @@
             </div>
             
             <div class="concept-card">
-                <h3 class="concept-title">The Core Innovation: A Digital Notary Public Network</h3>
+                <h3 class="concept-title">
+                    <span class="concept-icon">🏛️</span>
+                    The Core Innovation: A Digital Notary Public Network
+                </h3>
                 <div class="concept-content">
                     <p>
                         The <span class="highlight-text">Federation of Peers</span> model establishes secure, 
@@ -924,7 +1711,7 @@
     </section>
 
     <!-- Process Flow Section -->
-    <section class="process-section">
+    <section class="process-section" id="process">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">How the Attestation Network Works</h2>
@@ -937,24 +1724,31 @@
                 <div class="process-step">
                     <div class="step-number">1</div>
                     <div class="step-content">
-                        <h3 class="step-title">State Snapshot (The Merkle Root)</h3>
+                        <div class="step-arrow"></div>
+                        <h3 class="step-title">
+                            <span class="step-icon">📸</span>
+                            State Snapshot (The Merkle Root)
+                        </h3>
                         <p class="step-description">
                             At regular intervals (e.g., every hour), each sovereign registry calculates a 
                             <strong>Merkle root</strong> of its entire agent catalog. This is a single, unique 
                             hash that represents a verifiable 'snapshot' of the registry's state at that moment.
                         </p>
                         <div class="code-block">
-                            merkle_root = calculate_merkle_root(agent_catalog)
-                            timestamp = current_utc_time()
-                            state_snapshot = {registry_id, timestamp, merkle_root}
-                        </div>
+merkle_root = calculate_merkle_root(agent_catalog)
+timestamp = current_utc_time()
+state_snapshot = {registry_id, timestamp, merkle_root}</div>
                     </div>
                 </div>
                 
                 <div class="process-step">
                     <div class="step-number">2</div>
                     <div class="step-content">
-                        <h3 class="step-title">Attestation Request</h3>
+                        <div class="step-arrow"></div>
+                        <h3 class="step-title">
+                            <span class="step-icon">📤</span>
+                            Attestation Request
+                        </h3>
                         <p class="step-description">
                             The registry sends this Merkle root to a quorum of the Attestation Partners. 
                             It is asking them: "Please bear witness that this was my exact state at this 
@@ -966,33 +1760,63 @@
                 <div class="process-step">
                     <div class="step-number">3</div>
                     <div class="step-content">
-                        <h3 class="step-title">The Notarization (The Signing)</h3>
+                        <div class="step-arrow"></div>
+                        <h3 class="step-title">
+                            <span class="step-icon">🖊️</span>
+                            The Notarization (The Signing)
+                        </h3>
                         <p class="step-description">
                             The Attestation Partners verify the registry's identity, timestamp the request, 
                             and then use their private keys to <strong>cryptographically sign the Merkle root</strong>. 
                             This creates an unforgeable attestation of the registry's state.
                         </p>
                         <div class="code-block">
-                            attestation = {
-                                registry_id: "sovereign_registry_001",
-                                timestamp: "2025-07-08T14:30:00Z",
-                                merkle_root: "0x7d3f...",
-                                partner_signature: sign(private_key, merkle_root)
-                            }
-                        </div>
+attestation = {
+    registry_id: "sovereign_registry_001",
+    timestamp: "2025-07-08T14:30:00Z",
+    merkle_root: "0x7d3f...",
+    partner_signature: sign(private_key, merkle_root)
+}</div>
                     </div>
                 </div>
                 
                 <div class="process-step">
                     <div class="step-number">4</div>
                     <div class="step-content">
-                        <h3 class="step-title">Public Record</h3>
+                        <div class="step-arrow"></div>
+                        <h3 class="step-title">
+                            <span class="step-icon">📜</span>
+                            Public Record
+                        </h3>
                         <p class="step-description">
                             The signed attestation is published to the Verifiable Attestation Ledger. 
                             This is the 'deposit' into the 'bank'—creating an unforgeable, public audit 
                             trail of every registry's state over time.
                         </p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <div class="demo-container">
+                <div class="demo-header">
+                    <h3 class="demo-title">Try It Live: Generate an Attestation</h3>
+                    <p class="section-subtitle">See how registry states are cryptographically attested</p>
+                </div>
+                
+                <div class="demo-grid">
+                    <input type="text" class="demo-input" id="registryId" placeholder="Registry ID (e.g., tokyo-registry-001)" value="tokyo-registry-001">
+                    <input type="text" class="demo-input" id="agentCount" placeholder="Number of Agents (e.g., 1547)" value="1547">
+                </div>
+                
+                <button class="demo-button" onclick="generateAttestation()">Generate Attestation</button>
+                
+                <div class="demo-result" id="demoResult">
+                    <div style="color: var(--text-muted);">Click "Generate Attestation" to see the cryptographic proof...</div>
                 </div>
             </div>
         </div>
@@ -1044,6 +1868,24 @@
                         products, like insurance against registry downtime or fraud.
                     </p>
                 </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🚀</div>
+                    <h3 class="benefit-title">Real-Time Verification</h3>
+                    <p class="benefit-description">
+                        Instant verification of registry states enables high-frequency agent trading 
+                        and millisecond-precision commerce protocols.
+                    </p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🌍</div>
+                    <h3 class="benefit-title">Global Trust Network</h3>
+                    <p class="benefit-description">
+                        Cross-jurisdiction trust without relying on any single government or corporation, 
+                        enabling truly borderless agent commerce.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -1059,7 +1901,7 @@
             </div>
             
             <div class="keyholders-intro">
-                <p style="font-size: 1.125rem; line-height: 1.8;">
+                <p>
                     The Attestation Partners <strong>cannot</strong> be the major cloud providers or any 
                     single entity with a dominant market position. Doing so would simply re-centralize trust. 
                     Instead, we invite a <strong>founding cohort of neutral, trusted organizations</strong> 
@@ -1108,6 +1950,7 @@
 
     <!-- CTA Section -->
     <section class="cta-section">
+        <div class="cta-bg-animation" id="ctaBg"></div>
         <div class="container">
             <div class="cta-content">
                 <h2 class="cta-title">Build on Verifiable Truth</h2>
@@ -1125,28 +1968,269 @@
 
     <!-- Footer -->
     <footer>
-    <div class="container">
-        <div class="footer-links">
-            <a href="/terms.html">Terms of Service</a>
-            <a href="/privacy.html">Privacy Policy</a>
-            <a href="/dpa.html">Data Processing Agreement</a>
-            <a href="/cookies.html">Cookie Policy</a>
-            <a href="/disclaimer.html">Risk Notice</a>
-            <a href="/sla.html">Enterprise SLA</a>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/cookies.html">Cookie Policy</a>
+                <a href="/disclaimer.html">Risk Notice</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
+            <div class="footer-content">
+                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/" style="color: var(--attestation-glow); text-decoration: none;">Raphael Jeziorny</a></p>
+            </div>
+            <div class="footer-legal">
+                <p>
+                    <a href="/imprint.html">Impressum</a> | 
+                    <a href="/privacy.html">Datenschutzerklärung</a>
+                </p>
+            </div>
         </div>
-        <div class="footer-content">
-            <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
-        </div>
-        <div class="footer-legal">
-            <p>
-                <a href="/imprint.html">Impressum</a> | 
-                <a href="/privacy.html">Datenschutzerklärung</a>
-            </p>
-        </div>
-    </div>
-</footer>
+    </footer>
 
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
     <script>
+        // Three.js Attestation Network Visualization
+        let scene, camera, renderer, nodes = [], connections = [];
+        let mouseX = 0, mouseY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
+
+        function initThree() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x000000, 0.0008);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
+            camera.position.z = 1500;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                canvas: document.getElementById('attestation-canvas'),
+                antialias: true,
+                alpha: true 
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Create attestation network nodes
+            const nodeGeometry = new THREE.SphereGeometry(30, 16, 16);
+            const nodeMaterials = [
+                new THREE.MeshBasicMaterial({ color: 0xFBBF24, wireframe: true, transparent: true, opacity: 0.8 }),
+                new THREE.MeshBasicMaterial({ color: 0x3B82F6, wireframe: true, transparent: true, opacity: 0.8 }),
+                new THREE.MeshBasicMaterial({ color: 0x8B5CF6, wireframe: true, transparent: true, opacity: 0.8 }),
+                new THREE.MeshBasicMaterial({ color: 0x10B981, wireframe: true, transparent: true, opacity: 0.8 })
+            ];
+
+            // Create central attestation node
+            const centralGeometry = new THREE.OctahedronGeometry(80, 2);
+            const centralMaterial = new THREE.MeshBasicMaterial({
+                color: 0xFBBF24,
+                wireframe: true,
+                transparent: true,
+                opacity: 1
+            });
+            const centralNode = new THREE.Mesh(centralGeometry, centralMaterial);
+            centralNode.userData = { 
+                baseScale: 1,
+                rotationSpeed: { x: 0.001, y: 0.002, z: 0.001 }
+            };
+            scene.add(centralNode);
+            nodes.push(centralNode);
+
+            // Create surrounding nodes
+            const nodeCount = 12;
+            for (let i = 0; i < nodeCount; i++) {
+                const material = nodeMaterials[i % nodeMaterials.length];
+                const node = new THREE.Mesh(nodeGeometry, material);
+                
+                const angle = (i / nodeCount) * Math.PI * 2;
+                const radius = 400 + Math.random() * 200;
+                
+                node.position.x = Math.cos(angle) * radius;
+                node.position.y = (Math.random() - 0.5) * 400;
+                node.position.z = Math.sin(angle) * radius;
+                
+                node.userData = {
+                    angle: angle,
+                    radius: radius,
+                    yOffset: node.position.y,
+                    speed: 0.0005 + Math.random() * 0.001,
+                    rotationSpeed: {
+                        x: (Math.random() - 0.5) * 0.01,
+                        y: (Math.random() - 0.5) * 0.01,
+                        z: (Math.random() - 0.5) * 0.01
+                    }
+                };
+                
+                scene.add(node);
+                nodes.push(node);
+
+                // Create connections
+                const connectionGeometry = new THREE.BufferGeometry();
+                const connectionMaterial = new THREE.LineBasicMaterial({
+                    color: 0xFBBF24,
+                    transparent: true,
+                    opacity: 0.2
+                });
+                
+                const positions = new Float32Array(6);
+                connectionGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                
+                const connection = new THREE.Line(connectionGeometry, connectionMaterial);
+                scene.add(connection);
+                connections.push({ line: connection, start: centralNode, end: node });
+            }
+
+            // Add floating signature particles
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 2000;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colors = new Float32Array(particlesCount * 3);
+
+            for (let i = 0; i < particlesCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 3000;
+                posArray[i + 1] = (Math.random() - 0.5) * 3000;
+                posArray[i + 2] = (Math.random() - 0.5) * 3000;
+                
+                // Golden particles
+                colors[i] = 0.984;
+                colors[i + 1] = 0.749;
+                colors[i + 2] = 0.141;
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.6,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particles);
+
+            // Event listeners
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            window.addEventListener('resize', onWindowResize);
+
+            animate();
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - windowHalfX) * 0.05;
+            mouseY = (event.clientY - windowHalfY) * 0.05;
+        }
+
+        function onWindowResize() {
+            windowHalfX = window.innerWidth / 2;
+            windowHalfY = window.innerHeight / 2;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Animate nodes
+            nodes.forEach((node, index) => {
+                if (index === 0) {
+                    // Central node
+                    node.rotation.x += node.userData.rotationSpeed.x;
+                    node.rotation.y += node.userData.rotationSpeed.y;
+                    node.rotation.z += node.userData.rotationSpeed.z;
+                    
+                    const scale = node.userData.baseScale + Math.sin(Date.now() * 0.001) * 0.1;
+                    node.scale.set(scale, scale, scale);
+                } else {
+                    // Orbiting nodes
+                    node.userData.angle += node.userData.speed;
+                    node.position.x = Math.cos(node.userData.angle) * node.userData.radius;
+                    node.position.z = Math.sin(node.userData.angle) * node.userData.radius;
+                    node.position.y = node.userData.yOffset + Math.sin(Date.now() * 0.001 + index) * 50;
+                    
+                    node.rotation.x += node.userData.rotationSpeed.x;
+                    node.rotation.y += node.userData.rotationSpeed.y;
+                    node.rotation.z += node.userData.rotationSpeed.z;
+                }
+            });
+
+            // Update connections
+            connections.forEach((connection) => {
+                const positions = connection.line.geometry.attributes.position.array;
+                positions[0] = connection.start.position.x;
+                positions[1] = connection.start.position.y;
+                positions[2] = connection.start.position.z;
+                positions[3] = connection.end.position.x;
+                positions[4] = connection.end.position.y;
+                positions[5] = connection.end.position.z;
+                connection.line.geometry.attributes.position.needsUpdate = true;
+                
+                // Pulse effect
+                connection.line.material.opacity = 0.2 + Math.sin(Date.now() * 0.002) * 0.1;
+            });
+
+            // Camera follow mouse
+            camera.position.x += (mouseX - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY - camera.position.y) * 0.05;
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize Three.js when page loads
+        window.addEventListener('load', () => {
+            initThree();
+            
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }, 1000);
+        });
+
+        // Attestation Particles
+        function createAttestationParticles() {
+            const container = document.getElementById('attestationParticles');
+            const symbols = ['🔐', '📜', '✓', '🔑', '⚡', '🛡️', '📋', '🖊️'];
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'attestation-particle';
+                particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 30 + 's';
+                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
+                particle.style.color = i % 2 === 0 ? 'var(--attestation-glow)' : 'var(--primary-glow)';
+                container.appendChild(particle);
+            }
+        }
+
+        createAttestationParticles();
+
+        // CTA Background Animation
+        function createCTAParticles() {
+            const container = document.getElementById('ctaBg');
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'cta-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        createCTAParticles();
+
         // Mobile Navigation Toggle
         const navToggle = document.getElementById('navToggle');
         const navMenu = document.getElementById('navMenu');
@@ -1161,21 +2245,6 @@
             link.addEventListener('click', function() {
                 navToggle.classList.remove('active');
                 navMenu.classList.remove('active');
-            });
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const offsetTop = target.offsetTop - 80;
-                    window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
-                    });
-                }
             });
         });
         
@@ -1195,31 +2264,96 @@
             lastScroll = currentScroll;
         });
 
-        // Developer Portal button placeholder
+        // Interactive Demo
+        function generateAttestation() {
+            const button = document.querySelector('.demo-button');
+            const result = document.getElementById('demoResult');
+            const registryId = document.getElementById('registryId').value || 'tokyo-registry-001';
+            const agentCount = document.getElementById('agentCount').value || '1547';
+            
+            button.textContent = 'Generating...';
+            button.disabled = true;
+            
+            // Simulate processing
+            setTimeout(() => {
+                const timestamp = new Date().toISOString();
+                const merkleRoot = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+                const signature = '0x' + Array.from({length: 128}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+                
+                result.innerHTML = `
+                    <div style="color: var(--accent-glow); margin-bottom: 1rem;">✅ Attestation Generated Successfully</div>
+                    <div style="margin-bottom: 0.5rem;"><strong>Registry ID:</strong> ${registryId}</div>
+                    <div style="margin-bottom: 0.5rem;"><strong>Agent Count:</strong> ${agentCount}</div>
+                    <div style="margin-bottom: 0.5rem;"><strong>Timestamp:</strong> ${timestamp}</div>
+                    <div style="margin-bottom: 0.5rem;"><strong>Merkle Root:</strong></div>
+                    <div style="word-break: break-all; margin-bottom: 1rem; color: var(--attestation-glow);">${merkleRoot}</div>
+                    <div style="margin-bottom: 0.5rem;"><strong>Attestation Signature:</strong></div>
+                    <div style="word-break: break-all; color: var(--primary-glow);">${signature}</div>
+                `;
+                
+                result.classList.add('success');
+                setTimeout(() => result.classList.remove('success'), 1000);
+                
+                button.textContent = 'Generate Attestation';
+                button.disabled = false;
+            }, 1500);
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Developer Portal button
         document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
             e.preventDefault();
             alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
         });
 
-// Mobile Dropdown Toggle
-const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-const dropdown = document.querySelector('.nav-dropdown');
+        // Mobile Dropdown Toggle
+        const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+        const dropdown = document.querySelector('.nav-dropdown');
 
-if (dropdownToggle) {
-    dropdownToggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 968) {
-            e.preventDefault();
-            dropdown.classList.toggle('active');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('click', function(e) {
+                if (window.innerWidth <= 968) {
+                    e.preventDefault();
+                    dropdown.classList.toggle('active');
+                }
+            });
         }
-    });
-}
 
-// Prevent dropdown from closing on desktop when hovering
-if (window.innerWidth > 968 && dropdownToggle) {
-    dropdownToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-    });
-}
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.concept-card, .benefit-card, .keyholder-card').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'all 0.6s ease';
+            observer.observe(element);
+        });
     </script>
 </body>
 </html>
