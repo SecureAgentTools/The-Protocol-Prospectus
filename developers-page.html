@@ -1358,7 +1358,154 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-    </style>
+    
+/* Dropdown Specific Styles */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.dropdown-arrow {
+    transition: transform 0.3s ease;
+}
+
+.nav-dropdown:hover .dropdown-arrow,
+.nav-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    background: rgba(10, 10, 10, 0.98);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0;
+    margin-top: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(-10px);
+    transition: all 0.3s ease;
+    list-style: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: rgba(10, 10, 10, 0.98);
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+    border-left: 1px solid rgba(59, 130, 246, 0.2);
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.nav-dropdown:hover .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown-link {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-dropdown-link:hover {
+    color: var(--text-bright);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* Mobile Dropdown */
+@media (max-width: 968px) {
+    .nav-dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .nav-dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+        width: 100%;
+        margin-top: 0.5rem;
+        margin-left: 1rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .nav-dropdown-menu::before {
+        display: none;
+    }
+
+    .nav-dropdown.active .nav-dropdown-menu {
+        display: block;
+    }
+
+    .nav-dropdown-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+/* Footer Styles */
+.footer-links {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    color: var(--primary-glow);
+}
+
+.footer-legal {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(59, 130, 246, 0.1);
+    text-align: center;
+}
+
+.footer-legal p a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-legal p a:hover {
+    color: var(--primary-glow);
+}
+</style>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -1377,27 +1524,37 @@
 
     <!-- Navigation Header -->
     <header class="nav-header">
-        <div class="nav-container">
-            <a href="/" class="nav-logo">The Protocol</a>
-            <nav>
-                <ul class="nav-menu" id="navMenu">
-                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
-                    <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
-                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
-                    <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
-                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
-                    <li><a href="/developers-page.html" class="nav-link active">For Developers</a></li>
-                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
-                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
-                </ul>
-                <div class="nav-toggle" id="navToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <div class="nav-container">
+        <a href="/" class="nav-logo">The Protocol</a>
+        <nav>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-dropdown">
+                    <a href="#" class="nav-link nav-dropdown-toggle">
+                        Ecosystem
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
+                            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </a>
+                    <ul class="nav-dropdown-menu">
+                        <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
+                        <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
+                        <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
+                        <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
+                        <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
+                    </ul>
+                </li>
+                <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
+                <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </div>
+</header>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -2388,6 +2545,26 @@ async def execute_complex_project(requirements):
             e.preventDefault();
             alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
         });
+
+// Mobile Dropdown Toggle
+const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+const dropdown = document.querySelector('.nav-dropdown');
+
+if (dropdownToggle) {
+    dropdownToggle.addEventListener('click', function(e) {
+        if (window.innerWidth <= 968) {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        }
+    });
+}
+
+// Prevent dropdown from closing on desktop when hovering
+if (window.innerWidth > 968 && dropdownToggle) {
+    dropdownToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+    });
+}
     </script>
 </body>
 </html>

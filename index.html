@@ -1016,6 +1016,8 @@
             background: rgba(16, 185, 129, 0.2);
             border: 1px solid rgba(16, 185, 129, 0.5);
             color: var(--accent-glow);
+            padding: 1.5rem;
+            font-size: 1rem;
         }
 
         .form-feedback.error {
@@ -1036,32 +1038,189 @@
                 padding: 1.5rem 0; /* Reduces vertical space slightly for a better fit */
             }
         }
-    </style>
+    
+/* Dropdown Specific Styles */
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.dropdown-arrow {
+    transition: transform 0.3s ease;
+}
+
+.nav-dropdown:hover .dropdown-arrow,
+.nav-dropdown.active .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 220px;
+    background: rgba(10, 10, 10, 0.98);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 0.75rem;
+    padding: 0.5rem 0;
+    margin-top: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-50%) translateY(-10px);
+    transition: all 0.3s ease;
+    list-style: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.nav-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: rgba(10, 10, 10, 0.98);
+    border-top: 1px solid rgba(59, 130, 246, 0.2);
+    border-left: 1px solid rgba(59, 130, 246, 0.2);
+    transform: translateX(-50%) rotate(45deg);
+}
+
+.nav-dropdown:hover .nav-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.nav-dropdown-link {
+    display: block;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.nav-dropdown-link:hover {
+    color: var(--text-bright);
+    background: rgba(59, 130, 246, 0.1);
+}
+
+/* Mobile Dropdown */
+@media (max-width: 968px) {
+    .nav-dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .nav-dropdown-menu {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        display: none;
+        width: 100%;
+        margin-top: 0.5rem;
+        margin-left: 1rem;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .nav-dropdown-menu::before {
+        display: none;
+    }
+
+    .nav-dropdown.active .nav-dropdown-menu {
+        display: block;
+    }
+
+    .nav-dropdown-link {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+}
+/* Footer Styles */
+.footer-links {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-weight: 500;
+}
+
+.footer-links a:hover {
+    color: var(--primary-glow);
+}
+
+.footer-legal {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(59, 130, 246, 0.1);
+    text-align: center;
+}
+
+.footer-legal p a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-legal p a:hover {
+    color: var(--primary-glow);
+}
+</style>
 </head>
 <body>
     <!-- Navigation Header -->
     <header class="nav-header">
-        <div class="nav-container">
-            <a href="/" class="nav-logo">The Protocol</a>
-            <nav>
-                <ul class="nav-menu" id="navMenu">
-                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
-                    <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
-                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
-                    <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
-                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
-                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
-                    <li><a href="#application" class="nav-link nav-cta">Join Beta</a></li>
-                </ul>
-                <div class="nav-toggle" id="navToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </nav>
-        </div>
-    </header>
+    <div class="nav-container">
+        <a href="/" class="nav-logo">The Protocol</a>
+        <nav>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-dropdown">
+                    <a href="#" class="nav-link nav-dropdown-toggle">
+                        Ecosystem
+                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
+                            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
+                        </svg>
+                    </a>
+                    <ul class="nav-dropdown-menu">
+                        <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
+                        <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
+                        <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
+                        <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
+                        <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
+                    </ul>
+                </li>
+                <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
+                <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </nav>
+    </div>
+</header>
 
     <!-- Hero Section -->
     <section class="hero">
@@ -1522,30 +1681,26 @@
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <div class="footer-links" style="display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
-                <a href="/terms.html">Terms of Service</a>
-                <a href="/privacy.html">Privacy Policy</a>
-                <a href="/dpa.html">Data Processing Agreement</a>
-                <a href="/cookies.html">Cookie Policy</a>
-                <a href="/disclaimer.html">Risk Notice</a>
-                <a href="/sla.html">Enterprise SLA</a>
-            </div>
-            <div class="footer-content">
-                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
-                <p style="margin-top: 1rem; font-size: 0.8rem;">
-                    The digital world is at an inflection point. You can continue to build applications on someone else's platform, 
-                    subject to their rules, their fees, and their strategic whims. Or you can claim a seat at the constitutional convention.
-                </p>
-            </div>
-            <div class="footer-legal" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(59, 130, 246, 0.1);">
-                <p>
-                    <a href="/imprint.html">Impressum</a> | 
-                    <a href="/privacy.html">Datenschutzerklärung</a>
-                </p>
-            </div>
+    <div class="container">
+        <div class="footer-links">
+            <a href="/terms.html">Terms of Service</a>
+            <a href="/privacy.html">Privacy Policy</a>
+            <a href="/dpa.html">Data Processing Agreement</a>
+            <a href="/cookies.html">Cookie Policy</a>
+            <a href="/disclaimer.html">Risk Notice</a>
+            <a href="/sla.html">Enterprise SLA</a>
         </div>
-    </footer>
+        <div class="footer-content">
+            <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
+        </div>
+        <div class="footer-legal">
+            <p>
+                <a href="/imprint.html">Impressum</a> | 
+                <a href="/privacy.html">Datenschutzerklärung</a>
+            </p>
+        </div>
+    </div>
+</footer>
 
     <script>
         // Interactive Network Animation
@@ -1654,60 +1809,23 @@
         const submitButton = document.getElementById('submit-button');
         const feedbackDiv = document.getElementById('form-feedback');
         
-        form.addEventListener('submit', async function(e) {
+        form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            // Disable submit button and show loading state
-            submitButton.disabled = true;
-            submitButton.textContent = 'Submitting...';
-            feedbackDiv.style.display = 'none';
+            // Show coming soon message
+            feedbackDiv.className = 'form-feedback success';
+            feedbackDiv.innerHTML = `
+                <div style="font-size: 1.1rem; line-height: 1.6;">
+                    <strong>Thank you for your interest!</strong><br><br>
+                    We are opening up the application form as soon as we have fully deployed.<br><br>
+                    For earlier inquiries, please contact:<br>
+                    <a href="mailto:r.jeziorny@theprotocol.cloud" style="color: #10B981; font-weight: 600;">r.jeziorny@theprotocol.cloud</a>
+                </div>
+            `;
+            feedbackDiv.style.display = 'block';
             
-            // Collect form data
-            const formData = {
-                name: document.getElementById('name').value,
-                title: document.getElementById('title').value,
-                company: document.getElementById('company').value,
-                email: document.getElementById('email').value,
-                profile: document.getElementById('profile').value,
-                timestamp: new Date().toISOString()
-            };
-            
-            try {
-                // Send data to backend
-                const response = await fetch('/api/apply', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                if (response.ok) {
-                    // Show success message
-                    feedbackDiv.className = 'form-feedback success';
-                    feedbackDiv.textContent = 'Application submitted successfully! Our architectural team will review your submission and contact you within 48 hours.';
-                    feedbackDiv.style.display = 'block';
-                    
-                    // Reset form
-                    form.reset();
-                } else {
-                    // Show error message
-                    const errorData = await response.json().catch(() => ({}));
-                    feedbackDiv.className = 'form-feedback error';
-                    feedbackDiv.textContent = errorData.message || 'An error occurred while submitting your application. Please try again.';
-                    feedbackDiv.style.display = 'block';
-                }
-            } catch (error) {
-                // Network or other error
-                feedbackDiv.className = 'form-feedback error';
-                feedbackDiv.textContent = 'Unable to connect to the server. Please check your connection and try again.';
-                feedbackDiv.style.display = 'block';
-                console.error('Form submission error:', error);
-            } finally {
-                // Re-enable submit button
-                submitButton.disabled = false;
-                submitButton.textContent = 'Submit Application for Founding Charter';
-            }
+            // Scroll to feedback message
+            feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         });
         
         // Mobile Navigation Toggle
@@ -1763,6 +1881,26 @@
             e.preventDefault();
             alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
         });
+
+// Mobile Dropdown Toggle
+const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
+const dropdown = document.querySelector('.nav-dropdown');
+
+if (dropdownToggle) {
+    dropdownToggle.addEventListener('click', function(e) {
+        if (window.innerWidth <= 968) {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        }
+    });
+}
+
+// Prevent dropdown from closing on desktop when hovering
+if (window.innerWidth > 968 && dropdownToggle) {
+    dropdownToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+    });
+}
     </script>
 </body>
 </html>
