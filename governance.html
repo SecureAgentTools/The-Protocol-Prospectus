@@ -31,12 +31,12 @@
             --bg-card: rgba(15, 23, 42, 0.6);
             --text-bright: #FFFFFF;
             --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --text-muted: #475569;
+            --text-secondary: #CBD5E1;
+            --text-muted: #64748B;
             --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
             --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
             --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
-            --gradient-rainbow: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%);
+            --gradient-premium: linear-gradient(135deg, #F59E0B 0%, #EF4444 50%, #8B5CF6 100%);
         }
 
         html {
@@ -44,14 +44,16 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-void);
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Loading Screen */
+        /* Premium Loading Screen */
         .loading-screen {
             position: fixed;
             top: 0;
@@ -77,6 +79,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: pulse 1.5s ease infinite;
+            letter-spacing: -0.03em;
         }
 
         @keyframes pulse {
@@ -86,8 +89,8 @@
 
         .loading-bar {
             width: 200px;
-            height: 4px;
-            background: rgba(16, 185, 129, 0.2);
+            height: 2px;
+            background: rgba(16, 185, 129, 0.1);
             border-radius: 2px;
             margin: 2rem auto;
             overflow: hidden;
@@ -97,7 +100,7 @@
             height: 100%;
             background: var(--gradient-accent);
             width: 0%;
-            animation: load 1.5s ease-out forwards;
+            animation: load 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         @keyframes load {
@@ -110,15 +113,16 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-header.scrolled {
-            background: rgba(10, 10, 10, 0.98);
+            background: rgba(0, 0, 0, 0.95);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
         }
 
@@ -140,12 +144,12 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
             text-decoration: none;
-            letter-spacing: -0.02em;
-            transition: all 0.3s ease;
+            letter-spacing: -0.03em;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-logo:hover {
-            transform: scale(1.05);
+            transform: scale(1.05) translateY(-1px);
         }
 
         .nav-menu {
@@ -161,7 +165,7 @@
             font-weight: 500;
             font-size: 0.95rem;
             letter-spacing: 0.01em;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
@@ -173,7 +177,7 @@
             width: 0;
             height: 2px;
             background: var(--gradient-primary);
-            transition: width 0.3s ease;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-link:hover {
@@ -187,11 +191,12 @@
         .nav-link.nav-cta {
             background: var(--gradient-primary);
             color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.75rem;
             border-radius: 0.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            font-weight: 600;
         }
 
         .nav-link.nav-cta::before {
@@ -209,7 +214,7 @@
 
         .nav-link.nav-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
         }
 
         .nav-link.nav-cta:hover::before {
@@ -224,9 +229,9 @@
         .nav-link.nav-dev-portal {
             background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
             color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 1.75rem;
             border-radius: 0.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 600;
             position: relative;
             overflow: hidden;
@@ -234,7 +239,7 @@
 
         .nav-link.nav-dev-portal:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
         }
 
         .nav-link.nav-dev-portal::after {
@@ -254,7 +259,7 @@
             width: 25px;
             height: 2px;
             background: var(--text-bright);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @media (max-width: 1200px) {
@@ -263,13 +268,13 @@
                 top: 80px;
                 left: 0;
                 right: 0;
-                background: rgba(10, 10, 10, 0.98);
+                background: rgba(0, 0, 0, 0.98);
                 flex-direction: column;
                 padding: 2rem;
                 gap: 1.5rem;
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
                 max-height: calc(100vh - 80px);
                 overflow-y: auto;
             }
@@ -295,21 +300,22 @@
             }
         }
 
-        /* Hero Section with Enhanced Governance Animation */
+        /* Premium Hero Section */
         .hero {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center top, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at center bottom, rgba(59, 130, 246, 0.08) 0%, transparent 50%);
             overflow: hidden;
             padding: 2rem;
             padding-top: 120px;
         }
 
-        /* Animated Governance Network Background */
-        .governance-network {
+        /* Advanced Particle Network */
+        .particle-network {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -317,75 +323,47 @@
             left: 0;
         }
 
-        .governance-network canvas {
+        .particle-network canvas {
             width: 100%;
             height: 100%;
         }
 
-        /* Floating Governance Orbs */
-        .gov-orb {
+        /* Premium Glass Morphism Elements */
+        .glass-layer {
             position: absolute;
-            border-radius: 50%;
-            filter: blur(60px);
-            animation: float-orb 25s infinite ease-in-out;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 50% 20%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+            filter: blur(100px);
+            animation: glass-shift 30s ease-in-out infinite;
         }
 
-        .gov-orb-1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
-            top: -200px;
-            right: -200px;
+        @keyframes glass-shift {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            33% { transform: rotate(120deg) scale(1.1); }
+            66% { transform: rotate(240deg) scale(0.9); }
         }
 
-        .gov-orb-2 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
-            bottom: -150px;
-            left: -150px;
-            animation-delay: -8s;
-        }
-
-        .gov-orb-3 {
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
-            top: 50%;
-            left: 30%;
-            animation-delay: -16s;
-        }
-
-        @keyframes float-orb {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(50px, -50px) scale(1.1);
-            }
-            50% {
-                transform: translate(-30px, 30px) scale(0.95);
-            }
-            75% {
-                transform: translate(40px, 20px) scale(1.05);
-            }
-        }
-
-        /* Crystalline Pattern Overlay */
-        .crystalline-overlay {
+        /* Geometric Grid Overlay */
+        .geometric-grid {
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0.05;
             background-image: 
-                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(16, 185, 129, 0.1) 35px, rgba(16, 185, 129, 0.1) 70px),
-                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(59, 130, 246, 0.1) 35px, rgba(59, 130, 246, 0.1) 70px);
-            animation: crystalline-shift 20s linear infinite;
+                linear-gradient(rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: grid-slide 20s linear infinite;
         }
 
-        @keyframes crystalline-shift {
+        @keyframes grid-slide {
             0% { transform: translate(0, 0); }
-            100% { transform: translate(70px, 70px); }
+            100% { transform: translate(100px, 100px); }
         }
 
         .hero-content {
@@ -393,7 +371,7 @@
             z-index: 10;
             max-width: 1000px;
             width: 100%;
-            animation: hero-enter 1s ease-out;
+            animation: hero-enter 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         @keyframes hero-enter {
@@ -408,49 +386,48 @@
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(2.5rem, 6vw, 5rem);
             font-weight: 900;
             margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
+            letter-spacing: -0.03em;
             line-height: 1.1;
         }
 
-        /* Holographic Text Effect */
-        .holographic-text {
+        /* Premium Gradient Text */
+        .gradient-text {
             background: linear-gradient(
-                to right,
-                #00ff88 0%,
-                #00ffff 15%,
-                #ff00ff 30%,
-                #ff0088 45%,
-                #00ff88 60%,
-                #00ffff 75%,
-                #ff00ff 90%,
-                #00ff88 100%
+                135deg,
+                #10B981 0%,
+                #3B82F6 25%,
+                #8B5CF6 50%,
+                #EC4899 75%,
+                #10B981 100%
             );
-            background-size: 200% auto;
+            background-size: 300% auto;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: holographic-shift 4s linear infinite;
-            text-shadow: 0 0 40px rgba(16, 185, 129, 0.5);
+            animation: gradient-flow 8s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(16, 185, 129, 0.3));
         }
 
-        @keyframes holographic-shift {
-            to { background-position: 200% center; }
+        @keyframes gradient-flow {
+            to { background-position: 300% center; }
         }
 
+        /* Enhanced Subtitle with Better Visibility */
         .hero .subtitle {
-            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-            color: var(--text-secondary);
+            font-size: clamp(1.25rem, 2.5vw, 1.875rem);
+            color: var(--text-bright);
             margin-bottom: 3rem;
-            font-weight: 300;
-            letter-spacing: 0.02em;
+            font-weight: 400;
+            letter-spacing: -0.01em;
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
             opacity: 0;
-            animation: fade-in-up 1s ease 0.5s forwards;
+            animation: fade-in-up 1s cubic-bezier(0.4, 0, 0.2, 1) 0.5s forwards;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
         @keyframes fade-in-up {
@@ -460,18 +437,95 @@
             }
         }
 
-        /* Voting Flow Visualization */
+        /* Premium Voting Visualization */
         .voting-visualization {
             margin-top: 4rem;
-            height: 300px;
+            height: 500px;
             position: relative;
             opacity: 0;
-            animation: fade-in-up 1s ease 0.8s forwards;
+            animation: fade-in-up 1s cubic-bezier(0.4, 0, 0.2, 1) 0.8s forwards;
+            background: 
+                linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(10, 10, 10, 0.8) 100%),
+                radial-gradient(ellipse at 30% 40%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
+                radial-gradient(ellipse at 70% 60%, rgba(16, 185, 129, 0.1) 0%, transparent 40%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.02),
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.03);
+        }
+
+        .voting-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Premium Flow Indicators */
+        .flow-indicators {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 3rem;
+            z-index: 10;
+        }
+
+        .flow-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 100px;
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+
+        .flow-indicator:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .flow-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        .flow-dot::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            background: radial-gradient(circle, currentColor 0%, transparent 70%);
+            opacity: 0.3;
+            animation: pulse-ring 2s ease infinite;
+        }
+
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.3); opacity: 0.1; }
+        }
+
+        .flow-label {
+            font-size: 0.875rem;
+            color: var(--text-bright);
+            font-weight: 600;
+            letter-spacing: 0.02em;
         }
 
         /* Section Styles */
         section {
-            padding: 6rem 0;
+            padding: 8rem 0;
             position: relative;
         }
 
@@ -483,11 +537,11 @@
 
         .section-header {
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 5rem;
         }
 
         .section-title {
-            font-size: clamp(2rem, 4vw, 3rem);
+            font-size: clamp(2rem, 4vw, 3.5rem);
             font-weight: 800;
             margin-bottom: 1rem;
             background: var(--gradient-primary);
@@ -496,112 +550,154 @@
             background-clip: text;
             position: relative;
             display: inline-block;
+            letter-spacing: -0.02em;
         }
 
         .section-title::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -15px;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
+            width: 60px;
+            height: 3px;
             background: var(--gradient-primary);
-            border-radius: 2px;
-            animation: pulse-line 2s ease infinite;
-        }
-
-        @keyframes pulse-line {
-            0%, 100% { width: 100px; opacity: 1; }
-            50% { width: 150px; opacity: 0.7; }
+            border-radius: 1.5px;
         }
 
         .section-subtitle {
-            font-size: 1.25rem;
+            font-size: 1.375rem;
             color: var(--text-secondary);
             max-width: 800px;
-            margin: 0 auto;
-            font-weight: 300;
-            line-height: 1.8;
+            margin: 2rem auto 0;
+            font-weight: 400;
+            line-height: 1.7;
+            letter-spacing: -0.01em;
         }
 
-        /* Enhanced Pledge Section with Particle Effects */
+        /* Premium Pledge Section */
         .pledge-section {
-            background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
+            background: linear-gradient(to bottom, var(--bg-void) 0%, rgba(10, 10, 10, 0.95) 100%);
             position: relative;
             overflow: hidden;
         }
 
-        .pledge-particles {
+        /* Animated Background Pattern */
+        .pledge-bg-pattern {
             position: absolute;
             width: 100%;
             height: 100%;
             top: 0;
             left: 0;
-            pointer-events: none;
+            opacity: 0.03;
+            background-image: 
+                radial-gradient(circle at 2% 35%, rgba(16, 185, 129, 0.5) 0%, transparent 50%),
+                radial-gradient(circle at 85% 80%, rgba(59, 130, 246, 0.5) 0%, transparent 50%);
+            animation: pattern-drift 25s ease-in-out infinite;
+        }
+
+        @keyframes pattern-drift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
         }
 
         .pledge-card {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
-            border: 2px solid rgba(16, 185, 129, 0.3);
-            border-radius: 1.5rem;
-            padding: 3rem;
+            background: 
+                linear-gradient(135deg, rgba(16, 185, 129, 0.02) 0%, transparent 50%),
+                linear-gradient(225deg, rgba(59, 130, 246, 0.02) 0%, transparent 50%),
+                rgba(0, 0, 0, 0.3);
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            border-radius: 2rem;
+            padding: 5rem;
             margin: 0 auto;
             max-width: 900px;
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
-            box-shadow: 
-                0 0 50px rgba(16, 185, 129, 0.2),
-                inset 0 0 50px rgba(16, 185, 129, 0.05);
-            transition: all 0.5s ease;
-        }
-
-        .pledge-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 
-                0 10px 60px rgba(16, 185, 129, 0.3),
-                inset 0 0 60px rgba(16, 185, 129, 0.1);
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .pledge-card::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: var(--gradient-accent);
-            border-radius: 1.5rem;
-            opacity: 0;
-            z-index: -1;
+            inset: 0;
+            border-radius: 2rem;
+            padding: 1px;
+            background: linear-gradient(135deg, 
+                rgba(16, 185, 129, 0.3) 0%, 
+                rgba(59, 130, 246, 0.3) 50%, 
+                rgba(139, 92, 246, 0.3) 100%);
+            -webkit-mask: 
+                linear-gradient(#fff 0 0) content-box, 
+                linear-gradient(#fff 0 0);
+            -webkit-mask-composite: exclude;
+            mask-composite: exclude;
+            opacity: 0.5;
             transition: opacity 0.5s ease;
         }
 
         .pledge-card:hover::before {
             opacity: 1;
-            animation: rotate-gradient 4s linear infinite;
         }
 
-        @keyframes rotate-gradient {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .pledge-card:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                0 0 100px rgba(16, 185, 129, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        .pledge-card::after {
-            content: '📜';
+        /* Premium Holographic Pattern */
+        .pledge-hologram {
             position: absolute;
-            top: -40px;
-            right: 40px;
-            font-size: 8rem;
-            opacity: 0.05;
-            transform: rotate(-15deg);
-            animation: float-icon 4s ease infinite;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 40px,
+                    rgba(16, 185, 129, 0.03) 40px,
+                    rgba(16, 185, 129, 0.03) 80px
+                ),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 40px,
+                    rgba(59, 130, 246, 0.03) 40px,
+                    rgba(59, 130, 246, 0.03) 80px
+                );
+            animation: hologram-slide 30s linear infinite;
+            mix-blend-mode: overlay;
         }
 
-        @keyframes float-icon {
-            0%, 100% { transform: rotate(-15deg) translateY(0); }
-            50% { transform: rotate(-15deg) translateY(-20px); }
+        @keyframes hologram-slide {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(80px, 80px) rotate(5deg); }
+        }
+
+        /* Premium Glow Effect */
+        .pledge-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150%;
+            height: 150%;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
+            filter: blur(100px);
+            opacity: 0;
+            animation: pledge-glow-pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pledge-glow-pulse {
+            0%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
 
         .pledge-title {
@@ -613,6 +709,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.02em;
         }
 
         .pledge-content {
@@ -625,31 +722,37 @@
             margin-bottom: 1.5rem;
         }
 
+        .pledge-content strong {
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
         .pledge-signature {
             margin-top: 3rem;
             text-align: right;
             font-style: italic;
             color: var(--text-secondary);
+            font-size: 1rem;
         }
 
-        /* Enhanced Principles Section with 3D Cards */
+        /* Premium Principles Section */
         .principles-section {
-            background: var(--bg-deep);
+            background: rgba(10, 10, 10, 0.95);
             position: relative;
             overflow: hidden;
         }
 
-        .principles-section::before {
-            content: '';
+        /* Hexagon Pattern Background */
+        .hex-pattern {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="hex-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><polygon points="50,10 90,35 90,75 50,100 10,75 10,35" fill="none" stroke="rgba(16, 185, 129, 0.05)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23hex-pattern)"/></svg>');
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="hex" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><polygon points="50,10 90,35 90,75 50,100 10,75 10,35" fill="none" stroke="rgba(255, 255, 255, 0.02)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23hex)"/></svg>');
             opacity: 0.5;
-            animation: hex-drift 30s linear infinite;
+            animation: hex-scroll 40s linear infinite;
         }
 
-        @keyframes hex-drift {
+        @keyframes hex-scroll {
             0% { transform: translate(0, 0); }
             100% { transform: translate(100px, 0); }
         }
@@ -658,21 +761,21 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
             gap: 2rem;
-            margin-top: 3rem;
+            margin-top: 4rem;
             position: relative;
             z-index: 1;
         }
 
         .principle-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid transparent;
-            border-radius: 1rem;
-            padding: 2.5rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            padding: 3rem;
             position: relative;
             overflow: hidden;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
-            cursor: pointer;
+            cursor: default;
             backdrop-filter: blur(10px);
         }
 
@@ -683,39 +786,34 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            background: linear-gradient(135deg, transparent 0%, rgba(16, 185, 129, 0.05) 100%);
             opacity: 0;
             transition: opacity 0.3s ease;
         }
 
         .principle-card:hover {
-            transform: translateY(-10px) rotateX(5deg) scale(1.02);
-            border-color: var(--accent-glow);
-            background: rgba(15, 23, 42, 0.95);
+            transform: translateY(-10px);
+            border-color: rgba(16, 185, 129, 0.3);
             box-shadow: 
-                0 20px 40px rgba(16, 185, 129, 0.3),
-                0 0 60px rgba(16, 185, 129, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(16, 185, 129, 0.2);
         }
 
         .principle-card:hover::before {
             opacity: 1;
         }
 
+        /* Principle Number - Premium Style */
         .principle-number {
             position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 4rem;
+            top: -20px;
+            right: 20px;
+            font-size: 6rem;
             font-weight: 900;
-            opacity: 0.1;
+            opacity: 0.03;
             color: var(--accent-glow);
-            animation: number-pulse 3s ease infinite;
-        }
-
-        @keyframes number-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.1; }
-            50% { transform: scale(1.1); opacity: 0.2; }
+            font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+            letter-spacing: -0.05em;
         }
 
         .principle-icon {
@@ -729,50 +827,18 @@
             margin-bottom: 1.5rem;
             font-size: 1.5rem;
             position: relative;
-            animation: icon-float 3s ease infinite;
-        }
-
-        .principle-card:nth-child(1) .principle-icon { animation-delay: 0s; }
-        .principle-card:nth-child(2) .principle-icon { animation-delay: 0.5s; }
-        .principle-card:nth-child(3) .principle-icon { animation-delay: 1s; }
-        .principle-card:nth-child(4) .principle-icon { animation-delay: 1.5s; }
-        .principle-card:nth-child(5) .principle-icon { animation-delay: 2s; }
-        .principle-card:nth-child(6) .principle-icon { animation-delay: 2.5s; }
-
-        @keyframes icon-float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(5deg); }
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         }
 
         .principle-icon::after {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
-            transform: rotate(45deg);
-            transition: all 0.6s;
-            opacity: 0;
-        }
-
-        .principle-card:hover .principle-icon::after {
-            animation: icon-shine 0.6s ease;
-        }
-
-        @keyframes icon-shine {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-                opacity: 0;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-                opacity: 0;
-            }
+            inset: -1px;
+            background: var(--gradient-accent);
+            border-radius: 1rem;
+            opacity: 0.5;
+            z-index: -1;
+            filter: blur(10px);
         }
 
         .principle-title {
@@ -780,16 +846,18 @@
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-bright);
+            letter-spacing: -0.01em;
         }
 
         .principle-description {
             color: var(--text-secondary);
-            line-height: 1.8;
+            line-height: 1.7;
+            font-size: 1rem;
         }
 
-        /* Enhanced Governance Structure with Live Visualization */
+        /* Premium Structure Section */
         .structure-section {
-            background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-dark) 100%);
+            background: linear-gradient(to bottom, rgba(10, 10, 10, 0.95) 0%, var(--bg-dark) 100%);
             position: relative;
             overflow: hidden;
         }
@@ -797,15 +865,16 @@
         .structure-visualization {
             width: 100%;
             height: 600px;
-            margin: 3rem 0;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 1.5rem;
+            margin: 4rem 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 2rem;
             position: relative;
             overflow: hidden;
             box-shadow: 
-                0 0 50px rgba(59, 130, 246, 0.2),
-                inset 0 0 50px rgba(59, 130, 246, 0.1);
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 30px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
         .structure-canvas {
@@ -815,34 +884,42 @@
 
         .visualization-title {
             position: absolute;
-            top: 20px;
+            top: 30px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1.25rem;
+            font-size: 0.875rem;
             font-weight: 700;
-            letter-spacing: 0.1em;
+            letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--text-secondary);
+            color: var(--text-muted);
             z-index: 10;
-        }
-
-        .structure-diagram {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            margin: 3rem 0;
-            position: relative;
+            padding: 0.5rem 1.5rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
             backdrop-filter: blur(10px);
         }
 
+        .structure-diagram {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2rem;
+            padding: 4rem;
+            margin: 4rem 0;
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
         .structure-level {
-            margin-bottom: 3rem;
-            padding-bottom: 3rem;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            margin-bottom: 4rem;
+            padding-bottom: 4rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             opacity: 0;
             transform: translateX(-30px);
-            animation: slide-in 0.6s ease forwards;
+            animation: slide-in 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .structure-level:nth-child(1) { animation-delay: 0.1s; }
@@ -863,13 +940,14 @@
         }
 
         .level-title {
-            font-size: 1.75rem;
+            font-size: 2rem;
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-bright);
             display: flex;
             align-items: center;
             gap: 1rem;
+            letter-spacing: -0.01em;
         }
 
         .level-icon {
@@ -882,33 +960,28 @@
             justify-content: center;
             font-size: 1.25rem;
             position: relative;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-            animation: pulse-glow 2s ease infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
-            50% { box-shadow: 0 0 50px rgba(59, 130, 246, 0.8); }
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         .level-description {
             color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            font-size: 1.125rem;
         }
 
         .level-members {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
         }
 
         .member-card {
             background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 0.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
             padding: 1.5rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
@@ -920,14 +993,15 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
             transition: left 0.5s ease;
         }
 
         .member-card:hover {
-            transform: translateX(5px);
-            border-color: rgba(59, 130, 246, 0.5);
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.3);
             background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .member-card:hover::before {
@@ -938,34 +1012,71 @@
             font-weight: 600;
             color: var(--text-bright);
             margin-bottom: 0.5rem;
+            font-size: 1.125rem;
         }
 
         .member-description {
             font-size: 0.875rem;
             color: var(--text-secondary);
+            line-height: 1.6;
         }
 
-        /* Enhanced Roadmap with Animated Timeline */
+        /* Premium Roadmap Section */
         .roadmap-section {
             background: var(--bg-void);
             position: relative;
             overflow: hidden;
         }
 
-        .roadmap-section::before {
-            content: '';
+        /* Animated Background Elements */
+        .roadmap-bg {
             position: absolute;
             width: 100%;
             height: 100%;
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-            opacity: 0.5;
+            top: 0;
+            left: 0;
+            opacity: 0.05;
+        }
+
+        .roadmap-bg::before,
+        .roadmap-bg::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+        }
+
+        .roadmap-bg::before {
+            width: 600px;
+            height: 600px;
+            background: var(--accent-glow);
+            top: 20%;
+            left: -300px;
+            animation: float-left 25s ease-in-out infinite;
+        }
+
+        .roadmap-bg::after {
+            width: 800px;
+            height: 800px;
+            background: var(--secondary-glow);
+            bottom: 20%;
+            right: -400px;
+            animation: float-right 30s ease-in-out infinite;
+        }
+
+        @keyframes float-left {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(100px, -50px); }
+        }
+
+        @keyframes float-right {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-100px, 50px); }
         }
 
         .roadmap-timeline {
             position: relative;
-            margin-top: 4rem;
+            margin-top: 5rem;
             z-index: 1;
         }
 
@@ -975,31 +1086,23 @@
             left: 200px;
             top: 0;
             bottom: 0;
-            width: 4px;
-            background: linear-gradient(to bottom, var(--accent-glow), var(--primary-glow), var(--secondary-glow));
-            border-radius: 2px;
-            animation: timeline-grow 2s ease forwards;
-        }
-
-        @keyframes timeline-grow {
-            from {
-                transform: scaleY(0);
-                transform-origin: top;
-            }
-            to {
-                transform: scaleY(1);
-            }
+            width: 2px;
+            background: linear-gradient(to bottom, 
+                var(--accent-glow) 0%, 
+                var(--primary-glow) 50%, 
+                var(--secondary-glow) 100%);
+            opacity: 0.3;
         }
 
         .roadmap-phase {
             display: grid;
             grid-template-columns: 200px 1fr;
-            gap: 3rem;
-            margin-bottom: 4rem;
+            gap: 4rem;
+            margin-bottom: 5rem;
             position: relative;
             opacity: 0;
             transform: translateX(-50px);
-            animation: phase-in 0.8s ease forwards;
+            animation: phase-in 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
         .roadmap-phase:nth-child(1) { animation-delay: 0.2s; }
@@ -1023,78 +1126,72 @@
             font-weight: 700;
             color: var(--accent-glow);
             margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
         }
 
         .phase-date {
             font-size: 0.875rem;
-            color: var(--text-secondary);
+            color: var(--text-muted);
         }
 
         .phase-content {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 1rem;
-            padding: 2rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
             position: relative;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
         }
 
         .phase-content:hover {
             transform: translateX(10px);
-            border-color: rgba(16, 185, 129, 0.5);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.3);
+            box-shadow: 
+                0 0 0 1px rgba(16, 185, 129, 0.1),
+                0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .phase-content::before {
             content: '';
             position: absolute;
-            left: -3rem;
+            left: -3.5rem;
             top: 50%;
             transform: translateY(-50%);
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             background: var(--accent-glow);
             border-radius: 50%;
-            border: 4px solid var(--bg-void);
+            border: 3px solid var(--bg-void);
             box-shadow: 0 0 20px var(--accent-glow);
-            animation: node-pulse 2s ease infinite;
-        }
-
-        @keyframes node-pulse {
-            0%, 100% { 
-                box-shadow: 0 0 20px var(--accent-glow);
-                transform: translateY(-50%) scale(1);
-            }
-            50% { 
-                box-shadow: 0 0 40px var(--accent-glow);
-                transform: translateY(-50%) scale(1.1);
-            }
         }
 
         .phase-title {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-bright);
+            letter-spacing: -0.01em;
         }
 
         .phase-description {
             color: var(--text-secondary);
-            line-height: 1.8;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
         }
 
         .phase-milestones {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             list-style: none;
         }
 
         .phase-milestones li {
-            padding-left: 1.5rem;
+            padding-left: 2rem;
             position: relative;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
             color: var(--text-secondary);
             transition: all 0.3s ease;
+            line-height: 1.6;
         }
 
         .phase-milestones li:hover {
@@ -1103,44 +1200,45 @@
         }
 
         .phase-milestones li::before {
-            content: '✓';
+            content: '';
             position: absolute;
             left: 0;
-            color: var(--accent-glow);
-            animation: check-bounce 2s ease infinite;
+            top: 0.5rem;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-glow);
+            border-radius: 50%;
         }
 
-        @keyframes check-bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        /* Enhanced CTA Section */
+        /* Premium CTA Section */
         .cta-section {
             background: 
-                radial-gradient(ellipse at center, rgba(16, 185, 129, 0.2) 0%, transparent 70%),
-                linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
-            padding: 5rem 0;
+                radial-gradient(ellipse at center, rgba(16, 185, 129, 0.15) 0%, transparent 60%),
+                linear-gradient(to bottom, var(--bg-dark) 0%, var(--bg-void) 100%);
+            padding: 8rem 0;
             text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .cta-section::before {
-            content: '';
+        /* Animated Grid Background */
+        .cta-grid {
             position: absolute;
-            top: -100px;
-            left: -100px;
-            right: -100px;
-            bottom: -100px;
-            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(16, 185, 129, 0.1)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
-            animation: grid-move 20s linear infinite;
-            opacity: 0.5;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background-image: 
+                linear-gradient(rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(500px) rotateX(60deg);
+            animation: grid-flow 20s linear infinite;
         }
 
-        @keyframes grid-move {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100px, 100px); }
+        @keyframes grid-flow {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
         }
 
         .cta-content {
@@ -1151,20 +1249,21 @@
         }
 
         .cta-title {
-            font-size: clamp(2rem, 4vw, 3rem);
+            font-size: clamp(2rem, 4vw, 3.5rem);
             font-weight: 800;
             margin-bottom: 1.5rem;
             background: var(--gradient-accent);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            letter-spacing: -0.02em;
         }
 
         .cta-description {
-            font-size: 1.25rem;
+            font-size: 1.375rem;
             color: var(--text-secondary);
-            margin-bottom: 2rem;
-            line-height: 1.8;
+            margin-bottom: 3rem;
+            line-height: 1.7;
         }
 
         .cta-buttons {
@@ -1174,6 +1273,7 @@
             flex-wrap: wrap;
         }
 
+        /* Premium Button Styles */
         .btn-primary {
             background: var(--gradient-primary);
             color: var(--text-bright);
@@ -1183,11 +1283,12 @@
             border: none;
             border-radius: 0.5rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-block;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         .btn-primary::before {
@@ -1206,8 +1307,8 @@
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
         }
 
         .btn-secondary {
@@ -1219,7 +1320,7 @@
             border: 2px solid var(--accent-glow);
             border-radius: 0.5rem;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-block;
             position: relative;
@@ -1241,9 +1342,10 @@
 
         .btn-secondary:hover {
             background: rgba(16, 185, 129, 0.1);
-            transform: translateY(-2px) scale(1.05);
+            transform: translateY(-2px) scale(1.02);
             border-color: var(--text-bright);
             color: var(--text-bright);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         }
 
         .btn-secondary:hover::before {
@@ -1255,7 +1357,7 @@
         footer {
             background: var(--bg-void);
             padding: 4rem 0 2rem;
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             position: relative;
         }
 
@@ -1267,12 +1369,7 @@
             right: 0;
             height: 1px;
             background: var(--gradient-primary);
-            animation: footer-glow 3s ease infinite;
-        }
-
-        @keyframes footer-glow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
+            opacity: 0.5;
         }
 
         .footer-content {
@@ -1303,7 +1400,7 @@
         .footer-legal {
             margin-top: 2rem;
             padding-top: 2rem;
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .footer-legal a {
@@ -1352,7 +1449,25 @@
             }
 
             .voting-visualization {
-                height: 200px;
+                height: 350px;
+            }
+
+            .hero h1 {
+                font-size: clamp(2rem, 5vw, 3rem);
+            }
+
+            section {
+                padding: 4rem 0;
+            }
+
+            .pledge-card,
+            .structure-diagram {
+                padding: 2rem;
+            }
+
+            .flow-indicators {
+                flex-direction: column;
+                gap: 1rem;
             }
         }
 
@@ -1383,17 +1498,18 @@
             left: 50%;
             transform: translateX(-50%);
             min-width: 220px;
-            background: rgba(10, 10, 10, 0.98);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 0.75rem;
             padding: 0.5rem 0;
             margin-top: 1rem;
             opacity: 0;
             visibility: hidden;
             transform: translateX(-50%) translateY(-10px);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             list-style: none;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(20px);
         }
 
         .nav-dropdown-menu::before {
@@ -1404,9 +1520,9 @@
             transform: translateX(-50%);
             width: 12px;
             height: 12px;
-            background: rgba(10, 10, 10, 0.98);
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-            border-left: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
             transform: translateX(-50%) rotate(45deg);
         }
 
@@ -1471,12 +1587,18 @@
         .fade-in {
             opacity: 0;
             transform: translateY(30px);
-            transition: all 0.8s ease;
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .fade-in.visible {
             opacity: 1;
             transform: translateY(0);
+        }
+
+        /* Custom Scroll Icon */
+        .scroll-icon-svg {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
@@ -1527,22 +1649,20 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <!-- Animated Governance Network Background -->
-        <div class="governance-network">
-            <canvas id="governanceCanvas"></canvas>
+        <!-- Advanced Particle Network -->
+        <div class="particle-network">
+            <canvas id="particleCanvas"></canvas>
         </div>
         
-        <!-- Crystalline Pattern Overlay -->
-        <div class="crystalline-overlay"></div>
+        <!-- Premium Glass Morphism -->
+        <div class="glass-layer"></div>
         
-        <!-- Floating Governance Orbs -->
-        <div class="gov-orb gov-orb-1"></div>
-        <div class="gov-orb gov-orb-2"></div>
-        <div class="gov-orb gov-orb-3"></div>
+        <!-- Geometric Grid -->
+        <div class="geometric-grid"></div>
         
         <div class="hero-content">
             <h1>
-                <span class="holographic-text">Governance & Stewardship</span><br>
+                <span class="gradient-text">Governance & Stewardship</span><br>
                 Built for Perpetual Decentralization
             </h1>
             <p class="subtitle">
@@ -1550,18 +1670,34 @@
                 that no single entity—not even us—can control the future of autonomous commerce.
             </p>
             
-            <!-- Voting Flow Visualization -->
+            <!-- Advanced Voting Visualization -->
             <div class="voting-visualization">
-                <canvas id="votingCanvas"></canvas>
+                <canvas id="votingCanvas" class="voting-canvas"></canvas>
+                <div class="flow-indicators">
+                    <div class="flow-indicator">
+                        <div class="flow-dot" style="color: #8B5CF6;"></div>
+                        <span class="flow-label">Proposal</span>
+                    </div>
+                    <div class="flow-indicator">
+                        <div class="flow-dot" style="color: #3B82F6;"></div>
+                        <span class="flow-label">Discussion</span>
+                    </div>
+                    <div class="flow-indicator">
+                        <div class="flow-dot" style="color: #F59E0B;"></div>
+                        <span class="flow-label">Voting</span>
+                    </div>
+                    <div class="flow-indicator">
+                        <div class="flow-dot" style="color: #10B981;"></div>
+                        <span class="flow-label">Execution</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Pledge Section -->
     <section class="pledge-section">
-        <div class="pledge-particles">
-            <canvas id="pledgeParticles"></canvas>
-        </div>
+        <div class="pledge-bg-pattern"></div>
         
         <div class="container">
             <div class="section-header fade-in">
@@ -1569,6 +1705,9 @@
             </div>
             
             <div class="pledge-card fade-in">
+                <div class="pledge-hologram"></div>
+                <div class="pledge-glow"></div>
+                
                 <h3 class="pledge-title">The Stewardship Pledge</h3>
                 <div class="pledge-content">
                     <p>
@@ -1611,6 +1750,8 @@
 
     <!-- Principles Section -->
     <section class="principles-section">
+        <div class="hex-pattern"></div>
+        
         <div class="container">
             <div class="section-header fade-in">
                 <h2 class="section-title">Core Governance Principles</h2>
@@ -1621,7 +1762,7 @@
             
             <div class="principles-grid fade-in">
                 <div class="principle-card">
-                    <span class="principle-number">1</span>
+                    <span class="principle-number">01</span>
                     <div class="principle-icon">⚖️</div>
                     <h3 class="principle-title">Sovereignty First</h3>
                     <p class="principle-description">
@@ -1631,7 +1772,7 @@
                 </div>
                 
                 <div class="principle-card">
-                    <span class="principle-number">2</span>
+                    <span class="principle-number">02</span>
                     <div class="principle-icon">🔍</div>
                     <h3 class="principle-title">Radical Transparency</h3>
                     <p class="principle-description">
@@ -1641,7 +1782,7 @@
                 </div>
                 
                 <div class="principle-card">
-                    <span class="principle-number">3</span>
+                    <span class="principle-number">03</span>
                     <div class="principle-icon">🛡️</div>
                     <h3 class="principle-title">Security Through Distribution</h3>
                     <p class="principle-description">
@@ -1651,7 +1792,7 @@
                 </div>
                 
                 <div class="principle-card">
-                    <span class="principle-number">4</span>
+                    <span class="principle-number">04</span>
                     <div class="principle-icon">🔄</div>
                     <h3 class="principle-title">Evolutionary Stability</h3>
                     <p class="principle-description">
@@ -1661,7 +1802,7 @@
                 </div>
                 
                 <div class="principle-card">
-                    <span class="principle-number">5</span>
+                    <span class="principle-number">05</span>
                     <div class="principle-icon">🏛️</div>
                     <h3 class="principle-title">Constitutional Immutability</h3>
                     <p class="principle-description">
@@ -1671,7 +1812,7 @@
                 </div>
                 
                 <div class="principle-card">
-                    <span class="principle-number">6</span>
+                    <span class="principle-number">06</span>
                     <div class="principle-icon">🌍</div>
                     <h3 class="principle-title">Global Representation</h3>
                     <p class="principle-description">
@@ -1784,6 +1925,8 @@
 
     <!-- Roadmap Section -->
     <section class="roadmap-section">
+        <div class="roadmap-bg"></div>
+        
         <div class="container">
             <div class="section-header fade-in">
                 <h2 class="section-title">The Path to Full Decentralization</h2>
@@ -1875,6 +2018,8 @@
 
     <!-- CTA Section -->
     <section class="cta-section">
+        <div class="cta-grid"></div>
+        
         <div class="container">
             <div class="cta-content fade-in">
                 <h2 class="cta-title">Shape the Future of Autonomous Commerce</h2>
@@ -1925,249 +2070,291 @@
             }, 1500);
         });
 
-        // Enhanced Governance Network Animation
-        const govCanvas = document.getElementById('governanceCanvas');
-        const govCtx = govCanvas.getContext('2d');
+        // Advanced Particle Network
+        const particleCanvas = document.getElementById('particleCanvas');
+        const particleCtx = particleCanvas.getContext('2d');
         
-        function resizeGovCanvas() {
-            govCanvas.width = window.innerWidth;
-            govCanvas.height = window.innerHeight;
+        function resizeParticleCanvas() {
+            particleCanvas.width = window.innerWidth;
+            particleCanvas.height = window.innerHeight;
         }
         
-        resizeGovCanvas();
-        window.addEventListener('resize', resizeGovCanvas);
+        resizeParticleCanvas();
+        window.addEventListener('resize', resizeParticleCanvas);
         
-        // Governance nodes representing different stakeholders
-        const govNodes = [];
+        // Particle system for governance network
+        const particles = [];
+        const particleCount = 80;
         const connections = [];
-        const proposals = [];
-        const votes = [];
-        const nodeCount = 40;
         
-        // Create governance nodes
-        for (let i = 0; i < nodeCount; i++) {
-            const angle = (i / nodeCount) * Math.PI * 2;
-            const radius = 150 + Math.random() * 100;
-            const centerX = govCanvas.width / 2;
-            const centerY = govCanvas.height / 2;
+        class Particle {
+            constructor() {
+                this.x = Math.random() * particleCanvas.width;
+                this.y = Math.random() * particleCanvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.opacity = Math.random() * 0.5 + 0.5;
+            }
             
-            govNodes.push({
-                x: centerX + Math.cos(angle) * radius,
-                y: centerY + Math.sin(angle) * radius,
-                vx: (Math.random() - 0.5) * 0.3,
-                vy: (Math.random() - 0.5) * 0.3,
-                radius: 5 + Math.random() * 5,
-                type: i < 10 ? 'council' : i < 20 ? 'technical' : 'community',
-                color: i < 10 ? '#10B981' : i < 20 ? '#3B82F6' : '#8B5CF6',
-                influence: Math.random(),
-                voting: false,
-                voteProgress: 0,
-                pulsePhase: Math.random() * Math.PI * 2
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > particleCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > particleCanvas.height) this.vy *= -1;
+            }
+            
+            draw() {
+                particleCtx.fillStyle = `rgba(16, 185, 129, ${this.opacity})`;
+                particleCtx.beginPath();
+                particleCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                particleCtx.fill();
+            }
+        }
+        
+        // Initialize particles
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+        
+        function drawParticleNetwork() {
+            particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
             });
-        }
-        
-        // Create connections between nodes
-        for (let i = 0; i < govNodes.length; i++) {
-            for (let j = i + 1; j < govNodes.length; j++) {
-                const distance = Math.sqrt(
-                    Math.pow(govNodes[i].x - govNodes[j].x, 2) + 
-                    Math.pow(govNodes[i].y - govNodes[j].y, 2)
-                );
-                
-                if (distance < 150 && Math.random() < 0.3) {
-                    connections.push({
-                        from: i,
-                        to: j,
-                        strength: Math.random() * 0.5 + 0.5,
-                        active: false
-                    });
-                }
-            }
-        }
-        
-        // Create proposal animations
-        function createProposal() {
-            if (Math.random() < 0.02) {
-                const originNode = Math.floor(Math.random() * nodeCount);
-                proposals.push({
-                    x: govNodes[originNode].x,
-                    y: govNodes[originNode].y,
-                    radius: 0,
-                    maxRadius: 200,
-                    opacity: 1,
-                    color: govNodes[originNode].color
-                });
-                
-                // Trigger voting animation
-                setTimeout(() => {
-                    govNodes.forEach((node, i) => {
-                        if (Math.random() < 0.7) {
-                            setTimeout(() => {
-                                votes.push({
-                                    from: i,
-                                    to: originNode,
-                                    progress: 0,
-                                    color: node.color,
-                                    approve: Math.random() < 0.8
-                                });
-                            }, Math.random() * 1000);
-                        }
-                    });
-                }, 500);
-            }
-        }
-        
-        function drawGovernanceNetwork() {
-            govCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            govCtx.fillRect(0, 0, govCanvas.width, govCanvas.height);
             
             // Draw connections
-            connections.forEach(conn => {
-                const from = govNodes[conn.from];
-                const to = govNodes[conn.to];
-                
-                govCtx.strokeStyle = `rgba(59, 130, 246, ${conn.strength * 0.2})`;
-                govCtx.lineWidth = conn.strength * 2;
-                govCtx.beginPath();
-                govCtx.moveTo(from.x, from.y);
-                govCtx.lineTo(to.x, to.y);
-                govCtx.stroke();
-            });
-            
-            // Update and draw proposals
-            proposals.forEach((proposal, index) => {
-                proposal.radius += 2;
-                proposal.opacity -= 0.005;
-                
-                if (proposal.opacity > 0) {
-                    govCtx.strokeStyle = proposal.color + Math.floor(proposal.opacity * 255).toString(16).padStart(2, '0');
-                    govCtx.lineWidth = 3;
-                    govCtx.beginPath();
-                    govCtx.arc(proposal.x, proposal.y, proposal.radius, 0, Math.PI * 2);
-                    govCtx.stroke();
-                } else {
-                    proposals.splice(index, 1);
-                }
-            });
-            
-            // Update and draw votes
-            votes.forEach((vote, index) => {
-                const from = govNodes[vote.from];
-                const to = govNodes[vote.to];
-                
-                vote.progress += 0.03;
-                
-                if (vote.progress < 1) {
-                    const x = from.x + (to.x - from.x) * vote.progress;
-                    const y = from.y + (to.y - from.y) * vote.progress;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
                     
-                    // Vote particle
-                    const particleColor = vote.approve ? '#10B981' : '#EF4444';
-                    govCtx.fillStyle = particleColor;
-                    govCtx.beginPath();
-                    govCtx.arc(x, y, 3, 0, Math.PI * 2);
-                    govCtx.fill();
-                    
-                    // Glow effect
-                    const glowGradient = govCtx.createRadialGradient(x, y, 0, x, y, 10);
-                    glowGradient.addColorStop(0, particleColor + '80');
-                    glowGradient.addColorStop(1, particleColor + '00');
-                    govCtx.fillStyle = glowGradient;
-                    govCtx.beginPath();
-                    govCtx.arc(x, y, 10, 0, Math.PI * 2);
-                    govCtx.fill();
-                } else {
-                    votes.splice(index, 1);
+                    if (distance < 150) {
+                        const opacity = (1 - distance / 150) * 0.2;
+                        particleCtx.strokeStyle = `rgba(16, 185, 129, ${opacity})`;
+                        particleCtx.lineWidth = 1;
+                        particleCtx.beginPath();
+                        particleCtx.moveTo(particles[i].x, particles[i].y);
+                        particleCtx.lineTo(particles[j].x, particles[j].y);
+                        particleCtx.stroke();
+                    }
                 }
-            });
+            }
             
-            // Update and draw nodes
-            govNodes.forEach((node, i) => {
-                // Update position
-                node.x += node.vx;
-                node.y += node.vy;
-                
-                // Bounce off edges
-                if (node.x < 0 || node.x > govCanvas.width) node.vx *= -1;
-                if (node.y < 0 || node.y > govCanvas.height) node.vy *= -1;
-                
-                // Keep nodes in bounds
-                node.x = Math.max(0, Math.min(govCanvas.width, node.x));
-                node.y = Math.max(0, Math.min(govCanvas.height, node.y));
-                
-                // Draw node glow
-                const pulseScale = 1 + Math.sin(Date.now() * 0.001 + node.pulsePhase) * 0.2;
-                const glowGradient = govCtx.createRadialGradient(
-                    node.x, node.y, 0,
-                    node.x, node.y, node.radius * 3 * pulseScale
-                );
-                glowGradient.addColorStop(0, node.color + '40');
-                glowGradient.addColorStop(1, 'transparent');
-                govCtx.fillStyle = glowGradient;
-                govCtx.beginPath();
-                govCtx.arc(node.x, node.y, node.radius * 3 * pulseScale, 0, Math.PI * 2);
-                govCtx.fill();
-                
-                // Draw node
-                govCtx.fillStyle = node.color;
-                govCtx.beginPath();
-                govCtx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                govCtx.fill();
-                
-                // Inner bright spot
-                govCtx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-                govCtx.beginPath();
-                govCtx.arc(node.x - node.radius * 0.3, node.y - node.radius * 0.3, node.radius * 0.3, 0, Math.PI * 2);
-                govCtx.fill();
-            });
-            
-            // Create new proposals
-            createProposal();
-            
-            requestAnimationFrame(drawGovernanceNetwork);
+            requestAnimationFrame(drawParticleNetwork);
         }
         
-        drawGovernanceNetwork();
+        drawParticleNetwork();
         
-        // Voting Flow Visualization
+        // Premium Voting Flow Visualization
         const votingCanvas = document.getElementById('votingCanvas');
         const votingCtx = votingCanvas.getContext('2d');
         
         function resizeVotingCanvas() {
             votingCanvas.width = votingCanvas.parentElement.clientWidth;
-            votingCanvas.height = 300;
+            votingCanvas.height = 500;
         }
         
         resizeVotingCanvas();
         window.addEventListener('resize', resizeVotingCanvas);
         
-        // Voting flow animation
+        // Enhanced voting flow system with premium effects
         const votingNodes = [
-            { name: 'Proposal', x: 0.1, y: 0.5, color: '#8B5CF6' },
-            { name: 'Discussion', x: 0.3, y: 0.3, color: '#3B82F6' },
-            { name: 'Voting', x: 0.5, y: 0.5, color: '#F59E0B' },
-            { name: 'Consensus', x: 0.7, y: 0.3, color: '#10B981' },
-            { name: 'Execution', x: 0.9, y: 0.5, color: '#10B981' }
+            { name: 'Proposal', x: 0.12, y: 0.5, color: '#8B5CF6', radius: 40, energy: 0 },
+            { name: 'Discussion', x: 0.31, y: 0.3, color: '#3B82F6', radius: 40, energy: 0 },
+            { name: 'Voting', x: 0.5, y: 0.5, color: '#F59E0B', radius: 45, energy: 0 },
+            { name: 'Consensus', x: 0.69, y: 0.3, color: '#10B981', radius: 40, energy: 0 },
+            { name: 'Execution', x: 0.88, y: 0.5, color: '#10B981', radius: 40, energy: 0 }
         ];
         
         const flowParticles = [];
+        const energyWaves = [];
+        const backgroundParticles = [];
         
-        function createFlowParticle() {
-            if (Math.random() < 0.05) {
-                const startNode = Math.floor(Math.random() * (votingNodes.length - 1));
-                flowParticles.push({
-                    from: startNode,
-                    to: startNode + 1,
-                    progress: 0,
-                    trail: []
+        // Initialize background particles
+        for (let i = 0; i < 50; i++) {
+            backgroundParticles.push({
+                x: Math.random() * votingCanvas.width,
+                y: Math.random() * votingCanvas.height,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: (Math.random() - 0.5) * 0.2,
+                radius: Math.random() * 2 + 0.5,
+                opacity: Math.random() * 0.3 + 0.1
+            });
+        }
+        
+        class FlowParticle {
+            constructor(fromIndex) {
+                this.from = fromIndex;
+                this.to = fromIndex + 1;
+                this.progress = 0;
+                this.trail = [];
+                this.speed = 0.008 + Math.random() * 0.008;
+                this.color = votingNodes[this.from].color;
+                this.size = 4 + Math.random() * 3;
+            }
+            
+            update() {
+                this.progress += this.speed;
+                
+                if (this.progress >= 1) {
+                    // Transfer energy to target node
+                    votingNodes[this.to].energy = Math.min(1, votingNodes[this.to].energy + 0.3);
+                    return false;
+                }
+                
+                const from = votingNodes[this.from];
+                const to = votingNodes[this.to];
+                
+                const fromX = from.x * votingCanvas.width;
+                const fromY = from.y * votingCanvas.height;
+                const toX = to.x * votingCanvas.width;
+                const toY = to.y * votingCanvas.height;
+                
+                // Triple bezier curve for ultra-smooth paths
+                const cp1X = fromX + (toX - fromX) * 0.25;
+                const cp1Y = fromY - 80;
+                const cp2X = fromX + (toX - fromX) * 0.75;
+                const cp2Y = toY - 80;
+                
+                const t = this.progress;
+                const mt = 1 - t;
+                const x = mt*mt*mt*fromX + 3*mt*mt*t*cp1X + 3*mt*t*t*cp2X + t*t*t*toX;
+                const y = mt*mt*mt*fromY + 3*mt*mt*t*cp1Y + 3*mt*t*t*cp2Y + t*t*t*toY;
+                
+                this.trail.push({ x, y, opacity: 1, size: this.size });
+                if (this.trail.length > 30) {
+                    this.trail.shift();
+                }
+                
+                // Fade trail with easing
+                this.trail.forEach((point, idx) => {
+                    point.opacity = Math.pow(idx / this.trail.length, 2);
                 });
+                
+                return true;
+            }
+            
+            draw() {
+                // Draw advanced trail with multiple layers
+                this.trail.forEach((point, idx) => {
+                    if (idx > 0) {
+                        const prevPoint = this.trail[idx - 1];
+                        
+                        // Outer glow trail
+                        const glowGradient = votingCtx.createLinearGradient(
+                            prevPoint.x, prevPoint.y, point.x, point.y
+                        );
+                        glowGradient.addColorStop(0, this.color + Math.floor(prevPoint.opacity * 20).toString(16).padStart(2, '0'));
+                        glowGradient.addColorStop(1, this.color + Math.floor(point.opacity * 20).toString(16).padStart(2, '0'));
+                        
+                        votingCtx.strokeStyle = glowGradient;
+                        votingCtx.lineWidth = point.size * 3;
+                        votingCtx.lineCap = 'round';
+                        votingCtx.beginPath();
+                        votingCtx.moveTo(prevPoint.x, prevPoint.y);
+                        votingCtx.lineTo(point.x, point.y);
+                        votingCtx.stroke();
+                        
+                        // Core trail
+                        const coreGradient = votingCtx.createLinearGradient(
+                            prevPoint.x, prevPoint.y, point.x, point.y
+                        );
+                        coreGradient.addColorStop(0, `rgba(255, 255, 255, ${prevPoint.opacity * 0.8})`);
+                        coreGradient.addColorStop(1, `rgba(255, 255, 255, ${point.opacity * 0.8})`);
+                        
+                        votingCtx.strokeStyle = coreGradient;
+                        votingCtx.lineWidth = point.size;
+                        votingCtx.beginPath();
+                        votingCtx.moveTo(prevPoint.x, prevPoint.y);
+                        votingCtx.lineTo(point.x, point.y);
+                        votingCtx.stroke();
+                    }
+                });
+                
+                // Draw particle head with premium effects
+                if (this.trail.length > 0) {
+                    const lastPoint = this.trail[this.trail.length - 1];
+                    
+                    // Outer glow
+                    const outerGlow = votingCtx.createRadialGradient(
+                        lastPoint.x, lastPoint.y, 0,
+                        lastPoint.x, lastPoint.y, this.size * 5
+                    );
+                    outerGlow.addColorStop(0, this.color + '60');
+                    outerGlow.addColorStop(0.5, this.color + '20');
+                    outerGlow.addColorStop(1, 'transparent');
+                    
+                    votingCtx.fillStyle = outerGlow;
+                    votingCtx.beginPath();
+                    votingCtx.arc(lastPoint.x, lastPoint.y, this.size * 5, 0, Math.PI * 2);
+                    votingCtx.fill();
+                    
+                    // Middle glow
+                    votingCtx.fillStyle = this.color + '80';
+                    votingCtx.beginPath();
+                    votingCtx.arc(lastPoint.x, lastPoint.y, this.size * 1.5, 0, Math.PI * 2);
+                    votingCtx.fill();
+                    
+                    // Core
+                    votingCtx.fillStyle = '#FFFFFF';
+                    votingCtx.beginPath();
+                    votingCtx.arc(lastPoint.x, lastPoint.y, this.size * 0.8, 0, Math.PI * 2);
+                    votingCtx.fill();
+                }
+            }
+        }
+        
+        class EnergyWave {
+            constructor(node) {
+                this.x = node.x * votingCanvas.width;
+                this.y = node.y * votingCanvas.height;
+                this.radius = 0;
+                this.maxRadius = 100;
+                this.opacity = 0.5;
+                this.color = node.color;
+            }
+            
+            update() {
+                this.radius += 2;
+                this.opacity = 0.5 * (1 - this.radius / this.maxRadius);
+                return this.radius < this.maxRadius;
+            }
+            
+            draw() {
+                votingCtx.strokeStyle = this.color + Math.floor(this.opacity * 255).toString(16).padStart(2, '0');
+                votingCtx.lineWidth = 2;
+                votingCtx.beginPath();
+                votingCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                votingCtx.stroke();
             }
         }
         
         function drawVotingFlow() {
-            votingCtx.clearRect(0, 0, votingCanvas.width, votingCanvas.height);
+            // Clear with subtle fade effect
+            votingCtx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+            votingCtx.fillRect(0, 0, votingCanvas.width, votingCanvas.height);
             
-            // Draw connections
+            // Update and draw background particles
+            backgroundParticles.forEach(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                
+                if (particle.x < 0 || particle.x > votingCanvas.width) particle.vx *= -1;
+                if (particle.y < 0 || particle.y > votingCanvas.height) particle.vy *= -1;
+                
+                votingCtx.fillStyle = `rgba(255, 255, 255, ${particle.opacity})`;
+                votingCtx.beginPath();
+                votingCtx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                votingCtx.fill();
+            });
+            
+            // Draw premium connections
             for (let i = 0; i < votingNodes.length - 1; i++) {
                 const from = votingNodes[i];
                 const to = votingNodes[i + 1];
@@ -2177,143 +2364,155 @@
                 const toX = to.x * votingCanvas.width;
                 const toY = to.y * votingCanvas.height;
                 
-                // Draw connection line
+                // Control points for cubic bezier
+                const cp1X = fromX + (toX - fromX) * 0.25;
+                const cp1Y = fromY - 80;
+                const cp2X = fromX + (toX - fromX) * 0.75;
+                const cp2Y = toY - 80;
+                
+                // Animated connection glow
+                const glowPhase = (Date.now() * 0.001 + i) % (Math.PI * 2);
+                const glowIntensity = Math.sin(glowPhase) * 0.3 + 0.3;
+                
+                // Background glow
+                votingCtx.strokeStyle = `rgba(59, 130, 246, ${glowIntensity * 0.3})`;
+                votingCtx.lineWidth = 20;
+                votingCtx.beginPath();
+                votingCtx.moveTo(fromX, fromY);
+                votingCtx.bezierCurveTo(cp1X, cp1Y, cp2X, cp2Y, toX, toY);
+                votingCtx.stroke();
+                
+                // Main connection
                 const gradient = votingCtx.createLinearGradient(fromX, fromY, toX, toY);
-                gradient.addColorStop(0, from.color + '40');
-                gradient.addColorStop(1, to.color + '40');
+                gradient.addColorStop(0, `rgba(255, 255, 255, ${0.1 + glowIntensity * 0.1})`);
+                gradient.addColorStop(0.5, `rgba(255, 255, 255, ${0.15 + glowIntensity * 0.15})`);
+                gradient.addColorStop(1, `rgba(255, 255, 255, ${0.1 + glowIntensity * 0.1})`);
                 
                 votingCtx.strokeStyle = gradient;
                 votingCtx.lineWidth = 2;
-                votingCtx.setLineDash([5, 5]);
+                votingCtx.setLineDash([15, 10]);
+                votingCtx.lineDashOffset = -Date.now() * 0.02;
                 votingCtx.beginPath();
                 votingCtx.moveTo(fromX, fromY);
-                votingCtx.lineTo(toX, toY);
+                votingCtx.bezierCurveTo(cp1X, cp1Y, cp2X, cp2Y, toX, toY);
                 votingCtx.stroke();
                 votingCtx.setLineDash([]);
             }
             
-            // Update and draw flow particles
-            flowParticles.forEach((particle, index) => {
-                const from = votingNodes[particle.from];
-                const to = votingNodes[particle.to];
-                
-                const fromX = from.x * votingCanvas.width;
-                const fromY = from.y * votingCanvas.height;
-                const toX = to.x * votingCanvas.width;
-                const toY = to.y * votingCanvas.height;
-                
-                particle.progress += 0.02;
-                
-                if (particle.progress < 1) {
-                    const x = fromX + (toX - fromX) * particle.progress;
-                    const y = fromY + (toY - fromY) * particle.progress;
-                    
-                    // Add to trail
-                    particle.trail.push({ x, y });
-                    if (particle.trail.length > 15) {
-                        particle.trail.shift();
-                    }
-                    
-                    // Draw trail
-                    particle.trail.forEach((point, idx) => {
-                        votingCtx.fillStyle = `rgba(16, 185, 129, ${0.5 * (idx / particle.trail.length)})`;
-                        votingCtx.beginPath();
-                        votingCtx.arc(point.x, point.y, 2, 0, Math.PI * 2);
-                        votingCtx.fill();
-                    });
-                    
-                    // Draw particle
-                    votingCtx.fillStyle = '#10B981';
-                    votingCtx.beginPath();
-                    votingCtx.arc(x, y, 4, 0, Math.PI * 2);
-                    votingCtx.fill();
+            // Update and draw energy waves
+            for (let i = energyWaves.length - 1; i >= 0; i--) {
+                if (!energyWaves[i].update()) {
+                    energyWaves.splice(i, 1);
                 } else {
-                    flowParticles.splice(index, 1);
+                    energyWaves[i].draw();
                 }
-            });
+            }
             
-            // Draw nodes
+            // Update and draw flow particles
+            for (let i = flowParticles.length - 1; i >= 0; i--) {
+                if (!flowParticles[i].update()) {
+                    flowParticles.splice(i, 1);
+                } else {
+                    flowParticles[i].draw();
+                }
+            }
+            
+            // Create new particles
+            if (Math.random() < 0.02) {
+                const startNode = Math.floor(Math.random() * (votingNodes.length - 1));
+                flowParticles.push(new FlowParticle(startNode));
+            }
+            
+            // Draw premium nodes
             votingNodes.forEach((node, i) => {
                 const x = node.x * votingCanvas.width;
                 const y = node.y * votingCanvas.height;
                 
+                // Update node energy decay
+                node.energy *= 0.98;
+                
+                // Create energy wave when energized
+                if (node.energy > 0.5 && Math.random() < 0.05) {
+                    energyWaves.push(new EnergyWave(node));
+                }
+                
+                // Node pulse effect
+                const pulseScale = 1 + Math.sin(Date.now() * 0.001 + i * 0.5) * 0.1 + node.energy * 0.2;
+                
+                // Outer glow ring
+                votingCtx.strokeStyle = node.color + '40';
+                votingCtx.lineWidth = 3;
+                votingCtx.beginPath();
+                votingCtx.arc(x, y, node.radius * pulseScale * 1.3, 0, Math.PI * 2);
+                votingCtx.stroke();
+                
+                // Node shadow
+                const shadowGradient = votingCtx.createRadialGradient(
+                    x + 5, y + 5, 0, x + 5, y + 5, node.radius * 2
+                );
+                shadowGradient.addColorStop(0, 'rgba(0, 0, 0, 0.3)');
+                shadowGradient.addColorStop(1, 'transparent');
+                votingCtx.fillStyle = shadowGradient;
+                votingCtx.beginPath();
+                votingCtx.arc(x + 5, y + 5, node.radius * 2, 0, Math.PI * 2);
+                votingCtx.fill();
+                
                 // Node glow
-                const glowGradient = votingCtx.createRadialGradient(x, y, 0, x, y, 40);
-                glowGradient.addColorStop(0, node.color + '30');
+                const glowGradient = votingCtx.createRadialGradient(x, y, 0, x, y, node.radius * pulseScale * 1.8);
+                glowGradient.addColorStop(0, node.color + '60');
+                glowGradient.addColorStop(0.5, node.color + '20');
                 glowGradient.addColorStop(1, 'transparent');
                 votingCtx.fillStyle = glowGradient;
                 votingCtx.beginPath();
-                votingCtx.arc(x, y, 40, 0, Math.PI * 2);
+                votingCtx.arc(x, y, node.radius * pulseScale * 1.8, 0, Math.PI * 2);
                 votingCtx.fill();
                 
-                // Node circle
-                votingCtx.fillStyle = node.color;
+                // Main node gradient
+                const nodeGradient = votingCtx.createRadialGradient(
+                    x - node.radius * 0.3, y - node.radius * 0.3, 0,
+                    x, y, node.radius * pulseScale
+                );
+                nodeGradient.addColorStop(0, node.color);
+                nodeGradient.addColorStop(0.7, node.color);
+                nodeGradient.addColorStop(1, node.color + 'CC');
+                
+                votingCtx.fillStyle = nodeGradient;
                 votingCtx.beginPath();
-                votingCtx.arc(x, y, 20, 0, Math.PI * 2);
+                votingCtx.arc(x, y, node.radius * pulseScale, 0, Math.PI * 2);
+                votingCtx.fill();
+                
+                // Inner ring
+                votingCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+                votingCtx.lineWidth = 2;
+                votingCtx.beginPath();
+                votingCtx.arc(x, y, node.radius * pulseScale * 0.8, 0, Math.PI * 2);
+                votingCtx.stroke();
+                
+                // Center highlight
+                const highlightGradient = votingCtx.createRadialGradient(
+                    x - node.radius * 0.3, y - node.radius * 0.3, 0,
+                    x - node.radius * 0.3, y - node.radius * 0.3, node.radius * 0.6
+                );
+                highlightGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                highlightGradient.addColorStop(0.5, 'rgba(255, 255, 255, 0.4)');
+                highlightGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                votingCtx.fillStyle = highlightGradient;
+                votingCtx.beginPath();
+                votingCtx.arc(x - node.radius * 0.3, y - node.radius * 0.3, node.radius * 0.6, 0, Math.PI * 2);
                 votingCtx.fill();
                 
                 // Node label
-                votingCtx.fillStyle = '#FFFFFF';
-                votingCtx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
+                votingCtx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                votingCtx.font = 'bold 14px -apple-system, BlinkMacSystemFont, sans-serif';
                 votingCtx.textAlign = 'center';
-                votingCtx.fillText(node.name, x, y + 40);
+                votingCtx.textBaseline = 'middle';
+                votingCtx.fillText(node.name.toUpperCase(), x, y + node.radius + 30);
             });
             
-            createFlowParticle();
             requestAnimationFrame(drawVotingFlow);
         }
         
         drawVotingFlow();
-        
-        // Pledge Particles Animation
-        const pledgeCanvas = document.getElementById('pledgeParticles');
-        const pledgeCtx = pledgeCanvas.getContext('2d');
-        
-        function resizePledgeCanvas() {
-            pledgeCanvas.width = pledgeCanvas.parentElement.clientWidth;
-            pledgeCanvas.height = pledgeCanvas.parentElement.clientHeight;
-        }
-        
-        resizePledgeCanvas();
-        window.addEventListener('resize', resizePledgeCanvas);
-        
-        const pledgeParticles = [];
-        const particleCount = 100;
-        
-        for (let i = 0; i < particleCount; i++) {
-            pledgeParticles.push({
-                x: Math.random() * pledgeCanvas.width,
-                y: Math.random() * pledgeCanvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                radius: Math.random() * 2 + 1,
-                opacity: Math.random() * 0.5 + 0.5
-            });
-        }
-        
-        function drawPledgeParticles() {
-            pledgeCtx.clearRect(0, 0, pledgeCanvas.width, pledgeCanvas.height);
-            
-            pledgeParticles.forEach((particle) => {
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-                
-                // Wrap around edges
-                if (particle.x < 0) particle.x = pledgeCanvas.width;
-                if (particle.x > pledgeCanvas.width) particle.x = 0;
-                if (particle.y < 0) particle.y = pledgeCanvas.height;
-                if (particle.y > pledgeCanvas.height) particle.y = 0;
-                
-                pledgeCtx.fillStyle = `rgba(16, 185, 129, ${particle.opacity})`;
-                pledgeCtx.beginPath();
-                pledgeCtx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-                pledgeCtx.fill();
-            });
-            
-            requestAnimationFrame(drawPledgeParticles);
-        }
-        
-        drawPledgeParticles();
         
         // Governance Structure Visualization
         const structureCanvas = document.getElementById('structureCanvas');
@@ -2334,21 +2533,21 @@
                 y: 0.2,
                 nodes: 8,
                 color: '#10B981',
-                radius: 80
+                radius: 100
             },
             {
                 name: 'Technical Committee',
                 y: 0.5,
                 nodes: 12,
                 color: '#3B82F6',
-                radius: 120
+                radius: 140
             },
             {
                 name: 'Community Forum',
                 y: 0.8,
                 nodes: 20,
                 color: '#8B5CF6',
-                radius: 160
+                radius: 180
             }
         ];
         
@@ -2372,7 +2571,7 @@
                     angle: angle,
                     radius: tier.radius,
                     color: tier.color,
-                    size: 8 - tierIndex * 2,
+                    size: 10 - tierIndex * 2,
                     pulsePhase: Math.random() * Math.PI * 2
                 });
             }
@@ -2402,11 +2601,11 @@
             structureCtx.fillRect(0, 0, structureCanvas.width, structureCanvas.height);
             
             // Update rotation
-            rotationAngle += 0.001;
+            rotationAngle += 0.0005;
             
             // Update node positions
             structureNodes.forEach(node => {
-                const newAngle = node.angle + rotationAngle;
+                const newAngle = node.angle + rotationAngle * (3 - node.tier);
                 node.x = node.baseX + Math.cos(newAngle) * node.radius;
                 node.y = node.baseY + Math.sin(newAngle) * node.radius * 0.5;
             });
@@ -2418,22 +2617,32 @@
                 
                 const pulse = Math.sin(Date.now() * 0.001 + conn.pulseOffset) * 0.5 + 0.5;
                 
-                structureCtx.strokeStyle = `rgba(59, 130, 246, ${conn.strength * 0.3 * pulse})`;
-                structureCtx.lineWidth = conn.strength * 3;
+                // Connection line
+                const gradient = structureCtx.createLinearGradient(from.x, from.y, to.x, to.y);
+                gradient.addColorStop(0, `rgba(59, 130, 246, ${conn.strength * 0.2 * pulse})`);
+                gradient.addColorStop(0.5, `rgba(59, 130, 246, ${conn.strength * 0.3 * pulse})`);
+                gradient.addColorStop(1, `rgba(139, 92, 246, ${conn.strength * 0.2 * pulse})`);
+                
+                structureCtx.strokeStyle = gradient;
+                structureCtx.lineWidth = conn.strength * 2;
                 structureCtx.beginPath();
                 structureCtx.moveTo(from.x, from.y);
                 structureCtx.lineTo(to.x, to.y);
                 structureCtx.stroke();
                 
                 // Data flow particles
-                if (Math.random() < 0.01) {
+                if (Math.random() < 0.005) {
                     const progress = (Date.now() * 0.0005 + conn.pulseOffset) % 1;
                     const x = from.x + (to.x - from.x) * progress;
                     const y = from.y + (to.y - from.y) * progress;
                     
-                    structureCtx.fillStyle = '#10B981';
+                    const particleGradient = structureCtx.createRadialGradient(x, y, 0, x, y, 10);
+                    particleGradient.addColorStop(0, 'rgba(16, 185, 129, 0.8)');
+                    particleGradient.addColorStop(1, 'transparent');
+                    
+                    structureCtx.fillStyle = particleGradient;
                     structureCtx.beginPath();
-                    structureCtx.arc(x, y, 3, 0, Math.PI * 2);
+                    structureCtx.arc(x, y, 10, 0, Math.PI * 2);
                     structureCtx.fill();
                 }
             });
@@ -2444,7 +2653,7 @@
                 const centerY = tier.y * structureCanvas.height;
                 
                 structureCtx.fillStyle = tier.color;
-                structureCtx.font = 'bold 18px -apple-system, BlinkMacSystemFont, sans-serif';
+                structureCtx.font = 'bold 20px -apple-system, BlinkMacSystemFont, sans-serif';
                 structureCtx.textAlign = 'center';
                 structureCtx.fillText(tier.name, centerX, centerY);
             });
