@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Processing Agreement (DPA) | The Protocol</title>
+    
+    <!-- Open Graph / LinkedIn Meta Tags -->
+    <meta property="og:title" content="Data Processing Agreement - The Protocol">
+    <meta property="og:description" content="GDPR-compliant data processing agreement for enterprise partners.">
+    <meta property="og:image" content="https://www.theprotocol.cloud/preview.png">
+    <meta property="og:url" content="https://www.theprotocol.cloud/dpa.html">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link.nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta::after {
+            display: none;
+        }
+
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-top: 80px;
+        }
+
+        /* Legal Document Styles */
+        .legal-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .legal-header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .legal-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .legal-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .legal-meta {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .legal-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .toc-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-item {
+            margin-bottom: 0.75rem;
+        }
+
+        .toc-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: block;
+            padding: 0.25rem 0;
+        }
+
+        .toc-link:hover {
+            color: var(--primary-glow);
+        }
+
+        .toc-link::before {
+            content: '§ ';
+            color: var(--primary-glow);
+            font-weight: 700;
+        }
+
+        /* Legal Content */
+        .legal-section {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .legal-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary-glow);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-bright);
+        }
+
+        .subsection {
+            margin-bottom: 2rem;
+        }
+
+        .subsection-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .legal-content {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        .legal-content p {
+            margin-bottom: 1rem;
+        }
+
+        .legal-list {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .legal-list li {
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--primary-glow);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .highlight-box strong {
+            color: var(--text-bright);
+        }
+
+        .info-box {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--accent-glow);
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0.5rem;
+        }
+
+        .info-box strong {
+            color: var(--accent-glow);
+        }
+
+        /* Parties Box */
+        .parties-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .party {
+            text-align: center;
+        }
+
+        .party-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--primary-glow);
+            margin-bottom: 1rem;
+        }
+
+        .party-details {
+            color: var(--text-secondary);
+        }
+
+        /* Measures Grid */
+        .measures-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .measure-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .measure-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .measure-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-bright);
+        }
+
+        .measure-items {
+            list-style: none;
+        }
+
+        .measure-items li {
+            padding-left: 1.5rem;
+            position: relative;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .measure-items li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-glow);
+        }
+
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            margin: 2rem 0;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .data-table th {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--text-bright);
+            font-weight: 600;
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Download Section */
+        .download-section {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .download-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .download-description {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-download {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-void);
+            padding: 4rem 0 2rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            margin-top: 6rem;
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-glow);
+        }
+
+        .footer-legal {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer-legal a {
+            color: var(--primary-glow);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-legal a:hover {
+            color: var(--secondary-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .legal-container {
+                padding: 2rem 1rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .subsection-title {
+                font-size: 1.125rem;
+            }
+
+            .parties-box {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .measures-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 0.875rem;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .download-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-download {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
+                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
+                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Legal Content -->
+    <div class="legal-container">
+        <div class="legal-header">
+            <h1 class="legal-title">Data Processing Agreement</h1>
+            <p class="legal-subtitle">According to Article 28 GDPR</p>
+            <div class="legal-meta">
+                <div class="legal-meta-item">
+                    <span>📅</span>
+                    <span>Version: 1.0</span>
+                </div>
+                <div class="legal-meta-item">
+                    <span>📋</span>
+                    <span>Date: January 2025</span>
+                </div>
+                <div class="legal-meta-item">
+                    <span>🔒</span>
+                    <span>GDPR Article 28 Compliant</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parties -->
+        <div class="parties-box">
+            <div class="party">
+                <h3 class="party-title">Controller</h3>
+                <div class="party-details">
+                    <p>[Customer Name]</p>
+                    <p>[Address]</p>
+                    <p>[Registration]</p>
+                    <p style="margin-top: 0.5rem; font-style: italic;">(hereinafter "Customer")</p>
+                </div>
+            </div>
+            <div class="party">
+                <h3 class="party-title">Processor</h3>
+                <div class="party-details">
+                    <p>Raphael Jeziorny</p>
+                    <p>The Protocol</p>
+                    <p>Richard-Strauss-Straße 6</p>
+                    <p>83395 Freilassing, Germany</p>
+                    <p style="margin-top: 0.5rem; font-style: italic;">(hereinafter "Provider")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2 class="toc-title">Table of Contents</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><a href="#subject" class="toc-link">1. Subject Matter and Duration</a></li>
+                <li class="toc-item"><a href="#nature" class="toc-link">2. Nature and Purpose of Processing</a></li>
+                <li class="toc-item"><a href="#data-types" class="toc-link">3. Type of Personal Data</a></li>
+                <li class="toc-item"><a href="#obligations" class="toc-link">4. Processor Obligations</a></li>
+                <li class="toc-item"><a href="#measures" class="toc-link">5. Technical and Organizational Measures</a></li>
+                <li class="toc-item"><a href="#controller-rights" class="toc-link">6. Controller Rights</a></li>
+                <li class="toc-item"><a href="#notification" class="toc-link">7. Notification Duties</a></li>
+                <li class="toc-item"><a href="#deletion" class="toc-link">8. Deletion and Return</a></li>
+                <li class="toc-item"><a href="#liability" class="toc-link">9. Liability</a></li>
+                <li class="toc-item"><a href="#miscellaneous" class="toc-link">10. Miscellaneous</a></li>
+                <li class="toc-item"><a href="#annex1" class="toc-link">Annex 1: Security Measures</a></li>
+                <li class="toc-item"><a href="#annex2" class="toc-link">Annex 2: Sub-processors</a></li>
+            </ul>
+        </div>
+
+        <!-- Legal Sections -->
+        <section id="subject" class="legal-section">
+            <div class="section-number">§ 1</div>
+            <h2 class="section-title">Subject Matter and Duration</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">1.1 Subject Matter</h3>
+                <div class="legal-content">
+                    <p>
+                        Provider processes personal data on behalf of Customer within the provision of 
+                        "The Protocol" platform services according to the Main Agreement.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">1.2 Duration</h3>
+                <div class="legal-content">
+                    <p>The duration corresponds to the term of the Main Agreement.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="nature" class="legal-section">
+            <div class="section-number">§ 2</div>
+            <h2 class="section-title">Nature and Purpose of Processing</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">2.1 Nature of Processing</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Storage of agent metadata</li>
+                        <li>Processing of transaction data</li>
+                        <li>Identity management (SPIFFE/SPIRE)</li>
+                        <li>Log analysis and monitoring</li>
+                        <li>Backup and disaster recovery</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">2.2 Purpose</h3>
+                <div class="legal-content">
+                    <p>Provision of infrastructure for autonomous AI agents according to agreed services.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="data-types" class="legal-section">
+            <div class="section-number">§ 3</div>
+            <h2 class="section-title">Type of Personal Data</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">3.1 Data Categories</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Identification data (names, email addresses)</li>
+                        <li>Contact data</li>
+                        <li>Technical identifiers (IP addresses, DIDs)</li>
+                        <li>Transaction data</li>
+                        <li>Log data</li>
+                        <li>Contract data</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">3.2 Data Subjects</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Customer employees</li>
+                        <li>Customer's customers</li>
+                        <li>Agent operators</li>
+                        <li>Other authorized users</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="obligations" class="legal-section">
+            <div class="section-number">§ 4</div>
+            <h2 class="section-title">Processor Obligations</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">4.1 Instructions</h3>
+                <div class="legal-content">
+                    <p>Processor shall process data only on documented instructions from Customer.</p>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">4.2 Confidentiality</h3>
+                <div class="legal-content">
+                    <p>Processor ensures all personnel are bound by confidentiality per Art. 28(3)(b) GDPR.</p>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">4.3 Security of Processing</h3>
+                <div class="legal-content">
+                    <p>Processor implements technical and organizational measures per Art. 32 GDPR (see Annex 1).</p>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">4.4 Sub-processors</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Approval required for new sub-processors</li>
+                        <li>Current list in Annex 2</li>
+                        <li>Same data protection obligations</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">4.5 Assistance Obligations</h3>
+                <div class="legal-content">
+                    <p>Assistance with:</p>
+                    <ul class="legal-list">
+                        <li>Data subject rights (Art. 12-22 GDPR)</li>
+                        <li>Data protection impact assessments</li>
+                        <li>Data breach notifications</li>
+                        <li>Supervisory authority communication</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="measures" class="legal-section">
+            <div class="section-number">§ 5</div>
+            <h2 class="section-title">Technical and Organizational Measures</h2>
+            
+            <div class="legal-content">
+                <div class="measures-grid">
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.1 Physical Access Control</h4>
+                        <ul class="measure-items">
+                            <li>Secured data centers</li>
+                            <li>Access only for authorized personnel</li>
+                            <li>Visitor registration</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.2 System Access Control</h4>
+                        <ul class="measure-items">
+                            <li>Multi-factor authentication</li>
+                            <li>Strong password policies</li>
+                            <li>Regular access reviews</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.3 Data Access Control</h4>
+                        <ul class="measure-items">
+                            <li>Role-based access control (RBAC)</li>
+                            <li>Principle of least privilege</li>
+                            <li>Access logging</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.4 Transmission Control</h4>
+                        <ul class="measure-items">
+                            <li>Encrypted data transmission (TLS 1.3+)</li>
+                            <li>VPN for administrative access</li>
+                            <li>Secure API authentication</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.5 Input Control</h4>
+                        <ul class="measure-items">
+                            <li>Complete audit logging</li>
+                            <li>Immutable log storage</li>
+                            <li>Traceability of all changes</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.6 Job Control</h4>
+                        <ul class="measure-items">
+                            <li>Clear contractual agreements</li>
+                            <li>Documented processing procedures</li>
+                            <li>Regular compliance checks</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.7 Availability Control</h4>
+                        <ul class="measure-items">
+                            <li>Redundant systems</li>
+                            <li>Daily backups</li>
+                            <li>Disaster recovery plan</li>
+                            <li>DDoS protection</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="measure-card">
+                        <h4 class="measure-title">5.8 Separation Control</h4>
+                        <ul class="measure-items">
+                            <li>Multi-tenant architecture</li>
+                            <li>Logical data separation</li>
+                            <li>Separate encryption keys</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="controller-rights" class="legal-section">
+            <div class="section-number">§ 6</div>
+            <h2 class="section-title">Controller Rights</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">6.1 Audit Rights</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Inspection of relevant documents</li>
+                        <li>Access to business premises (with notice)</li>
+                        <li>Conduct audits</li>
+                        <li>Obtain information</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">6.2 Instruction Rights</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Issue additional instructions</li>
+                        <li>Change processing procedures</li>
+                        <li>Deletion instructions</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="notification" class="legal-section">
+            <div class="section-number">§ 7</div>
+            <h2 class="section-title">Notification Duties</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">7.1 Data Breaches</h3>
+                <div class="legal-content">
+                    <div class="highlight-box">
+                        <ul class="legal-list">
+                            <li>Immediate notification (max 24 hours)</li>
+                            <li>Detailed documentation</li>
+                            <li>Support with authority notification</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">7.2 Changes</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Technical/organizational changes</li>
+                        <li>Key personnel changes</li>
+                        <li>Location changes</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="deletion" class="legal-section">
+            <div class="section-number">§ 8</div>
+            <h2 class="section-title">Deletion and Return</h2>
+            
+            <div class="legal-content">
+                <p>After contract termination:</p>
+                <ul class="legal-list">
+                    <li>Complete deletion of all data</li>
+                    <li>Or return at Customer's choice</li>
+                    <li>Deletion certificate</li>
+                    <li>Exception: Legal retention requirements</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="liability" class="legal-section">
+            <div class="section-number">§ 9</div>
+            <h2 class="section-title">Liability</h2>
+            
+            <div class="legal-content">
+                <ul class="legal-list">
+                    <li>Liability per Main Agreement</li>
+                    <li>Processor liable for sub-processors</li>
+                    <li>Damages for breaches</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="miscellaneous" class="legal-section">
+            <div class="section-number">§ 10</div>
+            <h2 class="section-title">Miscellaneous</h2>
+            
+            <div class="legal-content">
+                <p><strong>10.1 Amendments:</strong> Written form required</p>
+                <p><strong>10.2 Severability:</strong> Partial invalidity doesn't affect entire agreement</p>
+                <p><strong>10.3 Governing Law:</strong> German law</p>
+            </div>
+        </section>
+
+        <section id="annex1" class="legal-section">
+            <div class="section-number">Annex 1</div>
+            <h2 class="section-title">Technical and Organizational Measures</h2>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Encryption</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>AES-256 for data at rest</li>
+                        <li>TLS 1.3 for transmission</li>
+                        <li>Key management with HSM</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Monitoring</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>24/7 Security Operations Center</li>
+                        <li>Intrusion Detection System (IDS)</li>
+                        <li>Security Information and Event Management (SIEM)</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Incident Response</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Documented incident response plan</li>
+                        <li>24/7 on-call service</li>
+                        <li>Regular drills</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">Certifications (Planned)</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>ISO 27001</li>
+                        <li>SOC 2 Type II</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="annex2" class="legal-section">
+            <div class="section-number">Annex 2</div>
+            <h2 class="section-title">Sub-processors</h2>
+            
+            <div class="legal-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Service</th>
+                            <th>Location</th>
+                            <th>Purpose</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Hetzner Online GmbH</td>
+                            <td>Infrastructure</td>
+                            <td>Germany</td>
+                            <td>Server hosting</td>
+                        </tr>
+                        <tr>
+                            <td>Hetzner Online GmbH</td>
+                            <td>Backup Services</td>
+                            <td>Germany</td>
+                            <td>Data backup</td>
+                        </tr>
+                        <tr>
+                            <td>Cloudflare, Inc.</td>
+                            <td>Content Delivery</td>
+                            <td>Global</td>
+                            <td>Static content</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Download Section -->
+        <div class="download-section">
+            <h2 class="download-title">Need This Agreement?</h2>
+            <p class="download-description">
+                Download the Data Processing Agreement for your records or to complete with your organization's details.
+            </p>
+            <div class="download-buttons">
+                <a href="#" class="btn-download" onclick="alert('PDF download will be available soon'); return false;">
+                    <span>📄</span>
+                    <span>Download PDF (English)</span>
+                </a>
+                <a href="#" class="btn-download" onclick="alert('PDF download will be available soon'); return false;">
+                    <span>📄</span>
+                    <span>Download PDF (Deutsch)</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/cookies.html">Cookie Policy</a>
+                <a href="/disclaimer.html">Risk Notice</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
+            <div class="footer-content">
+                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/" style="color: var(--primary-glow);">Raphael Jeziorny</a></p>
+            </div>
+            <div class="footer-legal">
+                <p>
+                    <a href="/imprint.html">Impressum</a> | 
+                    <a href="/privacy.html">Datenschutzerklärung</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', function() {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 100;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('.nav-header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.style.boxShadow = 'none';
+            } else {
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
+</body>
+</html>

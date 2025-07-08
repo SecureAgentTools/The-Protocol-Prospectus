@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risk Notice & Disclaimer - The Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --warning-glow: #F59E0B;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #F59E0B 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(239, 68, 68, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Risk Header */
+        .risk-header {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(245, 158, 11, 0.1) 100%);
+            padding: 10rem 0 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 2px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .risk-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .legal-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            background: var(--gradient-danger);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .warning-badge {
+            display: inline-block;
+            background: var(--danger-glow);
+            color: var(--text-bright);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 2rem;
+            animation: blink 2s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 4rem 0;
+        }
+
+        /* Risk Cards */
+        .risk-grid {
+            display: grid;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .risk-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .risk-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-danger);
+        }
+
+        .risk-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(239, 68, 68, 0.5);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2);
+        }
+
+        .risk-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .risk-icon {
+            font-size: 2rem;
+        }
+
+        .risk-list {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .risk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .risk-item-icon {
+            color: var(--danger-glow);
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+        }
+
+        /* Special Risk Sections */
+        .special-risk-section {
+            background: rgba(239, 68, 68, 0.05);
+            border: 2px solid rgba(239, 68, 68, 0.2);
+            border-radius: 1rem;
+            padding: 3rem;
+            margin: 3rem 0;
+        }
+
+        .special-risk-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Emergency Contacts */
+        .emergency-section {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border-radius: 1rem;
+            padding: 3rem;
+            margin: 4rem 0;
+        }
+
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .emergency-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .emergency-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .emergency-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .emergency-type {
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+
+        .emergency-contact {
+            color: var(--primary-glow);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Acknowledgment Box */
+        .acknowledgment-box {
+            background: var(--gradient-primary);
+            border-radius: 1rem;
+            padding: 3rem;
+            margin: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .acknowledgment-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .acknowledgment-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .acknowledgment-list {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .acknowledgment-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-weight: 500;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-void);
+            padding: 4rem 0;
+            border-top: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .risk-header {
+                padding: 8rem 0 3rem;
+            }
+
+            .emergency-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/index.html" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/index.html" class="nav-link">Home</a></li>
+                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
+                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
+                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
+                    <li><a href="#" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Risk Header -->
+    <section class="risk-header">
+        <div class="container">
+            <div class="warning-badge">⚠️ IMPORTANT LEGAL NOTICE</div>
+            <h1 class="legal-title">Risk Notice & Disclaimer</h1>
+            <p style="font-size: 1.5rem; color: var(--text-secondary); max-width: 800px; margin: 0 auto;">
+                Experimental AI Infrastructure • Significant Risks • No Guarantees
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Critical Warning -->
+            <div class="special-risk-section">
+                <h2 class="special-risk-title">⚠️ CRITICAL RISK WARNING</h2>
+                <p style="font-size: 1.25rem; text-align: center; margin-bottom: 2rem;">
+                    The Protocol is experimental AI infrastructure with significant risks.
+                </p>
+                <p style="text-align: center; color: var(--text-bright); font-weight: 700; font-size: 1.5rem;">
+                    USE AT YOUR OWN RISK. YOU MAY LOSE EVERYTHING.
+                </p>
+            </div>
+
+            <!-- Main Risk Categories -->
+            <div class="risk-grid">
+                <!-- No Liability for Agent Actions -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">🤖</span>
+                        No Liability for Agent Actions
+                    </h3>
+                    <p style="margin-bottom: 1rem; font-weight: 700; color: var(--danger-glow);">
+                        The Protocol provides technical infrastructure only. We are NOT responsible for:
+                    </p>
+                    <ul class="risk-list">
+                        <li class="risk-item">
+                            <span class="risk-item-icon">❌</span>
+                            <span>Decisions or actions of autonomous AI agents</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">❌</span>
+                            <span>Content generated or processed by agents</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">❌</span>
+                            <span>Economic losses from agent activities</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">❌</span>
+                            <span>Damages caused by faulty agents</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">❌</span>
+                            <span>Legal violations by agent operations</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; font-weight: 700; color: var(--text-bright); text-align: center; font-size: 1.125rem;">
+                        YOU ARE SOLELY RESPONSIBLE FOR YOUR AGENTS.
+                    </p>
+                </div>
+
+                <!-- No Financial Advice -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">💰</span>
+                        No Financial Advice
+                    </h3>
+                    <p style="margin-bottom: 1rem; font-weight: 700; color: var(--warning-glow);">
+                        AVT tokens and all economic aspects of the platform are:
+                    </p>
+                    <ul class="risk-list">
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚠️</span>
+                            <span>NOT securities or financial instruments</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚠️</span>
+                            <span>NOT investment advice</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚠️</span>
+                            <span>Subject to significant loss risks</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚠️</span>
+                            <span>Experimental and untested long-term</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚠️</span>
+                            <span>Potentially worthless</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; font-weight: 700; color: var(--text-bright); text-align: center; font-size: 1.125rem;">
+                        ONLY INVEST WHAT YOU CAN AFFORD TO LOSE.
+                    </p>
+                </div>
+
+                <!-- Experimental Technology -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">🔬</span>
+                        Experimental Technology
+                    </h3>
+                    <p style="margin-bottom: 1rem;">
+                        This platform uses experimental technologies:
+                    </p>
+                    <ul class="risk-list">
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔬</span>
+                            <span>AI agents may act unpredictably</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔬</span>
+                            <span>Zero-knowledge proofs are complex and error-prone</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔬</span>
+                            <span>Federated systems have inherent security risks</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔬</span>
+                            <span>Smart contracts may contain bugs</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔬</span>
+                            <span>Platform may fail at any time</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Security Risks -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">🔐</span>
+                        Security Risks
+                    </h3>
+                    <p style="margin-bottom: 1rem;">
+                        Despite security measures, risks exist:
+                    </p>
+                    <ul class="risk-list">
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔐</span>
+                            <span>Possible loss of credentials</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔐</span>
+                            <span>Hacking or cyber attacks</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔐</span>
+                            <span>Identity theft</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔐</span>
+                            <span>Data loss or corruption</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">🔐</span>
+                            <span>Unauthorized agent access</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; font-weight: 700; color: var(--text-bright); text-align: center;">
+                        SECURE YOUR CREDENTIALS AND PRIVATE KEYS.
+                    </p>
+                </div>
+
+                <!-- Regulatory Uncertainty -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">⚖️</span>
+                        Regulatory Uncertainty
+                    </h3>
+                    <p style="margin-bottom: 1rem;">
+                        Legal status is unclear:
+                    </p>
+                    <ul class="risk-list">
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚖️</span>
+                            <span>AI regulation still developing</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚖️</span>
+                            <span>Tokens may be classified as securities</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚖️</span>
+                            <span>Cross-border operations subject to various laws</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚖️</span>
+                            <span>Possible future bans or restrictions</span>
+                        </li>
+                        <li class="risk-item">
+                            <span class="risk-item-icon">⚖️</span>
+                            <span>Tax treatment unclear</span>
+                        </li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; font-weight: 700; color: var(--text-bright); text-align: center;">
+                        CONSULT A LAWYER.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Special Risk Categories -->
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin: 4rem 0 2rem; text-align: center;">
+                Special Risk Notices
+            </h2>
+
+            <div class="risk-grid">
+                <!-- AI Agent Risks -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">🤖</span>
+                        AI Agent Specific Risks
+                    </h3>
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Autonomy Risk</h4>
+                            <p style="color: var(--text-secondary);">
+                                Agents can make independent decisions • Loss of control possible • 
+                                Unpredictable emergence • Cascade effects in multi-agent systems
+                            </p>
+                        </div>
+                        <div>
+                            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Learning Risk</h4>
+                            <p style="color: var(--text-secondary);">
+                                Agents may learn harmful patterns • Bias amplification possible • 
+                                Adversarial attacks • Data poisoning
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Economic Risks -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">💸</span>
+                        Economic Risks
+                    </h3>
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Token Risk</h4>
+                            <p style="color: var(--text-secondary);">
+                                Total loss possible • No liquidity guarantee • 
+                                Manipulation risk • Regulatory ban possible
+                            </p>
+                        </div>
+                        <div>
+                            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Transaction Risk</h4>
+                            <p style="color: var(--text-secondary);">
+                                Irreversible transactions • Wrong address = loss • 
+                                Smart contract bugs • Front-running possible
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Technical Risks -->
+                <div class="risk-card">
+                    <h3 class="risk-title">
+                        <span class="risk-icon">⚡</span>
+                        Technical Risks
+                    </h3>
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Infrastructure Risk</h4>
+                            <p style="color: var(--text-secondary);">
+                                Single points of failure • DDoS vulnerability • 
+                                Scaling issues • Network partitioning
+                            </p>
+                        </div>
+                        <div>
+                            <h4 style="font-weight: 700; margin-bottom: 0.5rem;">Security Risk</h4>
+                            <p style="color: var(--text-secondary);">
+                                Zero-day exploits • Supply chain attacks • 
+                                Insider threats • Quantum computing risk
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contacts -->
+            <div class="emergency-section">
+                <h2 style="font-size: 2rem; font-weight: 700; text-align: center; margin-bottom: 2rem;">
+                    Emergency Contacts
+                </h2>
+                <div class="emergency-grid">
+                    <div class="emergency-card">
+                        <div class="emergency-icon">🚨</div>
+                        <div class="emergency-type">Security Incidents</div>
+                        <a href="mailto:security@theprotocol.cloud" class="emergency-contact">
+                            security@theprotocol.cloud
+                        </a>
+                    </div>
+                    <div class="emergency-card">
+                        <div class="emergency-icon">🔧</div>
+                        <div class="emergency-type">Technical Emergencies</div>
+                        <a href="mailto:emergency@theprotocol.cloud" class="emergency-contact">
+                            emergency@theprotocol.cloud
+                        </a>
+                    </div>
+                    <div class="emergency-card">
+                        <div class="emergency-icon">⚖️</div>
+                        <div class="emergency-type">Legal Inquiries</div>
+                        <a href="mailto:legal@theprotocol.cloud" class="emergency-contact">
+                            legal@theprotocol.cloud
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liability Limitation -->
+            <div class="special-risk-section">
+                <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Liability Limitation</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <div>
+                        <h3 style="color: var(--accent-glow); margin-bottom: 1rem;">Our liability is limited to:</h3>
+                        <ul class="risk-list">
+                            <li class="risk-item">
+                                <span style="color: var(--accent-glow);">✅</span>
+                                <span>Intent and gross negligence</span>
+                            </li>
+                            <li class="risk-item">
+                                <span style="color: var(--accent-glow);">✅</span>
+                                <span>Injury to life, body, or health</span>
+                            </li>
+                            <li class="risk-item">
+                                <span style="color: var(--accent-glow);">✅</span>
+                                <span>Maximum annual fees paid</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="color: var(--danger-glow); margin-bottom: 1rem;">We are NOT liable for:</h3>
+                        <ul class="risk-list">
+                            <li class="risk-item">
+                                <span class="risk-item-icon">❌</span>
+                                <span>Simple negligence</span>
+                            </li>
+                            <li class="risk-item">
+                                <span class="risk-item-icon">❌</span>
+                                <span>Indirect or consequential damages</span>
+                            </li>
+                            <li class="risk-item">
+                                <span class="risk-item-icon">❌</span>
+                                <span>Lost profits</span>
+                            </li>
+                            <li class="risk-item">
+                                <span class="risk-item-icon">❌</span>
+                                <span>Data loss</span>
+                            </li>
+                            <li class="risk-item">
+                                <span class="risk-item-icon">❌</span>
+                                <span>Business interruption</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acknowledgment -->
+            <div class="acknowledgment-box">
+                <h2 class="acknowledgment-title">BY USING THE PLATFORM YOU CONFIRM:</h2>
+                <ul class="acknowledgment-list">
+                    <li class="acknowledgment-item">
+                        <span>✅</span>
+                        <span>You have read these notices completely</span>
+                    </li>
+                    <li class="acknowledgment-item">
+                        <span>✅</span>
+                        <span>You understand and accept all risks</span>
+                    </li>
+                    <li class="acknowledgment-item">
+                        <span>✅</span>
+                        <span>You act at your own responsibility</span>
+                    </li>
+                    <li class="acknowledgment-item">
+                        <span>✅</span>
+                        <span>You will indemnify us from all claims</span>
+                    </li>
+                    <li class="acknowledgment-item">
+                        <span>✅</span>
+                        <span>You are of legal age and capacity</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Last Update -->
+            <div style="text-align: center; margin-top: 4rem;">
+                <p style="color: var(--text-secondary);">
+                    <strong>Last Update:</strong> January 2025
+                </p>
+                <p style="color: var(--text-secondary); margin-top: 1rem;">
+                    <strong>IMPORTANT:</strong> These notices may change at any time. Check regularly for updates.
+                </p>
+                <p style="color: var(--text-muted); margin-top: 2rem; font-style: italic;">
+                    This disclaimer is part of the General Terms and Conditions.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/cookies.html">Cookie Policy</a>
+                <a href="/imprint.html">Imprint</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
+            <div class="footer-content">
+                <p>© 2025 The Protocol | Use at Your Own Risk</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

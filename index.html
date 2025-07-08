@@ -105,6 +105,24 @@
             display: none;
         }
 
+        .nav-link.nav-dev-portal {
+            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-link.nav-dev-portal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-link.nav-dev-portal::after {
+            display: none;
+        }
+
         /* Mobile Navigation */
         .nav-toggle {
             display: none;
@@ -911,6 +929,27 @@
         .footer-content a:hover {
             color: var(--secondary-glow);
         }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-glow);
+        }
+        
+        .footer-legal p a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-legal p a:hover {
+            color: var(--primary-glow);
+        }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -1008,9 +1047,11 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
                     <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
+                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
                     <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
+                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
                     <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                    <li><a href="#economic-model" class="nav-link">Economics</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
                     <li><a href="#application" class="nav-link nav-cta">Join Beta</a></li>
                 </ul>
                 <div class="nav-toggle" id="navToggle">
@@ -1482,13 +1523,23 @@
     <!-- Footer -->
     <footer>
         <div class="container">
+            <div class="footer-links" style="display: flex; gap: 2rem; justify-content: center; margin-bottom: 2rem; flex-wrap: wrap;">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/cookies.html">Cookie Policy</a>
+                <a href="/disclaimer.html">Risk Notice</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
             <div class="footer-content">
                 <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
                 <p style="margin-top: 1rem; font-size: 0.8rem;">
                     The digital world is at an inflection point. You can continue to build applications on someone else's platform, 
                     subject to their rules, their fees, and their strategic whims. Or you can claim a seat at the constitutional convention.
                 </p>
-                <p style="margin-top: 1rem;">
+            </div>
+            <div class="footer-legal" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid rgba(59, 130, 246, 0.1);">
+                <p>
                     <a href="/imprint.html">Impressum</a> | 
                     <a href="/privacy.html">Datenschutzerklärung</a>
                 </p>
@@ -1705,6 +1756,12 @@
             }
             
             lastScroll = currentScroll;
+        });
+
+        // Developer Portal button placeholder
+        document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
         });
     </script>
 </body>

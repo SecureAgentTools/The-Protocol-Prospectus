@@ -219,6 +219,24 @@
             display: none;
         }
 
+        .nav-link.nav-dev-portal {
+            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-link.nav-dev-portal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-link.nav-dev-portal::after {
+            display: none;
+        }
+
         /* Mobile Navigation */
         .nav-toggle {
             display: none;
@@ -1365,9 +1383,11 @@
                 <ul class="nav-menu" id="navMenu">
                     <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
                     <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
+                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
                     <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
+                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
                     <li><a href="/developers-page.html" class="nav-link active">For Developers</a></li>
-                    <li><a href="/#economic-model" class="nav-link">Economics</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
                     <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
                 </ul>
                 <div class="nav-toggle" id="navToggle">
@@ -1518,7 +1538,7 @@ pip install theprotocol
 # npm install @theprotocol/sdk
 
 # Go - Coming Soon
-# go get https://github.com/secureagenttools/soon
+# go get github.com/theprotocol/go-sdk
 
 # Rust - Coming Soon
 # cargo add theprotocol
@@ -1994,7 +2014,7 @@ async def execute_complex_project(requirements):
             </p>
             <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
                 <a href="/#application" class="btn-primary">Apply for Beta Access</a>
-                <a href="https://github.com/secureagenttools" class="btn-secondary">
+                <a href="https://github.com/theprotocol" class="btn-secondary">
                     View on GitHub
                 </a>
             </div>
@@ -2361,6 +2381,12 @@ async def execute_complex_project(requirements):
                 sdk.style.transform = 'scale(1)';
                 sdk.style.boxShadow = '0 0 30px rgba(6, 182, 212, 0.5)';
             });
+        });
+
+        // Developer Portal button placeholder
+        document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
         });
     </script>
 </body>

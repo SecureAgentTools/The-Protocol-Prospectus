@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy | The Protocol</title>
+    <title>Terms of Service | The Protocol</title>
     
     <!-- Open Graph / LinkedIn Meta Tags -->
-    <meta property="og:title" content="Privacy Policy - The Protocol">
-    <meta property="og:description" content="How we protect your data in the sovereign agent infrastructure.">
+    <meta property="og:title" content="Terms of Service - The Protocol">
+    <meta property="og:description" content="Terms and conditions for using The Protocol's sovereign agent infrastructure.">
     <meta property="og:image" content="https://www.theprotocol.cloud/preview.png">
-    <meta property="og:url" content="https://www.theprotocol.cloud/privacy.html">
+    <meta property="og:url" content="https://www.theprotocol.cloud/terms.html">
     <meta property="og:type" content="website">
     
     <style>
@@ -345,94 +345,50 @@
             color: var(--text-bright);
         }
 
-        .info-box {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 4px solid var(--accent-glow);
+        .warning-box {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid var(--danger-glow);
             padding: 1.5rem;
             margin: 2rem 0;
             border-radius: 0.5rem;
         }
 
-        .info-box strong {
-            color: var(--accent-glow);
+        .warning-box strong {
+            color: var(--danger-glow);
         }
 
-        /* Contact Cards */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .contact-card {
+        /* Contact Section */
+        .contact-section {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 1rem;
             padding: 2rem;
+            margin-top: 3rem;
             text-align: center;
         }
 
-        .contact-card-title {
-            font-size: 1.25rem;
+        .contact-title {
+            font-size: 1.5rem;
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text-bright);
         }
 
-        .contact-card-info {
+        .contact-info {
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            align-items: center;
         }
 
-        .contact-card-info a {
+        .contact-info a {
             color: var(--primary-glow);
             text-decoration: none;
             transition: color 0.3s ease;
         }
 
-        .contact-card-info a:hover {
+        .contact-info a:hover {
             color: var(--secondary-glow);
-        }
-
-        /* Rights Section */
-        .rights-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 2rem 0;
-        }
-
-        .right-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .right-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(16, 185, 129, 0.5);
-        }
-
-        .right-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-bright);
-        }
-
-        .right-article {
-            font-size: 0.875rem;
-            color: var(--accent-glow);
-            margin-bottom: 0.5rem;
-        }
-
-        .right-description {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
         }
 
         /* Footer */
@@ -497,11 +453,6 @@
             .subsection-title {
                 font-size: 1.125rem;
             }
-
-            .contact-grid,
-            .rights-grid {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 </head>
@@ -530,7 +481,7 @@
     <!-- Legal Content -->
     <div class="legal-container">
         <div class="legal-header">
-            <h1 class="legal-title">Privacy Policy</h1>
+            <h1 class="legal-title">Terms of Service</h1>
             <p class="legal-subtitle">The Protocol - Sovereign Agent Infrastructure</p>
             <div class="legal-meta">
                 <div class="legal-meta-item">
@@ -542,8 +493,8 @@
                     <span>Version: 1.0</span>
                 </div>
                 <div class="legal-meta-item">
-                    <span>🔒</span>
-                    <span>GDPR Compliant</span>
+                    <span>🌍</span>
+                    <span>Jurisdiction: Germany</span>
                 </div>
             </div>
         </div>
@@ -552,407 +503,345 @@
         <div class="toc">
             <h2 class="toc-title">Table of Contents</h2>
             <ul class="toc-list">
-                <li class="toc-item"><a href="#controller" class="toc-link">1. Data Controller</a></li>
-                <li class="toc-item"><a href="#dpo" class="toc-link">2. Data Protection Officer</a></li>
-                <li class="toc-item"><a href="#collection" class="toc-link">3. Collection and Storage of Personal Data</a></li>
-                <li class="toc-item"><a href="#purposes" class="toc-link">4. Data Processing for Specific Purposes</a></li>
-                <li class="toc-item"><a href="#sharing" class="toc-link">5. Data Sharing</a></li>
-                <li class="toc-item"><a href="#rights" class="toc-link">6. Your Rights as Data Subject</a></li>
-                <li class="toc-item"><a href="#security" class="toc-link">7. Data Security</a></li>
-                <li class="toc-item"><a href="#cookies" class="toc-link">8. Cookies and Tracking</a></li>
-                <li class="toc-item"><a href="#special" class="toc-link">9. Special Categories of Data</a></li>
-                <li class="toc-item"><a href="#automated" class="toc-link">10. Automated Decision-Making</a></li>
-                <li class="toc-item"><a href="#minors" class="toc-link">11. Protection of Minors</a></li>
-                <li class="toc-item"><a href="#changes" class="toc-link">12. Changes to Privacy Policy</a></li>
-                <li class="toc-item"><a href="#contact" class="toc-link">13. Contact for Privacy Inquiries</a></li>
+                <li class="toc-item"><a href="#scope" class="toc-link">1. Scope and Contracting Parties</a></li>
+                <li class="toc-item"><a href="#services" class="toc-link">2. Scope of Services</a></li>
+                <li class="toc-item"><a href="#obligations" class="toc-link">3. User Obligations and Responsibilities</a></li>
+                <li class="toc-item"><a href="#token" class="toc-link">4. Token Economy (AVT)</a></li>
+                <li class="toc-item"><a href="#liability" class="toc-link">5. Limitation of Liability</a></li>
+                <li class="toc-item"><a href="#data" class="toc-link">6. Data Protection</a></li>
+                <li class="toc-item"><a href="#ip" class="toc-link">7. Intellectual Property</a></li>
+                <li class="toc-item"><a href="#term" class="toc-link">8. Term and Termination</a></li>
+                <li class="toc-item"><a href="#changes" class="toc-link">9. Changes to Terms</a></li>
+                <li class="toc-item"><a href="#disputes" class="toc-link">10. Dispute Resolution</a></li>
+                <li class="toc-item"><a href="#final" class="toc-link">11. Final Provisions</a></li>
             </ul>
         </div>
 
         <!-- Legal Sections -->
-        <section id="controller" class="legal-section">
+        <section id="scope" class="legal-section">
             <div class="section-number">§ 1</div>
-            <h2 class="section-title">Data Controller</h2>
+            <h2 class="section-title">Scope and Contracting Parties</h2>
             
             <div class="legal-content">
-                <p>Responsible for data processing under the General Data Protection Regulation (GDPR):</p>
+                <p>
+                    1.1 These Terms of Service ("Terms") apply to all contracts between Raphael Jeziorny, 
+                    trading as "The Protocol" (Richard-Strauss-Straße 6, 83395 Freilassing, Germany) - 
+                    hereinafter "Provider" - and users of the platform - hereinafter "User".
+                </p>
                 
-                <div class="info-box">
-                    <p><strong>Raphael Jeziorny</strong><br>
-                    The Protocol<br>
-                    Richard-Strauss-Straße 6<br>
-                    83395 Freilassing<br>
-                    Germany</p>
-                    
-                    <p style="margin-top: 1rem;">
-                    Email: <a href="mailto:r.jeziorny@theprotocol.cloud" style="color: var(--primary-glow);">r.jeziorny@theprotocol.cloud</a><br>
-                    Phone: <a href="tel:+4915733924375" style="color: var(--primary-glow);">+49 157 33924375</a>
-                    </p>
-                </div>
+                <p>
+                    1.2 The platform provides infrastructure for autonomous AI agents, including:
+                </p>
+                <ul class="legal-list">
+                    <li>Identity management (SPIFFE/SPIRE)</li>
+                    <li>Federated registry services</li>
+                    <li>Token economy system (TEG)</li>
+                    <li>Zero-knowledge proof services</li>
+                </ul>
+                
+                <p>
+                    1.3 Deviating, conflicting, or supplementary terms of the User shall not become part 
+                    of the contract unless the Provider expressly agrees to their validity in writing.
+                </p>
             </div>
         </section>
 
-        <section id="dpo" class="legal-section">
+        <section id="services" class="legal-section">
             <div class="section-number">§ 2</div>
-            <h2 class="section-title">Data Protection Officer</h2>
+            <h2 class="section-title">Scope of Services</h2>
             
-            <div class="legal-content">
-                <div class="contact-grid">
-                    <div class="contact-card">
-                        <h3 class="contact-card-title">Data Protection Officer</h3>
-                        <div class="contact-card-info">
-                            <p><strong>Raphael Jeziorny</strong></p>
-                            <p>The Protocol</p>
-                            <p>Email: <a href="mailto:privacy@theprotocol.cloud">privacy@theprotocol.cloud</a></p>
-                            <p>Email: <a href="mailto:datenschutz@theprotocol.cloud">datenschutz@theprotocol.cloud</a></p>
-                            <p>Phone: <a href="tel:+4915733924375">+49 157 33924375</a></p>
-                        </div>
+            <div class="subsection">
+                <h3 class="subsection-title">2.1 Infrastructure Provision</h3>
+                <div class="legal-content">
+                    <div class="highlight-box">
+                        <p>
+                            <strong>Important:</strong> The Provider exclusively provides technical infrastructure. 
+                            The Provider is NOT responsible for:
+                        </p>
+                        <ul class="legal-list">
+                            <li>Actions of autonomous agents</li>
+                            <li>Content or data processed by agents</li>
+                            <li>Economic decisions of users</li>
+                            <li>Interactions between agents</li>
+                        </ul>
                     </div>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">2.2 Availability</h3>
+                <div class="legal-content">
+                    <ul class="legal-list">
+                        <li>Target availability: 99.5% annual average</li>
+                        <li>Excluded: Planned maintenance (announced 48h in advance)</li>
+                        <li>No guarantee of uninterrupted operation</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">2.3 Technical Requirements</h3>
+                <div class="legal-content">
+                    <p>Users must ensure:</p>
+                    <ul class="legal-list">
+                        <li>Compatible software environment</li>
+                        <li>Sufficient network bandwidth</li>
+                        <li>Compliance with API specifications</li>
+                        <li>Proper agent configuration</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <section id="collection" class="legal-section">
+        <section id="obligations" class="legal-section">
             <div class="section-number">§ 3</div>
-            <h2 class="section-title">Collection and Storage of Personal Data</h2>
+            <h2 class="section-title">User Obligations and Responsibilities</h2>
             
             <div class="subsection">
-                <h3 class="subsection-title">3.1 When Visiting the Website</h3>
+                <h3 class="subsection-title">3.1 Registration</h3>
                 <div class="legal-content">
-                    <p>When accessing our website, your browser automatically sends information to our server, temporarily stored in a log file:</p>
                     <ul class="legal-list">
-                        <li>IP address of the requesting computer</li>
-                        <li>Date and time of access</li>
-                        <li>Name and URL of retrieved file</li>
-                        <li>Referring website (Referrer URL)</li>
-                        <li>Browser used and operating system</li>
-                        <li>Name of your access provider</li>
+                        <li>Truthful information required</li>
+                        <li>Confidentiality of access credentials</li>
+                        <li>Immediate reporting of security incidents</li>
+                        <li>One account per natural/legal person</li>
                     </ul>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(f) GDPR (legitimate interest in data security and functionality)</p>
-                    <p><strong>Storage Duration:</strong> 7 days, then automatic deletion</p>
                 </div>
             </div>
             
             <div class="subsection">
-                <h3 class="subsection-title">3.2 Registration and Platform Use</h3>
+                <h3 class="subsection-title">3.2 Agent Responsibility</h3>
                 <div class="legal-content">
-                    <p>During registration we collect:</p>
-                    <ul class="legal-list">
-                        <li>Name</li>
-                        <li>Email address</li>
-                        <li>Company information</li>
-                        <li>Payment information (for paid services)</li>
-                        <li>Technical identifiers (DIDs, API keys)</li>
-                    </ul>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(b) GDPR (contract fulfillment)</p>
-                    <p><strong>Storage Duration:</strong> During contract term + legal retention periods</p>
-                </div>
-            </div>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">3.3 Agent-Related Data</h3>
-                <div class="legal-content">
-                    <p>For agent infrastructure operation, we process:</p>
-                    <ul class="legal-list">
-                        <li>Agent identifiers (DIDs)</li>
-                        <li>Transaction data (timestamps, amounts, parties)</li>
-                        <li>Performance metrics</li>
-                        <li>Security events</li>
-                        <li>Federation connection data</li>
-                    </ul>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(b) GDPR (contract fulfillment)</p>
-                    <div class="highlight-box">
-                        <p><strong>Storage Duration:</strong></p>
+                    <div class="warning-box">
+                        <p>
+                            <strong>Critical:</strong> The User is FULLY responsible for:
+                        </p>
                         <ul class="legal-list">
-                            <li>Transaction data: 10 years (tax law requirements)</li>
-                            <li>Technical logs: 90 days</li>
-                            <li>Security events: 1 year</li>
+                            <li>All actions of their agents</li>
+                            <li>Compliance with applicable laws</li>
+                            <li>Damages caused by agent activities</li>
+                            <li>Data processing by agents</li>
                         </ul>
                     </div>
                 </div>
             </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">3.3 Prohibited Uses</h3>
+                <div class="legal-content">
+                    <p>The following are strictly prohibited:</p>
+                    <ul class="legal-list">
+                        <li>Illegal activities of any kind</li>
+                        <li>Attacks on infrastructure</li>
+                        <li>Violation of third-party rights</li>
+                        <li>Money laundering or terrorism financing</li>
+                        <li>Manipulation of the token system</li>
+                        <li>Reverse engineering of the platform</li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
-        <section id="purposes" class="legal-section">
+        <section id="token" class="legal-section">
             <div class="section-number">§ 4</div>
-            <h2 class="section-title">Data Processing for Specific Purposes</h2>
+            <h2 class="section-title">Token Economy (AVT)</h2>
             
             <div class="subsection">
-                <h3 class="subsection-title">4.1 Token Transactions (TEG Layer)</h3>
+                <h3 class="subsection-title">4.1 Token Nature</h3>
                 <div class="legal-content">
-                    <p>Processed data:</p>
-                    <ul class="legal-list">
-                        <li>Wallet addresses</li>
-                        <li>Transaction amounts</li>
-                        <li>Timestamps</li>
-                        <li>Smart contract interactions</li>
-                    </ul>
-                    <p><strong>Purpose:</strong> Token economy operations, compliance, fraud prevention</p>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(b) GDPR (contract fulfillment), Art. 6(1)(c) GDPR (legal obligation - anti-money laundering)</p>
-                </div>
-            </div>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">4.2 Zero-Knowledge Proofs</h3>
-                <div class="legal-content">
-                    <div class="info-box">
-                        <p><strong>Privacy by Design:</strong></p>
+                    <div class="highlight-box">
                         <ul class="legal-list">
-                            <li>No storage of data being proven</li>
-                            <li>Only storage of proof hashes</li>
-                            <li>Metadata about proof creation</li>
+                            <li>AVT are utility tokens, NOT securities</li>
+                            <li>No claim to profit participation</li>
+                            <li>No guarantee of value stability</li>
+                            <li>Use at own risk</li>
                         </ul>
                     </div>
-                    <p><strong>Purpose:</strong> Trust building without data disclosure</p>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(b) GDPR (contract fulfillment)</p>
                 </div>
             </div>
             
             <div class="subsection">
-                <h3 class="subsection-title">4.3 Federation Services</h3>
+                <h3 class="subsection-title">4.2 Transactions</h3>
                 <div class="legal-content">
-                    <p>For registry federation:</p>
                     <ul class="legal-list">
-                        <li>Registry identifiers</li>
-                        <li>Connection metadata</li>
-                        <li>Routing information</li>
-                        <li>Performance statistics</li>
+                        <li>All transactions are final</li>
+                        <li>No refunds possible</li>
+                        <li>Fee structure subject to change</li>
+                        <li>User bears transaction risk</li>
                     </ul>
-                    <p><strong>Purpose:</strong> Enabling federated network</p>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(f) GDPR (legitimate interest)</p>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">4.3 Compliance</h3>
+                <div class="legal-content">
+                    <p>User commits to:</p>
+                    <ul class="legal-list">
+                        <li>Fulfill tax obligations</li>
+                        <li>Comply with anti-money laundering regulations</li>
+                        <li>No circumvention of sanctions</li>
+                    </ul>
                 </div>
             </div>
         </section>
 
-        <section id="sharing" class="legal-section">
+        <section id="liability" class="legal-section">
             <div class="section-number">§ 5</div>
-            <h2 class="section-title">Data Sharing</h2>
+            <h2 class="section-title">Limitation of Liability</h2>
             
             <div class="subsection">
-                <h3 class="subsection-title">5.1 No Sharing with Third Parties</h3>
+                <h3 class="subsection-title">5.1 Exclusion of Liability</h3>
                 <div class="legal-content">
-                    <p>We do not share your personal data with third parties, except:</p>
-                    <ul class="legal-list">
-                        <li>You have explicitly consented (Art. 6(1)(a) GDPR)</li>
-                        <li>To fulfill legal obligations (Art. 6(1)(c) GDPR)</li>
-                        <li>To protect legitimate interests (Art. 6(1)(f) GDPR)</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">5.2 Data Processors</h3>
-                <div class="legal-content">
-                    <p>We use the following service providers:</p>
-                    <ul class="legal-list">
-                        <li><strong>Hosting:</strong> Hetzner Online GmbH (Server location: Germany)</li>
-                        <li><strong>Email:</strong> Google Workspace (GDPR compliant)</li>
-                        <li><strong>Monitoring:</strong> Uptime Robot (EU servers)</li>
-                    </ul>
-                    <p>Data processing agreements per Art. 28 GDPR exist with all processors.</p>
-                </div>
-            </div>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">5.3 Third Country Transfers</h3>
-                <div class="legal-content">
-                    <p>Federation partners may be located worldwide. Transfers only with:</p>
-                    <ul class="legal-list">
-                        <li>EU Commission adequacy decision</li>
-                        <li>Appropriate safeguards (e.g., standard contractual clauses)</li>
-                        <li>Explicit user consent</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <section id="rights" class="legal-section">
-            <div class="section-number">§ 6</div>
-            <h2 class="section-title">Your Rights as Data Subject</h2>
-            
-            <div class="legal-content">
-                <p>Under the GDPR, you have the following rights:</p>
-                
-                <div class="rights-grid">
-                    <div class="right-card">
-                        <h4 class="right-title">Right of Access</h4>
-                        <p class="right-article">Art. 15 GDPR</p>
-                        <p class="right-description">Obtain information about your processed data</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Right to Rectification</h4>
-                        <p class="right-article">Art. 16 GDPR</p>
-                        <p class="right-description">Request correction of inaccurate data</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Right to Erasure</h4>
-                        <p class="right-article">Art. 17 GDPR</p>
-                        <p class="right-description">Request deletion ("right to be forgotten")</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Right to Restriction</h4>
-                        <p class="right-article">Art. 18 GDPR</p>
-                        <p class="right-description">Request restriction of processing</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Data Portability</h4>
-                        <p class="right-article">Art. 20 GDPR</p>
-                        <p class="right-description">Receive data in machine-readable format</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Right to Object</h4>
-                        <p class="right-article">Art. 21 GDPR</p>
-                        <p class="right-description">Object to processing based on legitimate interest</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Withdrawal of Consent</h4>
-                        <p class="right-article">Art. 7(3) GDPR</p>
-                        <p class="right-description">Withdraw consent at any time</p>
-                    </div>
-                    
-                    <div class="right-card">
-                        <h4 class="right-title">Right to Complain</h4>
-                        <p class="right-article">Art. 77 GDPR</p>
-                        <p class="right-description">Lodge complaint with supervisory authority</p>
-                    </div>
-                </div>
-                
-                <div class="info-box" style="margin-top: 2rem;">
-                    <p><strong>Supervisory Authority:</strong></p>
-                    <p>Bayerisches Landesamt für Datenschutzaufsicht<br>
-                    Promenade 18<br>
-                    91522 Ansbach<br>
-                    Germany</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="security" class="legal-section">
-            <div class="section-number">§ 7</div>
-            <h2 class="section-title">Data Security</h2>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">7.1 Technical and Organizational Measures</h3>
-                <div class="legal-content">
-                    <ul class="legal-list">
-                        <li><strong>Encryption:</strong> TLS 1.3+ for all connections</li>
-                        <li><strong>Access control:</strong> Multi-factor authentication</li>
-                        <li><strong>Encryption at rest:</strong> AES-256</li>
-                        <li><strong>Regular security audits</strong></li>
-                        <li><strong>Incident response plan</strong></li>
-                        <li><strong>Regular encrypted backups</strong></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">7.2 SPIFFE/SPIRE Integration</h3>
-                <div class="legal-content">
-                    <div class="highlight-box">
+                    <div class="warning-box">
+                        <p><strong>The Provider is NOT liable for:</strong></p>
                         <ul class="legal-list">
-                            <li>Short-lived cryptographic identities</li>
-                            <li>Zero-trust architecture</li>
-                            <li>Continuous authentication</li>
+                            <li>Actions of autonomous agents</li>
+                            <li>Economic losses</li>
+                            <li>Data loss (except for intent)</li>
+                            <li>Consequential damages of any kind</li>
+                            <li>Lost profits</li>
+                            <li>Failures due to force majeure</li>
                         </ul>
                     </div>
                 </div>
             </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">5.2 Maximum Liability</h3>
+                <div class="legal-content">
+                    <p>In case of gross negligence:</p>
+                    <ul class="legal-list">
+                        <li>Maximum: User's annual fee</li>
+                        <li>Exclusion for slight negligence</li>
+                        <li>Exception: Injury to life/health</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">5.3 Indemnification</h3>
+                <div class="legal-content">
+                    <p>The User indemnifies the Provider from:</p>
+                    <ul class="legal-list">
+                        <li>Third-party claims</li>
+                        <li>Regulatory measures</li>
+                        <li>Legal defense costs</li>
+                    </ul>
+                </div>
+            </div>
         </section>
 
-        <section id="cookies" class="legal-section">
+        <section id="data" class="legal-section">
+            <div class="section-number">§ 6</div>
+            <h2 class="section-title">Data Protection</h2>
+            
+            <div class="legal-content">
+                <p>6.1 Data processing is conducted according to our separate <a href="/privacy.html" style="color: var(--primary-glow);">Privacy Policy</a>.</p>
+                <p>6.2 The User guarantees lawful data processing for all data handled by their agents.</p>
+                <p>6.3 Data processing agreements are only valid with a separate DPA agreement.</p>
+            </div>
+        </section>
+
+        <section id="ip" class="legal-section">
+            <div class="section-number">§ 7</div>
+            <h2 class="section-title">Intellectual Property</h2>
+            
+            <div class="legal-content">
+                <p><strong>7.1 Platform Rights:</strong> All rights to the platform remain with the Provider.</p>
+                <p><strong>7.2 User Content:</strong> User retains rights to their own content.</p>
+                <p><strong>7.3 License Grant:</strong> User grants Provider necessary usage rights for platform operation.</p>
+            </div>
+        </section>
+
+        <section id="term" class="legal-section">
             <div class="section-number">§ 8</div>
-            <h2 class="section-title">Cookies and Tracking</h2>
+            <h2 class="section-title">Term and Termination</h2>
             
             <div class="subsection">
-                <h3 class="subsection-title">8.1 Necessary Cookies</h3>
+                <h3 class="subsection-title">8.1 Term</h3>
                 <div class="legal-content">
                     <ul class="legal-list">
-                        <li>Session cookies for authentication</li>
-                        <li>Security cookies (CSRF protection)</li>
+                        <li>Indefinite term with monthly notice period</li>
+                        <li>Extraordinary termination for cause</li>
                     </ul>
-                    <p><strong>Legal Basis:</strong> Art. 6(1)(f) GDPR (legitimate interest)</p>
                 </div>
             </div>
             
             <div class="subsection">
-                <h3 class="subsection-title">8.2 No Analytics Cookies</h3>
+                <h3 class="subsection-title">8.2 Consequences of Termination</h3>
                 <div class="legal-content">
-                    <div class="info-box">
-                        <p><strong>Privacy First:</strong> We do not use tracking or analytics cookies.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="special" class="legal-section">
-            <div class="section-number">§ 9</div>
-            <h2 class="section-title">Special Categories of Data</h2>
-            
-            <div class="legal-content">
-                <p>We generally do not process special categories of personal data per Art. 9 GDPR (e.g., health data, religious beliefs, political opinions).</p>
-            </div>
-        </section>
-
-        <section id="automated" class="legal-section">
-            <div class="section-number">§ 10</div>
-            <h2 class="section-title">Automated Decision-Making</h2>
-            
-            <div class="subsection">
-                <h3 class="subsection-title">10.1 Agent Activities</h3>
-                <div class="legal-content">
-                    <p>The platform uses automated systems for:</p>
                     <ul class="legal-list">
-                        <li>Fraud detection</li>
-                        <li>Risk assessment</li>
-                        <li>Performance optimization</li>
+                        <li>Access blocking</li>
+                        <li>Export possibility for 30 days</li>
+                        <li>Deletion after legal retention periods</li>
                     </ul>
-                    <div class="highlight-box">
-                        <p><strong>Your Right:</strong> You have the right to human review of automated decisions that significantly affect you.</p>
-                    </div>
                 </div>
-            </div>
-        </section>
-
-        <section id="minors" class="legal-section">
-            <div class="section-number">§ 11</div>
-            <h2 class="section-title">Protection of Minors</h2>
-            
-            <div class="legal-content">
-                <p>Our services are not directed at persons under 18 years. We do not knowingly collect data from minors.</p>
             </div>
         </section>
 
         <section id="changes" class="legal-section">
-            <div class="section-number">§ 12</div>
-            <h2 class="section-title">Changes to Privacy Policy</h2>
+            <div class="section-number">§ 9</div>
+            <h2 class="section-title">Changes to Terms</h2>
             
             <div class="legal-content">
-                <p>Changes will be published on this page. For material changes, we will inform registered users by email.</p>
+                <p>9.1 Changes will be announced 30 days in advance via email to registered users.</p>
+                <p>9.2 Silence is deemed as consent to the changes.</p>
+                <p>9.3 Users have the right to object, which may result in termination.</p>
             </div>
         </section>
 
-        <section id="contact" class="legal-section">
-            <div class="section-number">§ 13</div>
-            <h2 class="section-title">Contact for Privacy Inquiries</h2>
+        <section id="disputes" class="legal-section">
+            <div class="section-number">§ 10</div>
+            <h2 class="section-title">Dispute Resolution</h2>
             
-            <div class="legal-content">
-                <div class="contact-grid">
-                    <div class="contact-card">
-                        <h3 class="contact-card-title">Privacy Inquiries</h3>
-                        <div class="contact-card-info">
-                            <p>Email: <a href="mailto:privacy@theprotocol.cloud">privacy@theprotocol.cloud</a></p>
-                            <p>Email: <a href="mailto:datenschutz@theprotocol.cloud">datenschutz@theprotocol.cloud</a></p>
-                            <p>Or by mail to the address above</p>
-                        </div>
-                    </div>
+            <div class="subsection">
+                <h3 class="subsection-title">10.1 Escalation Process</h3>
+                <div class="legal-content">
+                    <ol class="legal-list">
+                        <li>Internal resolution through support</li>
+                        <li>Mediation (if agreed by both parties)</li>
+                        <li>Ordinary courts</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">10.2 Applicable Law</h3>
+                <div class="legal-content">
+                    <p>German law applies, excluding UN Sales Law (CISG).</p>
+                </div>
+            </div>
+            
+            <div class="subsection">
+                <h3 class="subsection-title">10.3 Jurisdiction</h3>
+                <div class="legal-content">
+                    <p>Munich, Germany (where legally permissible).</p>
                 </div>
             </div>
         </section>
+
+        <section id="final" class="legal-section">
+            <div class="section-number">§ 11</div>
+            <h2 class="section-title">Final Provisions</h2>
+            
+            <div class="legal-content">
+                <p><strong>11.1 Severability:</strong> If any provision is invalid, the remaining terms remain in effect.</p>
+                <p><strong>11.2 Written Form:</strong> Changes require written form (email sufficient).</p>
+                <p><strong>11.3 Language:</strong> In case of contradictions between translations, the German version prevails.</p>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <div class="contact-section">
+            <h2 class="contact-title">Questions About These Terms?</h2>
+            <div class="contact-info">
+                <p><strong>Raphael Jeziorny</strong></p>
+                <p>The Protocol</p>
+                <p>Email: <a href="mailto:r.jeziorny@theprotocol.cloud">r.jeziorny@theprotocol.cloud</a></p>
+                <p>Phone: <a href="tel:+4915733924375">+49 157 33924375</a></p>
+                <p>Address: Richard-Strauss-Straße 6, 83395 Freilassing, Germany</p>
+            </div>
+        </div>
     </div>
 
     <!-- Footer -->

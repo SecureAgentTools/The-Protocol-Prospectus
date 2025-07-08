@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Policy - The Protocol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        /* Cookie Policy Specific Styles */
+        .legal-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 10rem 0 5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .legal-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .legal-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .legal-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section {
+            padding: 4rem 0;
+        }
+
+        /* Cookie Categories */
+        .cookie-grid {
+            display: grid;
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .cookie-category {
+            background: var(--bg-card);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .cookie-category:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .category-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .category-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-bright);
+        }
+
+        /* Cookie Table */
+        .cookie-table {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+
+        .cookie-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .cookie-table th {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 1.5rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--text-bright);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .cookie-table td {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .cookie-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cookie-table tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Not Used Section */
+        .not-used-section {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .not-used-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .not-used-list {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .not-used-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .not-used-icon {
+            color: var(--danger-glow);
+            font-size: 1.5rem;
+        }
+
+        /* Browser Instructions */
+        .browser-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .browser-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .browser-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .browser-name {
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+
+        .browser-path {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Contact Card */
+        .contact-card {
+            background: var(--gradient-primary);
+            border-radius: 1rem;
+            padding: 3rem;
+            text-align: center;
+            margin: 4rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .contact-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-email {
+            font-size: 1.5rem;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contact-email a {
+            color: var(--text-bright);
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .contact-email a:hover {
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-void);
+            padding: 4rem 0;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .legal-header {
+                padding: 8rem 0 3rem;
+            }
+
+            .cookie-table {
+                overflow-x: auto;
+            }
+
+            .cookie-table table {
+                min-width: 600px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/index.html" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="/index.html" class="nav-link">Home</a></li>
+                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
+                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
+                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
+                    <li><a href="#" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Legal Header -->
+    <section class="legal-header">
+        <div class="container">
+            <h1 class="legal-title">Cookie Policy</h1>
+            <p class="legal-subtitle">Transparency First: We Only Use Essential Cookies</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="section">
+        <div class="container">
+            <!-- Introduction -->
+            <div style="text-align: center; margin-bottom: 4rem;">
+                <p style="font-size: 1.25rem; color: var(--text-secondary); max-width: 800px; margin: 0 auto;">
+                    At The Protocol, we believe in radical transparency. We use only the minimum cookies necessary 
+                    to keep our platform secure and functional. No tracking. No advertising. No compromise.
+                </p>
+            </div>
+
+            <!-- What are Cookies -->
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;">What are Cookies?</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 3rem;">
+                Cookies are small text files stored on your device when you visit our website. They help us 
+                make the website functional and remember your preferences.
+            </p>
+
+            <!-- Cookies We Use -->
+            <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem;">Cookies We Use</h2>
+            
+            <div class="cookie-grid">
+                <!-- Session Cookies -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-icon">🔐</div>
+                        <h3 class="category-title">Session Cookies</h3>
+                    </div>
+                    <p><strong>Name:</strong> protocol_session</p>
+                    <p><strong>Purpose:</strong> Maintain your login session</p>
+                    <p><strong>Duration:</strong> Until browser closes</p>
+                    <p><strong>Necessary:</strong> Yes, for platform function</p>
+                </div>
+
+                <!-- Security Cookies -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-icon">🛡️</div>
+                        <h3 class="category-title">Security Cookies</h3>
+                    </div>
+                    <p><strong>Name:</strong> csrf_token</p>
+                    <p><strong>Purpose:</strong> Protection against Cross-Site Request Forgery attacks</p>
+                    <p><strong>Duration:</strong> 24 hours</p>
+                    <p><strong>Necessary:</strong> Yes, for your security</p>
+                </div>
+
+                <!-- Preference Cookies -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <div class="category-icon">⚙️</div>
+                        <h3 class="category-title">Preference Cookies</h3>
+                    </div>
+                    <p><strong>Name:</strong> lang_preference</p>
+                    <p><strong>Purpose:</strong> Store your language preference</p>
+                    <p><strong>Duration:</strong> 1 year</p>
+                    <p><strong>Necessary:</strong> No, but recommended</p>
+                </div>
+            </div>
+
+            <!-- Cookie Table -->
+            <h2 style="font-size: 2rem; font-weight: 700; margin: 3rem 0 2rem;">Cookie Summary Table</h2>
+            <div class="cookie-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cookie Name</th>
+                            <th>Type</th>
+                            <th>Purpose</th>
+                            <th>Duration</th>
+                            <th>Necessary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>protocol_session</code></td>
+                            <td>Session</td>
+                            <td>Authentication</td>
+                            <td>Session</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td><code>csrf_token</code></td>
+                            <td>Security</td>
+                            <td>CSRF Protection</td>
+                            <td>24 hours</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td><code>lang_preference</code></td>
+                            <td>Preference</td>
+                            <td>Language Setting</td>
+                            <td>1 year</td>
+                            <td>No</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Cookies We DON'T Use -->
+            <div class="not-used-section">
+                <h2 class="not-used-title">
+                    <span>🚫</span> Cookies We DO NOT Use
+                </h2>
+                <ul class="not-used-list">
+                    <li class="not-used-item">
+                        <span class="not-used-icon">❌</span>
+                        <span>Tracking cookies</span>
+                    </li>
+                    <li class="not-used-item">
+                        <span class="not-used-icon">❌</span>
+                        <span>Advertising cookies</span>
+                    </li>
+                    <li class="not-used-item">
+                        <span class="not-used-icon">❌</span>
+                        <span>Analytics cookies (Google Analytics, etc.)</span>
+                    </li>
+                    <li class="not-used-item">
+                        <span class="not-used-icon">❌</span>
+                        <span>Social media cookies</span>
+                    </li>
+                    <li class="not-used-item">
+                        <span class="not-used-icon">❌</span>
+                        <span>Third-party cookies</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Your Control -->
+            <h2 style="font-size: 2rem; font-weight: 700; margin: 3rem 0 2rem;">Your Control Over Cookies</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+                You can control cookies in your browser settings. Here's how to access cookie settings in popular browsers:
+            </p>
+
+            <div class="browser-grid">
+                <div class="browser-card">
+                    <div class="browser-name">Chrome</div>
+                    <div class="browser-path">Settings → Privacy and security → Cookies</div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">Firefox</div>
+                    <div class="browser-path">Settings → Privacy & Security → Cookies</div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">Safari</div>
+                    <div class="browser-path">Settings → Privacy → Cookies</div>
+                </div>
+                <div class="browser-card">
+                    <div class="browser-name">Edge</div>
+                    <div class="browser-path">Settings → Privacy, search, and services → Cookies</div>
+                </div>
+            </div>
+
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.75rem; padding: 1.5rem; margin: 2rem 0;">
+                <p style="color: var(--text-bright); font-weight: 500;">
+                    ⚠️ Note: Blocking necessary cookies may impair platform functionality.
+                </p>
+            </div>
+
+            <!-- Legal Basis -->
+            <h2 style="font-size: 2rem; font-weight: 700; margin: 3rem 0 2rem;">Legal Basis</h2>
+            <p style="color: var(--text-secondary);">
+                Technically necessary cookies: Art. 6(1)(f) GDPR (legitimate interest)
+            </p>
+
+            <!-- Updates -->
+            <h2 style="font-size: 2rem; font-weight: 700; margin: 3rem 0 2rem;">Updates</h2>
+            <p style="color: var(--text-secondary);">
+                This Cookie Policy was last updated on: <strong>January 2025</strong><br>
+                Changes will be published on this page.
+            </p>
+
+            <!-- Contact -->
+            <div class="contact-card">
+                <h2 class="contact-title">Questions About Our Cookie Use?</h2>
+                <div class="contact-email">
+                    <a href="mailto:privacy@theprotocol.cloud">privacy@theprotocol.cloud</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/imprint.html">Imprint</a>
+                <a href="/disclaimer.html">Risk Notice</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
+            <div class="footer-content">
+                <p>© 2025 The Protocol | Building Trust in the Agent Economy</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

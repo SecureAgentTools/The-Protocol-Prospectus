@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Attestation Network - Decentralized Trust Layer | The Protocol</title>
+    
+    <!-- Open Graph / LinkedIn Meta Tags -->
+    <meta property="og:title" content="The Attestation Network: Decentralized Notary for the Agent Economy">
+    <meta property="og:description" content="Immutable, cryptographically-signed proof of registry integrity. The foundation for trillion-dollar autonomous commerce.">
+    <meta property="og:image" content="https://www.theprotocol.cloud/preview.png">
+    <meta property="og:url" content="https://www.theprotocol.cloud/attestation.html">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link.nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta::after {
+            display: none;
+        }
+
+        .nav-link.nav-dev-portal {
+            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .nav-link.nav-dev-portal:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .nav-link.nav-dev-portal::after {
+            display: none;
+        }
+
+        /* Mobile Navigation */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 2px;
+            background: var(--text-bright);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 1200px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1.5rem;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
+            }
+
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-toggle.active span:nth-child(1) {
+                transform: rotate(45deg) translate(5px, 5px);
+            }
+
+            .nav-toggle.active span:nth-child(2) {
+                opacity: 0;
+            }
+
+            .nav-toggle.active span:nth-child(3) {
+                transform: rotate(-45deg) translate(5px, -5px);
+            }
+        }
+
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--bg-void);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Enhanced Hero Section */
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+            overflow: hidden;
+            padding: 2rem;
+            padding-top: 120px;
+        }
+
+        /* Animated Bank Vault Background */
+        .vault-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                radial-gradient(circle at 20% 50%, var(--primary-glow) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, var(--secondary-glow) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%);
+            animation: vaultPulse 20s ease-in-out infinite;
+        }
+
+        @keyframes vaultPulse {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.05) rotate(1deg); }
+            50% { transform: scale(1) rotate(-1deg); }
+            75% { transform: scale(1.05) rotate(0deg); }
+        }
+
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(to right, #FFFFFF 0%, #8B5CF6 50%, #3B82F6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% auto;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Section Styles */
+        section {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+            font-weight: 300;
+            line-height: 1.8;
+        }
+
+        /* Core Concept Section */
+        .concept-section {
+            background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
+        }
+
+        .concept-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .concept-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-bright);
+        }
+
+        .concept-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .highlight-text {
+            color: var(--primary-glow);
+            font-weight: 600;
+        }
+
+        /* Process Flow Section */
+        .process-section {
+            background: var(--bg-deep);
+        }
+
+        .process-timeline {
+            position: relative;
+            margin-top: 4rem;
+        }
+
+        .process-step {
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .step-number {
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            position: relative;
+            margin: 0 auto;
+        }
+
+        .step-number::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 3rem;
+            background: linear-gradient(to bottom, var(--primary-glow) 0%, transparent 100%);
+        }
+
+        .process-step:last-child .step-number::after {
+            display: none;
+        }
+
+        .step-content {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        .step-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-bright);
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: var(--accent-glow);
+            overflow-x: auto;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-dark) 100%);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benefit-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid transparent;
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-glow);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .benefit-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-accent);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .benefit-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-bright);
+        }
+
+        .benefit-description {
+            color: var(--text-secondary);
+            line-height: 1.8;
+        }
+
+        /* Key Holders Section */
+        .keyholders-section {
+            background: var(--bg-void);
+            position: relative;
+        }
+
+        .keyholders-intro {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 4rem;
+        }
+
+        .keyholders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .keyholder-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .keyholder-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+        }
+
+        .keyholder-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .keyholder-type {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 0.5rem;
+        }
+
+        .keyholder-example {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            padding: 5rem 0;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-glow);
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border: 2px solid var(--primary-glow);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--bg-void);
+            padding: 4rem 0 2rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-glow);
+        }
+
+        .footer-legal {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .footer-legal a {
+            color: var(--primary-glow);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer-legal a:hover {
+            color: var(--secondary-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .process-step {
+                grid-template-columns: 60px 1fr;
+                gap: 1rem;
+            }
+
+            .step-number {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .btn-primary,
+            .btn-secondary {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li><a href="/technical-page.html" class="nav-link">Technical Architecture</a></li>
+                    <li><a href="/zkp-page.html" class="nav-link">Zero-Knowledge Proofs</a></li>
+                    <li><a href="/attestation.html" class="nav-link">Attestation Network</a></li>
+                    <li><a href="/federation.html" class="nav-link">Federation Model</a></li>
+                    <li><a href="/governance.html" class="nav-link">Governance</a></li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
+                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+                <div class="nav-toggle" id="navToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="vault-bg"></div>
+        
+        <div class="hero-content">
+            <h1>
+                <span class="gradient-text">The Attestation Network</span><br>
+                A Decentralized Notary for the Agent Economy
+            </h1>
+            <p class="subtitle">
+                Your registry's cryptographic integrity, witnessed by a consortium of neutral parties. 
+                This is how we enable trillion-dollar autonomous commerce with protocol-level trust.
+            </p>
+        </div>
+    </section>
+
+    <!-- Core Concept Section -->
+    <section class="concept-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Beyond Federation: The Trust Layer</h2>
+                <p class="section-subtitle">
+                    Federation establishes peer-to-peer trust. But how do you prove that a registry 
+                    hasn't been compromised? Enter the Attestation Network—our architectural immune system.
+                </p>
+            </div>
+            
+            <div class="concept-card">
+                <h3 class="concept-title">The Core Innovation: A Digital Notary Public Network</h3>
+                <div class="concept-content">
+                    <p>
+                        The <span class="highlight-text">Federation of Peers</span> model establishes secure, 
+                        point-to-point trust between registries using cryptographic identities (mTLS/SPIFFE). 
+                        This is the foundation.
+                    </p>
+                    <p style="margin-top: 1.5rem;">
+                        The next evolutionary step is the <span class="highlight-text">Attestation Network</span>—a 
+                        specialized, distributed database that stores one thing of immense value: 
+                        <strong>immutable, cryptographically-signed proof that a registry's state was valid 
+                        at a specific point in time.</strong>
+                    </p>
+                    <p style="margin-top: 1.5rem;">
+                        Think of it as the "BANK" where we store the most valuable asset in a decentralized 
+                        economy: <span class="highlight-text">verifiable truth</span>. The "keys" to this bank 
+                        are distributed among a carefully selected consortium of trusted, neutral partners.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Flow Section -->
+    <section class="process-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">How the Attestation Network Works</h2>
+                <p class="section-subtitle">
+                    A four-step process that transforms registry state into immutable, verifiable proof.
+                </p>
+            </div>
+            
+            <div class="process-timeline">
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3 class="step-title">State Snapshot (The Merkle Root)</h3>
+                        <p class="step-description">
+                            At regular intervals (e.g., every hour), each sovereign registry calculates a 
+                            <strong>Merkle root</strong> of its entire agent catalog. This is a single, unique 
+                            hash that represents a verifiable 'snapshot' of the registry's state at that moment.
+                        </p>
+                        <div class="code-block">
+                            merkle_root = calculate_merkle_root(agent_catalog)
+                            timestamp = current_utc_time()
+                            state_snapshot = {registry_id, timestamp, merkle_root}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Attestation Request</h3>
+                        <p class="step-description">
+                            The registry sends this Merkle root to a quorum of the Attestation Partners. 
+                            It is asking them: "Please bear witness that this was my exact state at this 
+                            exact time." The partners never see the full agent list—only the root hash.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3 class="step-title">The Notarization (The Signing)</h3>
+                        <p class="step-description">
+                            The Attestation Partners verify the registry's identity, timestamp the request, 
+                            and then use their private keys to <strong>cryptographically sign the Merkle root</strong>. 
+                            This creates an unforgeable attestation of the registry's state.
+                        </p>
+                        <div class="code-block">
+                            attestation = {
+                                registry_id: "sovereign_registry_001",
+                                timestamp: "2025-07-08T14:30:00Z",
+                                merkle_root: "0x7d3f...",
+                                partner_signature: sign(private_key, merkle_root)
+                            }
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h3 class="step-title">Public Record</h3>
+                        <p class="step-description">
+                            The signed attestation is published to the Verifiable Attestation Ledger. 
+                            This is the 'deposit' into the 'bank'—creating an unforgeable, public audit 
+                            trail of every registry's state over time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Why This Enables a Trillion-Dollar Economy</h2>
+                <p class="section-subtitle">
+                    The Attestation Network unlocks capabilities that make high-stakes autonomous commerce possible.
+                </p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">⚖️</div>
+                    <h3 class="benefit-title">Conflict Resolution</h3>
+                    <p class="benefit-description">
+                        If two agents have a dispute over a transaction, they have a provable, notarized 
+                        record of what the state of the network was when the agreement was made.
+                    </p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">🛡️</div>
+                    <h3 class="benefit-title">Preventing Fraud</h3>
+                    <p class="benefit-description">
+                        A registry cannot retroactively add or remove an agent from its catalog to 
+                        influence a dispute without invalidating its entire chain of attested Merkle roots.
+                    </p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">📊</div>
+                    <h3 class="benefit-title">Auditing & Compliance</h3>
+                    <p class="benefit-description">
+                        Enterprises can prove to regulators that their agents were operating under 
+                        specific, verifiable network conditions at a specific time.
+                    </p>
+                </div>
+                
+                <div class="benefit-card">
+                    <div class="benefit-icon">💎</div>
+                    <h3 class="benefit-title">Insurance & Derivatives</h3>
+                    <p class="benefit-description">
+                        This verifiable state history becomes the foundation for advanced economic 
+                        products, like insurance against registry downtime or fraud.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Holders Section -->
+    <section class="keyholders-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Who Holds the Keys to the Bank?</h2>
+                <p class="section-subtitle">
+                    The Consortium of Neutral Partners
+                </p>
+            </div>
+            
+            <div class="keyholders-intro">
+                <p style="font-size: 1.125rem; line-height: 1.8;">
+                    The Attestation Partners <strong>cannot</strong> be the major cloud providers or any 
+                    single entity with a dominant market position. Doing so would simply re-centralize trust. 
+                    Instead, we invite a <strong>founding cohort of neutral, trusted organizations</strong> 
+                    to act as the initial attestors.
+                </p>
+            </div>
+            
+            <div class="keyholders-grid">
+                <div class="keyholder-card">
+                    <div class="keyholder-icon">🏛️</div>
+                    <h3 class="keyholder-type">Non-Profit Foundations</h3>
+                    <p class="keyholder-example">
+                        The Linux Foundation, Apache Foundation, or other standards bodies with 
+                        proven track records of neutral governance.
+                    </p>
+                </div>
+                
+                <div class="keyholder-card">
+                    <div class="keyholder-icon">🎓</div>
+                    <h3 class="keyholder-type">Academic Institutions</h3>
+                    <p class="keyholder-example">
+                        Leading university computer science departments with expertise in 
+                        distributed systems and cryptography.
+                    </p>
+                </div>
+                
+                <div class="keyholder-card">
+                    <div class="keyholder-icon">🌍</div>
+                    <h3 class="keyholder-type">Diverse Enterprises</h3>
+                    <p class="keyholder-example">
+                        A major bank from Europe, a manufacturing firm from Asia, a logistics 
+                        company from North America—entities with vested interest but no platform dominance.
+                    </p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <p style="font-size: 1.125rem; color: var(--text-bright);">
+                    By distributing the 'keys to the bank' among a consortium of respected, neutral, 
+                    and diversified partners, we ensure that <strong>no single entity—not even us—can 
+                    control the integrity of the federated network</strong>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2 class="cta-title">Build on Verifiable Truth</h2>
+                <p class="cta-description">
+                    The Attestation Network is the foundation for a new economic reality where 
+                    trust is cryptographic, disputes are resolvable, and commerce operates at the speed of light.
+                </p>
+                <div class="cta-buttons">
+                    <a href="/technical-page.html" class="btn-primary">Explore Technical Details</a>
+                    <a href="/governance.html" class="btn-secondary">Learn About Governance</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="/terms.html">Terms of Service</a>
+                <a href="/privacy.html">Privacy Policy</a>
+                <a href="/dpa.html">Data Processing Agreement</a>
+                <a href="/cookies.html">Cookie Policy</a>
+                <a href="/disclaimer.html">Risk Notice</a>
+                <a href="/sla.html">Enterprise SLA</a>
+            </div>
+            <div class="footer-content">
+                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
+            </div>
+            <div class="footer-legal">
+                <p>
+                    <a href="/imprint.html">Impressum</a> | 
+                    <a href="/privacy.html">Datenschutzerklärung</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Navigation Toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        navToggle.addEventListener('click', function() {
+            navToggle.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function() {
+                navToggle.classList.remove('active');
+                navMenu.classList.remove('active');
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const offsetTop = target.offsetTop - 80;
+                    window.scrollTo({
+                        top: offsetTop,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Header scroll effect
+        let lastScroll = 0;
+        const header = document.querySelector('.nav-header');
+        
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.style.boxShadow = 'none';
+            } else {
+                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Developer Portal button placeholder
+        document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
+        });
+    </script>
+</body>
+</html>
