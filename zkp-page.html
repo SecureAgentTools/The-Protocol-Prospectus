@@ -6,9 +6,18 @@
     <title>Zero-Knowledge Proofs - Privacy Without Compromise</title>
     
     <!-- SEO & Open Graph -->
-    <meta name="description" content="The Protocol's ZKP implementation enables agents to prove capabilities without revealing secrets. Sub-100ms verification with Groth16.">
+    <meta name="description" content="Experience The Protocol's ZKP implementation in stunning cinematic quality. Sub-100ms verification with Groth16 in an immersive 3D environment.">
     <meta property="og:title" content="Zero-Knowledge Architecture - Prove Everything, Reveal Nothing">
-    <meta property="og:description" content="See how The Protocol uses ZK-SNARKs for agent attestations, reputation scoring, and privacy-preserving compliance.">
+    <meta property="og:description" content="Witness the future of privacy-preserving computation through cutting-edge 3D visualization with ray-traced effects and spatial audio.">
+    
+    <!-- Three.js r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- GSAP for cinematic animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Tone.js for spatial audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     
     <style>
         * {
@@ -18,20 +27,16 @@
         }
 
         :root {
-            --primary-glow: #3B82F6;
-            --secondary-glow: #8B5CF6;
-            --accent-glow: #10B981;
-            --zkp-glow: #F59E0B;
-            --danger-glow: #EF4444;
+            --zkp-primary: #F59E0B;
+            --zkp-secondary: #8B5CF6;
+            --zkp-accent: #10B981;
+            --zkp-danger: #EF4444;
+            --zkp-info: #3B82F6;
             --bg-void: #000000;
             --bg-deep: #0a0a0a;
-            --bg-dark: #0F172A;
-            --bg-card: rgba(15, 23, 42, 0.6);
             --text-bright: #FFFFFF;
             --text-primary: #F8FAFC;
             --text-secondary: #94A3B8;
-            --text-muted: #475569;
-            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
             --gradient-zkp: linear-gradient(135deg, #F59E0B 0%, #8B5CF6 100%);
             --gradient-holographic: linear-gradient(45deg, #F59E0B, #8B5CF6, #10B981, #F59E0B);
         }
@@ -40,8 +45,116 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-void);
             color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
+            overflow: hidden;
+            cursor: none;
+        }
+
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--zkp-primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor.hover {
+            width: 40px;
+            height: 40px;
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .custom-cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--zkp-primary);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-void);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-title {
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: var(--gradient-zkp);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(245, 158, 11, 0.2);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            background: var(--gradient-zkp);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
+        }
+
+        .loading-status {
+            margin-top: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Main Canvas */
+        #zkp-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* UI Overlay */
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
         }
 
         /* Navigation Header */
@@ -50,10 +163,11 @@
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 10, 0.95);
+            background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            border-bottom: 1px solid rgba(245, 158, 11, 0.2);
             z-index: 1000;
+            pointer-events: auto;
             transition: all 0.3s ease;
         }
 
@@ -70,1954 +184,2728 @@
         .nav-logo {
             font-size: 1.5rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            background: var(--gradient-zkp);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             text-decoration: none;
             letter-spacing: -0.02em;
+            cursor: pointer;
         }
 
-        .nav-menu {
+        /* View Mode Selector */
+        .view-modes {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            align-items: center;
-            gap: 2.5rem;
-            list-style: none;
+            gap: 1rem;
+            background: rgba(10, 10, 10, 0.8);
+            padding: 0.5rem;
+            border-radius: 100px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            pointer-events: auto;
+            z-index: 200;
         }
 
-        .nav-link {
+        .view-mode-btn {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
             color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            letter-spacing: 0.01em;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-primary);
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover {
-            color: var(--text-bright);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-        
-        .nav-link.active {
-            color: var(--zkp-glow);
-        }
-        
-        .nav-link.active::after {
-            width: 100%;
-            background: var(--gradient-zkp);
-        }
-
-        .nav-link.nav-cta {
-            background: var(--gradient-primary);
-            color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link.nav-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-        }
-
-        .nav-link.nav-cta::after {
-            display: none;
-        }
-
-        .nav-link.nav-dev-portal {
-            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
-            color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
             transition: all 0.3s ease;
             font-weight: 600;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-link.nav-dev-portal:hover {
+        .view-mode-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--gradient-zkp);
+            transition: width 0.3s ease;
+            z-index: -1;
+        }
+
+        .view-mode-btn:hover {
+            color: var(--text-bright);
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
         }
 
-        .nav-link.nav-dev-portal::after {
-            display: none;
+        .view-mode-btn.active {
+            color: var(--text-bright);
+            background: var(--gradient-zkp);
         }
 
-        /* Mobile Navigation */
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
+        /* Control Panel */
+        .control-panel {
+            position: fixed;
+            top: 120px;
+            right: 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            pointer-events: auto;
+            width: 300px;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+            z-index: 200;
+        }
+
+        .control-section {
+            margin-bottom: 2rem;
+        }
+
+        .control-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--zkp-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-button {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--text-bright);
+            border-radius: 0.5rem;
             cursor: pointer;
-            padding: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
-        .nav-toggle span {
-            width: 25px;
-            height: 2px;
-            background: var(--text-bright);
+        .control-button:hover {
+            background: rgba(245, 158, 11, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        /* Info Panel */
+        .info-panel {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            pointer-events: auto;
+            max-width: 400px;
+            max-height: 40vh;
+            overflow-y: auto;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(20px);
             transition: all 0.3s ease;
         }
 
-        @media (max-width: 968px) {
-            .nav-menu {
-                position: fixed;
-                top: 80px;
-                left: 0;
-                right: 0;
-                background: rgba(10, 10, 10, 0.98);
-                flex-direction: column;
-                padding: 2rem;
-                gap: 1.5rem;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-            }
-
-            .nav-menu.active {
-                transform: translateX(0);
-            }
-
-            .nav-toggle {
-                display: flex;
-            }
-
-            .nav-toggle.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-
-            .nav-toggle.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .nav-toggle.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(5px, -5px);
-            }
+        .info-panel.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* Hero with Advanced Holographic Effect */
-        .hero {
-            min-height: 100vh;
+        /* FPS Display - FIXED: Moved to left side */
+        .fps-display {
+            position: fixed;
+            top: 100px;
+            left: 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            pointer-events: auto;
+            z-index: 200;
+            min-width: 150px;
+        }
+
+        .fps-display .fps-value {
+            color: var(--zkp-primary);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        /* Stats Display - FIXED: Better positioning */
+        .stats-display {
+            position: fixed;
+            bottom: 100px;
+            right: 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            pointer-events: auto;
+            z-index: 200;
+            min-width: 200px;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            color: var(--zkp-primary);
+            font-weight: bold;
+        }
+
+        /* Quality Settings */
+        .quality-settings {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .quality-btn {
+            flex: 1;
+            padding: 0.5rem;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--text-secondary);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+            text-align: center;
+        }
+
+        .quality-btn.active {
+            background: var(--gradient-zkp);
+            color: var(--text-bright);
+            border-color: transparent;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            background: 
-                radial-gradient(ellipse at center, rgba(245, 158, 11, 0.15) 0%, transparent 70%),
-                linear-gradient(45deg, transparent 25%, rgba(245, 158, 11, 0.02) 25%, rgba(245, 158, 11, 0.02) 50%, transparent 50%, transparent 75%, rgba(139, 92, 246, 0.02) 75%);
-            background-size: 100% 100%, 50px 50px;
-            padding: 8rem 2rem 4rem;
-            overflow: hidden;
-        }
-
-        /* Animated background particles */
-        .particle-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--zkp-glow);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: float 20s infinite linear;
-        }
-
-        @keyframes float {
-            from {
-                transform: translateY(100vh) translateX(0);
-            }
-            to {
-                transform: translateY(-100px) translateX(100px);
-            }
-        }
-
-        .holographic-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-holographic);
-            opacity: 0.05;
-            background-size: 400% 400%;
-            animation: holographic 20s ease infinite;
-            pointer-events: none;
-        }
-
-        @keyframes holographic {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .hero-content {
-            text-align: center;
-            z-index: 10;
-            max-width: 1200px;
-            width: 100%;
-        }
-
-        .hero h1 {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-            position: relative;
-        }
-
-        /* Glitch effect for hero text */
-        .glitch {
-            position: relative;
-            display: inline-block;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-        }
-
-        .glitch::before {
-            animation: glitch-1 0.5s infinite linear alternate-reverse;
-            color: var(--zkp-glow);
-            z-index: -1;
-        }
-
-        .glitch::after {
-            animation: glitch-2 0.5s infinite linear alternate-reverse;
-            color: var(--secondary-glow);
-            z-index: -2;
-        }
-
-        @keyframes glitch-1 {
-            0% {
-                clip-path: inset(40% 0 61% 0);
-                transform: translate(-2px, -2px);
-            }
-            100% {
-                clip-path: inset(92% 0 1% 0);
-                transform: translate(2px, 2px);
-            }
-        }
-
-        @keyframes glitch-2 {
-            0% {
-                clip-path: inset(65% 0 8% 0);
-                transform: translate(-2px, 2px);
-            }
-            100% {
-                clip-path: inset(1% 0 92% 0);
-                transform: translate(2px, -2px);
-            }
-        }
-
-        .gradient-text-zkp {
-            background: linear-gradient(to right, #FFFFFF 0%, #F59E0B 50%, #8B5CF6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* Enhanced Interactive ZKP Flow Visualization */
-        .zkp-flow-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 3rem;
-            background: rgba(15, 23, 42, 0.6);
+            gap: 1rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 1.5rem;
-            position: relative;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 100px rgba(245, 158, 11, 0.2);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            pointer-events: auto;
+            z-index: 200;
         }
 
-        .zkp-flow-container::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            background: var(--gradient-zkp);
-            border-radius: 1.5rem;
-            z-index: -1;
-            opacity: 0.5;
-            background-size: 400% 400%;
-            animation: holographic 10s ease infinite;
-        }
-
-        #zkp-flow-canvas {
-            width: 100%;
-            height: 600px;
-            cursor: crosshair;
-        }
-
-        /* 3D Card Effect for Use Cases */
-        .use-cases-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-            margin: 4rem 0;
-            perspective: 1000px;
-        }
-
-        .use-case-card {
-            background: var(--bg-card);
-            border: 1px solid transparent;
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .audio-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
             cursor: pointer;
-            transform-style: preserve-3d;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
         }
 
-        .use-case-card::before {
-            content: '';
-            position: absolute;
-            inset: -2px;
-            background: var(--gradient-zkp);
-            border-radius: 1.5rem;
+        .audio-toggle:hover {
+            color: var(--zkp-primary);
+            transform: scale(1.1);
+        }
+
+        .audio-toggle.active {
+            color: var(--zkp-primary);
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(245, 158, 11, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--zkp-primary);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Command Palette */
+        .command-palette {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 600px;
+            max-width: 90vw;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            pointer-events: auto;
+            z-index: 1000;
             opacity: 0;
-            z-index: -1;
-            transition: opacity 0.5s ease;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
 
-        .use-case-card:hover {
-            transform: translateY(-10px) rotateX(5deg) scale(1.02);
-            background: rgba(15, 23, 42, 0.9);
-        }
-
-        .use-case-card:hover::before {
+        .command-palette.active {
             opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
         }
 
-        /* Animated Circuit Board Background */
-        .circuit-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .command-input {
             width: 100%;
-            height: 100%;
-            opacity: 0.05;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(245, 158, 11, 0.1) 50px, rgba(245, 158, 11, 0.1) 51px),
-                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(245, 158, 11, 0.1) 50px, rgba(245, 158, 11, 0.1) 51px);
-            animation: circuit-flow 20s linear infinite;
+            padding: 1rem;
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 0.5rem;
+            color: var(--text-bright);
+            font-size: 1.1rem;
+            outline: none;
         }
 
-        @keyframes circuit-flow {
-            from {
-                transform: translate(0, 0);
-            }
-            to {
-                transform: translate(50px, 50px);
-            }
+        .command-results {
+            margin-top: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .use-case-icon {
-            font-size: 3rem;
-            margin-bottom: 1.5rem;
-            display: inline-block;
+        .command-item {
+            padding: 0.75rem 1rem;
+            background: rgba(245, 158, 11, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .command-item:hover {
+            background: rgba(245, 158, 11, 0.1);
+            transform: translateX(5px);
+        }
+
+        /* Voice Control */
+        .voice-control {
+            position: fixed;
+            top: 150px;
+            left: 2rem;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            pointer-events: auto;
+            z-index: 200;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .voice-control:hover {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        .voice-control.active {
+            background: var(--gradient-zkp);
             animation: pulse 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-        }
-
-        .use-case-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-bright);
-        }
-
-        /* Enhanced Circuit Visualization */
-        .circuit-container {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 1rem;
-            padding: 3rem;
-            margin: 3rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .circuit-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .circuit-component {
-            text-align: center;
-            padding: 2rem;
-            background: rgba(245, 158, 11, 0.05);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 0.75rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .circuit-component::after {
-            content: '';
-            position: absolute;
-            top: -100%;
-            left: -100%;
-            width: 300%;
-            height: 300%;
-            background: radial-gradient(circle, rgba(245, 158, 11, 0.3) 0%, transparent 70%);
-            transition: all 0.5s ease;
-            opacity: 0;
-        }
-
-        .circuit-component:hover {
-            transform: scale(1.05) translateZ(20px);
-            background: rgba(245, 158, 11, 0.1);
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
-        }
-
-        .circuit-component:hover::after {
-            opacity: 1;
-            top: -50%;
-            left: -50%;
-        }
-
-        /* Performance Metrics with Animation */
-        .performance-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .perf-metric {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 1rem;
-            padding: 2rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .perf-metric::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: var(--gradient-zkp);
-            border-radius: 1rem;
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s ease;
-        }
-
-        .perf-metric:hover::before {
-            opacity: 0.3;
-            animation: rotate 3s linear infinite;
-        }
-
-        @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .perf-value {
-            font-size: 3rem;
-            font-weight: 800;
-            background: var(--gradient-zkp);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-            display: inline-block;
-            animation: count-up 2s ease-out;
-        }
-
-        @keyframes count-up {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .perf-label {
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-size: 0.875rem;
-        }
-
-        /* Enhanced Code Examples */
-        .code-example {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 0.75rem;
-            padding: 2rem;
-            margin: 2rem 0;
-            overflow-x: auto;
-            position: relative;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-        }
-
-        .code-example::before {
-            content: 'ZKP Implementation';
-            position: absolute;
-            top: 0.5rem;
-            right: 1rem;
-            font-size: 0.75rem;
-            color: var(--zkp-glow);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .code-example pre {
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.9rem;
-            line-height: 1.6;
-            color: var(--accent-glow);
-        }
-
-        .code-example .comment {
-            color: var(--text-muted);
-        }
-
-        .code-example .keyword {
-            color: var(--zkp-glow);
-        }
-
-        .code-example .string {
-            color: var(--secondary-glow);
-        }
-
-        /* Privacy Features with Icons */
-        .privacy-features {
-            display: grid;
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-
-        .privacy-feature {
-            display: flex;
-            align-items: start;
-            gap: 1.5rem;
-            padding: 2rem;
-            background: rgba(15, 23, 42, 0.6);
-            border-left: 4px solid var(--zkp-glow);
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .privacy-feature::after {
-            content: '';
-            position: absolute;
+        /* Help Overlay */
+        .help-overlay {
+            position: fixed;
             top: 0;
-            right: -100%;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.1), transparent);
-            transition: right 0.6s ease;
-        }
-
-        .privacy-feature:hover::after {
-            right: -100%;
-            animation: sweep 0.6s ease-out;
-        }
-
-        @keyframes sweep {
-            0% {
-                right: -100%;
-            }
-            50% {
-                right: 0;
-            }
-            100% {
-                right: 100%;
-            }
-        }
-
-        .privacy-icon {
-            font-size: 2rem;
-            color: var(--zkp-glow);
-            flex-shrink: 0;
-        }
-
-        /* Roadmap Timeline */
-        .roadmap-timeline {
-            position: relative;
-            padding: 2rem 0;
-            margin: 3rem 0;
-        }
-
-        .roadmap-timeline::before {
-            content: '';
-            position: absolute;
-            left: 50%;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--zkp-glow), transparent);
-            transform: translateX(-50%);
-        }
-
-        .roadmap-item {
-            position: relative;
-            margin: 3rem 0;
-            display: flex;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
             align-items: center;
             justify-content: center;
+            pointer-events: auto;
         }
 
-        .roadmap-content {
-            width: 45%;
+        .help-content {
+            background: rgba(10, 10, 10, 0.95);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 1rem;
             padding: 2rem;
-            background: rgba(245, 158, 11, 0.05);
-            border: 1px solid rgba(245, 158, 11, 0.2);
-            border-radius: 0.75rem;
-            position: relative;
-            transition: all 0.3s ease;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
-        .roadmap-item:nth-child(odd) .roadmap-content {
-            margin-right: auto;
-            text-align: right;
-        }
-
-        .roadmap-item:nth-child(even) .roadmap-content {
-            margin-left: auto;
-            text-align: left;
-        }
-
-        .roadmap-content:hover {
-            transform: scale(1.05);
-            background: rgba(245, 158, 11, 0.1);
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.3);
-        }
-
-        .roadmap-dot {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: 20px;
-            height: 20px;
-            background: var(--zkp-glow);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-        }
-
-        .roadmap-dot.current {
-            width: 30px;
-            height: 30px;
-            animation: pulse-dot 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-dot {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
-            }
-            50% {
-                box-shadow: 0 0 40px rgba(245, 158, 11, 0.8);
-            }
-        }
-
-        /* Sections */
-        section {
-            padding: 6rem 0;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .section-header {
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
+        .help-title {
+            font-size: 2rem;
+            font-weight: 900;
             margin-bottom: 1rem;
             background: var(--gradient-zkp);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .section-subtitle {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            max-width: 800px;
+        .help-section {
+            margin-bottom: 1.5rem;
         }
 
-        /* CTA Buttons */
-        .btn-primary {
-            background: var(--gradient-zkp);
-            color: var(--text-bright);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        .help-section h3 {
+            color: var(--zkp-primary);
+            margin-bottom: 0.5rem;
         }
 
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 50%;
+        .help-shortcut {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(245, 158, 11, 0.1);
+        }
+
+        .key {
+            background: rgba(245, 158, 11, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: var(--zkp-primary);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Screenshot Flash */
+        .screenshot-flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 9000;
+        }
+
+        /* Cinematic Mode UI */
+        .cinematic-ui {
+            position: fixed;
+            top: 2rem;
             left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+            transform: translateX(-50%);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            pointer-events: auto;
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.5s ease;
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.5);
+        .cinematic-ui.visible {
+            opacity: 1;
         }
 
-        .btn-primary:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* Responsive */
+        /* Mobile Controls */
         @media (max-width: 768px) {
-            .circuit-grid {
-                grid-template-columns: 1fr;
+            .control-panel {
+                display: none;
             }
             
-            .hero h1 {
-                font-size: clamp(2.5rem, 7vw, 5rem);
+            .stats-display {
+                top: auto;
+                bottom: 100px;
+                right: 1rem;
             }
             
-            .use-cases-grid {
-                grid-template-columns: 1fr;
+            .view-modes {
+                flex-wrap: wrap;
+                max-width: 90vw;
+                top: 90px;
             }
-
-            .roadmap-timeline::before {
-                left: 20px;
-            }
-
-            .roadmap-item {
-                justify-content: flex-start;
-                margin-left: 40px;
-            }
-
-            .roadmap-content {
-                width: calc(100% - 40px);
-                text-align: left !important;
-                margin: 0 !important;
-            }
-
-            .roadmap-dot {
-                left: 20px;
+            
+            .view-mode-btn {
+                font-size: 0.8rem;
+                padding: 0.5rem 1rem;
             }
         }
-    
-/* Dropdown Specific Styles */
-.nav-dropdown {
-    position: relative;
-}
 
-.nav-dropdown-toggle {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-}
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border-width: 0;
+        }
 
-.dropdown-arrow {
-    transition: transform 0.3s ease;
-}
+        /* Focus styles */
+        button:focus-visible,
+        input:focus-visible,
+        a:focus-visible {
+            outline: 2px solid var(--zkp-primary);
+            outline-offset: 2px;
+        }
 
-.nav-dropdown:hover .dropdown-arrow,
-.nav-dropdown.active .dropdown-arrow {
-    transform: rotate(180deg);
-}
+        /* Component Labels - FIXED: Attached to components */
+        .component-label {
+            position: absolute;
+            background: rgba(10, 10, 10, 0.9);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-bright);
+            pointer-events: none;
+            z-index: 150;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            font-weight: 600;
+        }
 
-.nav-dropdown-menu {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 220px;
-    background: rgba(10, 10, 10, 0.98);
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    border-radius: 0.75rem;
-    padding: 0.5rem 0;
-    margin-top: 1rem;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateX(-50%) translateY(-10px);
-    transition: all 0.3s ease;
-    list-style: none;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-}
-
-.nav-dropdown-menu::before {
-    content: '';
-    position: absolute;
-    top: -6px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 12px;
-    height: 12px;
-    background: rgba(10, 10, 10, 0.98);
-    border-top: 1px solid rgba(59, 130, 246, 0.2);
-    border-left: 1px solid rgba(59, 130, 246, 0.2);
-    transform: translateX(-50%) rotate(45deg);
-}
-
-.nav-dropdown:hover .nav-dropdown-menu {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0);
-}
-
-.nav-dropdown-link {
-    display: block;
-    padding: 0.75rem 1.5rem;
-    color: var(--text-secondary);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.nav-dropdown-link:hover {
-    color: var(--text-bright);
-    background: rgba(59, 130, 246, 0.1);
-}
-
-/* Mobile Dropdown */
-@media (max-width: 968px) {
-    .nav-dropdown-toggle {
-        width: 100%;
-        justify-content: space-between;
-    }
-
-    .nav-dropdown-menu {
-        position: static;
-        opacity: 1;
-        visibility: visible;
-        transform: none;
-        display: none;
-        width: 100%;
-        margin-top: 0.5rem;
-        margin-left: 1rem;
-        background: transparent;
-        border: none;
-        box-shadow: none;
-    }
-
-    .nav-dropdown-menu::before {
-        display: none;
-    }
-
-    .nav-dropdown.active .nav-dropdown-menu {
-        display: block;
-    }
-
-    .nav-dropdown-link {
-        padding: 0.75rem 1rem;
-        font-size: 0.875rem;
-    }
-}
-/* Footer Styles */
-.footer-links {
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-}
-
-.footer-links a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-    font-weight: 500;
-}
-
-.footer-links a:hover {
-    color: var(--primary-glow);
-}
-
-.footer-legal {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(59, 130, 246, 0.1);
-    text-align: center;
-}
-
-.footer-legal p a {
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-
-.footer-legal p a:hover {
-    color: var(--primary-glow);
-}
-</style>
+        .component-label.hidden {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation Header -->
-    <header class="nav-header">
-    <div class="nav-container">
-        <a href="/" class="nav-logo">The Protocol</a>
-        <nav>
-            <ul class="nav-menu" id="navMenu">
-                <li class="nav-dropdown">
-                    <a href="#" class="nav-link nav-dropdown-toggle">
-                        Ecosystem
-                        <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
-                            <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
-                        </svg>
-                    </a>
-                    <ul class="nav-dropdown-menu">
-                        <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
-                        <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
-                        <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
-                        <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
-                        <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
-                    </ul>
-                </li>
-                <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
-                <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
-            </ul>
-            <div class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </nav>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loadingScreen">
+        <h1 class="loading-title">Zero-Knowledge Proofs</h1>
+        <div class="loading-progress">
+            <div class="loading-progress-bar" id="loadingProgress"></div>
+        </div>
+        <div class="loading-status" id="loadingStatus">Initializing cryptographic systems...</div>
     </div>
-</header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="particle-container" id="particleContainer"></div>
-        <div class="holographic-overlay"></div>
-        <div class="circuit-bg"></div>
-        <div class="hero-content">
-            <h1>
-                <span class="glitch gradient-text-zkp" data-text="Prove Everything.">Prove Everything.</span><br>
-                <span class="glitch" data-text="Reveal Nothing." style="color: var(--text-bright);">Reveal Nothing.</span>
-            </h1>
-            <p style="font-size: 1.5rem; color: var(--text-secondary); max-width: 800px; margin: 2rem auto;">
-                Zero-Knowledge Proofs enable agents to verify capabilities, build reputation, 
-                and ensure compliance - all without exposing sensitive data.
-            </p>
-            
-            <!-- Enhanced Interactive ZKP Flow -->
-            <div class="zkp-flow-container">
-                <h3 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--zkp-glow);">Live ZKP Generation & Verification</h3>
-                <canvas id="zkp-flow-canvas"></canvas>
-                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-top: 1rem; text-align: center;">
-                    Click anywhere on the canvas to trigger a proof generation
-                </p>
+    <!-- Main Canvas -->
+    <canvas id="zkp-canvas"></canvas>
+
+    <!-- UI Overlay -->
+    <div class="ui-overlay">
+        <!-- Navigation -->
+        <header class="nav-header">
+            <div class="nav-container">
+                <a href="/" class="nav-logo">The Protocol</a>
+                <nav>
+                    <div style="display: flex; gap: 2rem; align-items: center;">
+                        <a href="/technical-page.html" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Technical</a>
+                        <a href="/federation.html" style="color: var(--text-secondary); text-decoration: none; font-weight: 500;">Federation</a>
+                        <a href="/developers-page.html" style="background: var(--gradient-zkp); color: var(--text-bright); padding: 0.75rem 1.5rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">For Developers</a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- View Mode Selector -->
+        <div class="view-modes">
+            <button class="view-mode-btn active" data-mode="circuit">Circuit View</button>
+            <button class="view-mode-btn" data-mode="flow">Data Flow</button>
+            <button class="view-mode-btn" data-mode="proof">Proof Generation</button>
+            <button class="view-mode-btn" data-mode="network">Network View</button>
+            <button class="view-mode-btn" data-mode="cinematic">Cinematic</button>
+        </div>
+
+        <!-- FPS Display - FIXED: Moved to left side -->
+        <div class="fps-display">
+            <div>FPS: <span class="fps-value" id="fpsCounter">60</span></div>
+        </div>
+
+        <!-- Control Panel -->
+        <div class="control-panel">
+            <div class="control-section">
+                <h3 class="control-title">
+                    <span>◈</span> Controls
+                </h3>
+                <button class="control-button" id="generateProofBtn">Generate ZK Proof</button>
+                <button class="control-button" id="verifyProofBtn">Verify Proof</button>
+                <button class="control-button" id="resetSceneBtn">Reset Scene</button>
+            </div>
+
+            <div class="control-section">
+                <h3 class="control-title">
+                    <span>◉</span> Cinematic Cameras
+                </h3>
+                <button class="control-button camera-preset" data-camera="orbit">Orbit Camera</button>
+                <button class="control-button camera-preset" data-camera="flythrough">Flythrough</button>
+                <button class="control-button camera-preset" data-camera="focus">Focus Mode</button>
+                <button class="control-button camera-preset" data-camera="matrix">Matrix View</button>
+            </div>
+
+            <div class="control-section">
+                <h3 class="control-title">
+                    <span>⚡</span> Performance
+                </h3>
+                <div class="quality-settings">
+                    <button class="quality-btn" data-quality="low">Low</button>
+                    <button class="quality-btn active" data-quality="medium">Medium</button>
+                    <button class="quality-btn" data-quality="high">High</button>
+                    <button class="quality-btn" data-quality="ultra">Ultra</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3 class="control-title">
+                    <span>◈</span> Visualization
+                </h3>
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <input type="checkbox" id="showParticles" checked>
+                    <span>Particle Effects</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                    <input type="checkbox" id="showConnections" checked>
+                    <span>Data Connections</span>
+                </label>
+                <label style="display: flex; align-items: center; gap: 0.5rem;">
+                    <input type="checkbox" id="showLabels" checked>
+                    <span>Component Labels</span>
+                </label>
             </div>
         </div>
-    </section>
 
-    <!-- Performance Metrics -->
-    <section style="background: var(--bg-deep);">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Lightning-Fast Privacy</h2>
-                <p class="section-subtitle">
-                    Production-ready ZKP implementation with performance that enables real-time agent interactions
-                </p>
+        <!-- Info Panel -->
+        <div class="info-panel" id="infoPanel">
+            <h3 style="color: var(--zkp-primary); margin-bottom: 0.5rem;">Component Details</h3>
+            <p id="infoPanelContent" style="color: var(--text-secondary); line-height: 1.6;"></p>
+        </div>
+
+        <!-- Stats Display -->
+        <div class="stats-display">
+            <div class="stat-row">
+                <span>Proofs Generated:</span>
+                <span class="stat-value" id="proofCount">0</span>
             </div>
-            
-            <div class="performance-grid">
-                <div class="perf-metric">
-                    <div class="perf-value"><100ms</div>
-                    <div class="perf-label">Proof Verification</div>
-                </div>
-                <div class="perf-metric">
-                    <div class="perf-value">~2s</div>
-                    <div class="perf-label">Proof Generation</div>
-                </div>
-                <div class="perf-metric">
-                    <div class="perf-value">2^128</div>
-                    <div class="perf-label">Security Level</div>
-                </div>
-                <div class="perf-metric">
-                    <div class="perf-value">Groth16</div>
-                    <div class="perf-label">Proving System</div>
-                </div>
+            <div class="stat-row">
+                <span>Verification Time:</span>
+                <span class="stat-value" id="verifyTime">78ms</span>
+            </div>
+            <div class="stat-row">
+                <span>Active Particles:</span>
+                <span class="stat-value" id="particleCount">2500</span>
             </div>
         </div>
-    </section>
 
-    <!-- Use Cases -->
-    <section>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Revolutionary Use Cases</h2>
-                <p class="section-subtitle">
-                    See how ZKP transforms agent interactions from trust-based to proof-based
-                </p>
-            </div>
-            
-            <div class="use-cases-grid">
-                <div class="use-case-card">
-                    <div class="use-case-icon">🔐</div>
-                    <h3 class="use-case-title">Agent Capability Attestation</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Agents prove they possess specific capabilities (translation, code generation, analysis) 
-                        without revealing their proprietary implementation or training data.
-                    </p>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem;">
-                        <code style="color: var(--zkp-glow); font-size: 0.875rem;">
-                            Proof: "I can translate to Japanese with 99% accuracy"<br>
-                            Hidden: Model weights, training data, algorithms
-                        </code>
-                    </div>
-                </div>
-                
-                <div class="use-case-card">
-                    <div class="use-case-icon">⭐</div>
-                    <h3 class="use-case-title">Anonymous Reputation</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Build and prove reputation scores across the network without revealing transaction 
-                        history or client identities. Perfect for competitive markets.
-                    </p>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem;">
-                        <code style="color: var(--zkp-glow); font-size: 0.875rem;">
-                            Proof: "95% satisfaction from 1000+ tasks"<br>
-                            Hidden: Client list, task details, pricing
-                        </code>
-                    </div>
-                </div>
-                
-                <div class="use-case-card">
-                    <div class="use-case-icon">🗳️</div>
-                    <h3 class="use-case-title">Private Governance Voting</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Participate in protocol governance with stake-weighted voting while keeping vote 
-                        choices and stake amounts completely private.
-                    </p>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem;">
-                        <code style="color: var(--zkp-glow); font-size: 0.875rem;">
-                            Proof: "Valid vote with sufficient stake"<br>
-                            Hidden: Vote choice, exact stake amount
-                        </code>
-                    </div>
-                </div>
-                
-                <div class="use-case-card">
-                    <div class="use-case-icon">📊</div>
-                    <h3 class="use-case-title">Compliance Verification</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Prove regulatory compliance (data residency, processing limits) without exposing 
-                        operational details or customer information.
-                    </p>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem;">
-                        <code style="color: var(--zkp-glow); font-size: 0.875rem;">
-                            Proof: "GDPR compliant, data in EU only"<br>
-                            Hidden: Server locations, customer data
-                        </code>
-                    </div>
-                </div>
-                
-                <div class="use-case-card">
-                    <div class="use-case-icon">💰</div>
-                    <h3 class="use-case-title">Private Settlements</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Execute cross-registry token transfers with proof of sufficient balance without 
-                        revealing total holdings or transaction patterns.
-                    </p>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem;">
-                        <code style="color: var(--zkp-glow); font-size: 0.875rem;">
-                            Proof: "Balance ≥ transfer amount"<br>
-                            Hidden: Total balance, other transactions
-                        </code>
-                    </div>
-                </div>
-                
-                <div class="use-case-card">
-                    <div class="use-case-icon">🛡️</div>
-                    <h3 class="use-case-title">TEE Attestations</h3>
-                    <p style="color: var(--text-secondary); line-height: 1.8;">
-                        Prove code is running in a Trusted Execution Environment with specific security 
-                        properties without revealing the actual code or data.
-                    </p>
-                    <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 0.5rem;">
-                        <code style="color: var(--zkp-glow); font-size: 0.875rem;">
-                            Proof: "Running in Intel SGX enclave"<br>
-                            Hidden: Code logic, processed data
-                        </code>
-                    </div>
-                </div>
-            </div>
+        <!-- Audio Controls -->
+        <div class="audio-controls">
+            <button class="audio-toggle" id="audioToggle">🔇</button>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
         </div>
-    </section>
 
-    <!-- Technical Implementation -->
-    <section style="background: var(--bg-deep);">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Under the Hood: Groth16</h2>
-                <p class="section-subtitle">
-                    State-of-the-art SNARK construction for production use
-                </p>
-            </div>
-            
-            <div class="circuit-container">
-                <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">ZKP Circuit Architecture</h3>
-                <div class="circuit-grid">
-                    <div class="circuit-component">
-                        <h4 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Circuit Compiler</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                            Circom 2.0 for writing constraints<br>
-                            Optimized for agent attestations
-                        </p>
-                    </div>
-                    <div class="circuit-component">
-                        <h4 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Trusted Setup</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                            Powers of Tau ceremony<br>
-                            Phase 2 for each circuit type
-                        </p>
-                    </div>
-                    <div class="circuit-component">
-                        <h4 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Proof Generation</h4>
-                        <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                            SnarkJS integration<br>
-                            WASM for browser support
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="code-example">
-                <pre><code><span class="comment">// Define a capability attestation circuit in Circom</span>
-<span class="keyword">pragma</span> circom 2.0.0;
-
-<span class="keyword">template</span> AgentCapabilityProof() {
-    <span class="comment">// Public inputs</span>
-    <span class="keyword">signal input</span> capability_hash;
-    <span class="keyword">signal input</span> minimum_score;
-    
-    <span class="comment">// Private inputs (hidden)</span>
-    <span class="keyword">signal private input</span> model_hash;
-    <span class="keyword">signal private input</span> test_results[100];
-    <span class="keyword">signal private input</span> secret_nonce;
-    
-    <span class="comment">// Compute average score privately</span>
-    <span class="keyword">signal</span> total_score;
-    <span class="keyword">signal</span> average_score;
-    
-    total_score <== Sum(test_results);
-    average_score <== total_score / 100;
-    
-    <span class="comment">// Assert capability meets minimum requirement</span>
-    <span class="keyword">component</span> gt = GreaterEqualThan(32);
-    gt.in[0] <== average_score;
-    gt.in[1] <== minimum_score;
-    gt.out === 1;
-    
-    <span class="comment">// Verify capability matches claimed hash</span>
-    <span class="keyword">component</span> hasher = Poseidon(3);
-    hasher.inputs[0] <== model_hash;
-    hasher.inputs[1] <== average_score;
-    hasher.inputs[2] <== secret_nonce;
-    hasher.out === capability_hash;
-}
-
-<span class="keyword">component</span> main = AgentCapabilityProof();</code></pre>
-            </div>
-            
-            <div class="code-example">
-                <pre><code><span class="comment">// Agent using ZKP for capability attestation</span>
-<span class="keyword">class</span> ZKPEnabledAgent:
-    <span class="keyword">async def</span> prove_capability(self, capability: str, min_score: float):
-        <span class="comment"># Generate proof without revealing model details</span>
-        proof_input = {
-            <span class="string">"capability_hash"</span>: self.hash_capability(capability),
-            <span class="string">"minimum_score"</span>: int(min_score * 100),
-            <span class="comment"># Private inputs - never sent to verifier</span>
-            <span class="string">"model_hash"</span>: self.model_hash,
-            <span class="string">"test_results"</span>: self.benchmark_results,
-            <span class="string">"secret_nonce"</span>: self.generate_nonce()
-        }
-        
-        <span class="comment"># Generate SNARK proof (~2 seconds)</span>
-        proof = <span class="keyword">await</span> self.zkp_prover.generate_proof(
-            circuit=<span class="string">"capability_attestation"</span>,
-            inputs=proof_input
-        )
-        
-        <span class="comment"># Proof is only 192 bytes!</span>
-        <span class="keyword">return</span> {
-            <span class="string">"proof"</span>: proof.serialize(),
-            <span class="string">"public_inputs"</span>: {
-                <span class="string">"capability"</span>: capability,
-                <span class="string">"min_score"</span>: min_score
-            }
-        }
-    
-    <span class="keyword">async def</span> verify_peer_capability(self, peer_did: str, proof_data: dict):
-        <span class="comment"># Verify in <100ms</span>
-        is_valid = <span class="keyword">await</span> self.zkp_verifier.verify(
-            proof=proof_data[<span class="string">"proof"</span>],
-            public_inputs=proof_data[<span class="string">"public_inputs"</span>]
-        )
-        
-        <span class="keyword">if</span> is_valid:
-            <span class="comment"># Trust established through mathematics, not reputation!</span>
-            <span class="keyword">await</span> self.delegate_task_to(peer_did)</code></pre>
-            </div>
+        <!-- Voice Control -->
+        <div class="voice-control" id="voiceControl">
+            <span>◉</span>
+            <span>Voice Control</span>
         </div>
-    </section>
 
-    <!-- Privacy Guarantees -->
-    <section>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Cryptographic Guarantees</h2>
-                <p class="section-subtitle">
-                    Mathematical certainty, not trust assumptions
-                </p>
-            </div>
-            
-            <div class="privacy-features">
-                <div class="privacy-feature">
-                    <div class="privacy-icon">🔒</div>
-                    <div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Perfect Zero-Knowledge</h3>
-                        <p style="color: var(--text-secondary);">
-                            The verifier learns absolutely nothing beyond the validity of the statement. 
-                            Even with unlimited computational power, private inputs remain hidden.
-                        </p>
+        <!-- Command Palette -->
+        <div class="command-palette" id="commandPalette">
+            <input type="text" class="command-input" id="commandInput" placeholder="Type a command...">
+            <div class="command-results" id="commandResults"></div>
+        </div>
+
+        <!-- Help Overlay -->
+        <div class="help-overlay" id="helpOverlay">
+            <div class="help-content">
+                <h2 class="help-title">Keyboard Shortcuts</h2>
+                
+                <div class="help-section">
+                    <h3>Navigation</h3>
+                    <div class="help-shortcut">
+                        <span>Rotate Camera</span>
+                        <span class="key">Mouse Drag</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Zoom</span>
+                        <span class="key">Mouse Wheel</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Reset View</span>
+                        <span class="key">R</span>
                     </div>
                 </div>
-                
-                <div class="privacy-feature">
-                    <div class="privacy-icon">⚡</div>
-                    <div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Non-Interactive Proofs</h3>
-                        <p style="color: var(--text-secondary);">
-                            Single-round proof generation. No back-and-forth communication required. 
-                            Perfect for asynchronous agent interactions across the federation.
-                        </p>
+
+                <div class="help-section">
+                    <h3>Actions</h3>
+                    <div class="help-shortcut">
+                        <span>Generate Proof</span>
+                        <span class="key">G</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Verify Proof</span>
+                        <span class="key">V</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Command Palette</span>
+                        <span class="key">Cmd/Ctrl + K</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Screenshot</span>
+                        <span class="key">Cmd/Ctrl + S</span>
                     </div>
                 </div>
-                
-                <div class="privacy-feature">
-                    <div class="privacy-icon">🎯</div>
-                    <div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Succinct Verification</h3>
-                        <p style="color: var(--text-secondary);">
-                            Proof size is constant (192 bytes) regardless of computation complexity. 
-                            Verification time is constant (~80ms) for any circuit size.
-                        </p>
+
+                <div class="help-section">
+                    <h3>View Modes</h3>
+                    <div class="help-shortcut">
+                        <span>Circuit View</span>
+                        <span class="key">1</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Data Flow</span>
+                        <span class="key">2</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Proof Generation</span>
+                        <span class="key">3</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Network View</span>
+                        <span class="key">4</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Cinematic</span>
+                        <span class="key">5</span>
                     </div>
                 </div>
-                
-                <div class="privacy-feature">
-                    <div class="privacy-icon">🛡️</div>
-                    <div>
-                        <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">128-bit Security</h3>
-                        <p style="color: var(--text-secondary);">
-                            Based on the hardness of the discrete logarithm problem in elliptic curve groups. 
-                            Quantum-resistant alternatives in development.
-                        </p>
+
+                <div class="help-section">
+                    <h3>Other</h3>
+                    <div class="help-shortcut">
+                        <span>Toggle Audio</span>
+                        <span class="key">M</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Performance Info</span>
+                        <span class="key">P</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Fullscreen</span>
+                        <span class="key">F</span>
+                    </div>
+                    <div class="help-shortcut">
+                        <span>Close Help</span>
+                        <span class="key">ESC</span>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
 
-    <!-- Roadmap -->
-    <section style="background: var(--bg-deep);">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">ZKP Roadmap</h2>
-                <p class="section-subtitle">
-                    From attestations to fully homomorphic agent interactions
-                </p>
-            </div>
-            
-            <div class="roadmap-timeline">
-                <div class="roadmap-item">
-                    <div class="roadmap-content">
-                        <h3 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Q1 2025 - Beta</h3>
-                        <p style="color: var(--text-secondary);">
-                            Basic capability attestations, reputation proofs, simple compliance circuits. 
-                            Groth16 with trusted setup ceremony completed.
-                        </p>
-                    </div>
-                    <div class="roadmap-dot"></div>
-                </div>
-                
-                <div class="roadmap-item">
-                    <div class="roadmap-content">
-                        <h3 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Q2 2025 (Current)</h3>
-                        <p style="color: var(--text-secondary);">
-                            Production rollout of core ZKP features. Enhanced performance optimizations.
-                            Integration with major agent frameworks.
-                        </p>
-                    </div>
-                    <div class="roadmap-dot current"></div>
-                </div>
-                
-                <div class="roadmap-item">
-                    <div class="roadmap-content">
-                        <h3 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Q3 2025 - Advanced Features</h3>
-                        <p style="color: var(--text-secondary);">
-                            ML model verification, dataset provenance proofs, multi-party computation protocols.
-                            PLONK integration for universal setup. Recursive SNARKs for complex agent workflows.
-                            IPA-based proofs for better performance.
-                        </p>
-                    </div>
-                    <div class="roadmap-dot"></div>
-                </div>
-                
-                <div class="roadmap-item">
-                    <div class="roadmap-content">
-                        <h3 style="color: var(--zkp-glow); margin-bottom: 0.5rem;">Q4 2025 - Homomorphic Integration</h3>
-                        <p style="color: var(--text-secondary);">
-                            Fully homomorphic encryption for private agent computation. 
-                            Agents can process encrypted data without decryption.
-                        </p>
-                    </div>
-                    <div class="roadmap-dot"></div>
-                </div>
-            </div>
+        <!-- Cinematic UI -->
+        <div class="cinematic-ui" id="cinematicUI">
+            <span>Press ESC to exit cinematic mode</span>
         </div>
-    </section>
+    </div>
 
-    <!-- CTA -->
-    <section style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); padding: 8rem 0;">
-        <div class="container" style="text-align: center;">
-            <h2 class="section-title">Privacy is Not Optional</h2>
-            <p style="font-size: 1.5rem; color: var(--text-secondary); margin: 2rem 0;">
-                In the age of autonomous agents, cryptographic privacy is a fundamental right.<br>
-                Build with zero-knowledge from day one.
-            </p>
-            <div style="display: flex; gap: 2rem; justify-content: center; margin-top: 3rem; flex-wrap: wrap;">
-                <a href="/developers-page.html" class="btn-primary">Start Building with ZKP</a>
-                <a href="/technical-page.html" style="background: transparent; color: var(--zkp-glow); border: 2px solid var(--zkp-glow); padding: 1rem 2.5rem; font-size: 1.125rem; font-weight: 600; border-radius: 0.5rem; text-decoration: none; display: inline-block; transition: all 0.3s ease;">
-                    View Full Architecture
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer style="background: var(--bg-void); padding: 4rem 0; border-top: 1px solid rgba(245, 158, 11, 0.1);">
-        <div class="container" style="text-align: center; color: var(--text-muted);">
-            <p>© 2025 The Protocol | <a href="/" style="color: var(--zkp-glow); text-decoration: none;">Home</a> | 
-               <a href="/imprint.html" style="color: var(--zkp-glow); text-decoration: none;">Imprint</a> | 
-               <a href="/privacy.html" style="color: var(--zkp-glow); text-decoration: none;">Privacy</a>
-            </p>
-        </div>
-    </footer>
+    <!-- Screenshot Flash -->
+    <div class="screenshot-flash" id="screenshotFlash"></div>
 
     <script>
-        // Mobile Navigation Toggle
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
-        
-        navToggle.addEventListener('click', function() {
-            navToggle.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                navToggle.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-        
-        // Header scroll effect
-        let lastScroll = 0;
-        const header = document.querySelector('.nav-header');
-        
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll <= 0) {
-                header.style.boxShadow = 'none';
-            } else {
-                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
-            }
-            
-            lastScroll = currentScroll;
-        });
-
-        // Create floating particles
-        const particleContainer = document.getElementById('particleContainer');
-        for (let i = 0; i < 50; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 20 + 's';
-            particle.style.animationDuration = (20 + Math.random() * 10) + 's';
-            particleContainer.appendChild(particle);
-        }
-        
-        // Enhanced Interactive ZKP Flow Visualization
-        const canvas = document.getElementById('zkp-flow-canvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = 600;
-        }
-        
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        
-        // ZKP Flow State
-        let flowState = {
-            phase: 0,
-            progress: 0,
-            particles: [],
-            proofs: [],
-            connections: [],
-            mouseX: 0,
-            mouseY: 0
+        // Initialize Three.js Scene
+        let scene, camera, renderer, composer;
+        let raycaster, mouse;
+        let audioEnabled = false;
+        let currentView = 'circuit';
+        let quality = 'medium'; // Changed default to medium for better performance
+        let stats = {
+            fps: 60,
+            proofCount: 0,
+            particleCount: 2500,
+            verifyTime: '78ms'
         };
 
-        // Node positions
-        const nodes = [
-            { id: 'input', label: 'Private Input', x: 0.15, y: 0.5, color: '#EF4444', icon: '🔐' },
-            { id: 'circuit', label: 'ZK Circuit', x: 0.35, y: 0.5, color: '#F59E0B', icon: '⚙️' },
-            { id: 'prover', label: 'Prover', x: 0.55, y: 0.3, color: '#8B5CF6', icon: '🧮' },
-            { id: 'proof', label: 'ZK Proof', x: 0.75, y: 0.5, color: '#10B981', icon: '📄' },
-            { id: 'verifier', label: 'Verifier', x: 0.85, y: 0.5, color: '#3B82F6', icon: '✓' }
-        ];
+        // Initialize Tone.js
+        let synth, reverb, delay, panner;
+        let audioContext;
 
-        // Create circuit connections
-        flowState.connections = [
-            { from: 'input', to: 'circuit', particles: [] },
-            { from: 'circuit', to: 'prover', particles: [] },
-            { from: 'prover', to: 'proof', particles: [] },
-            { from: 'proof', to: 'verifier', particles: [] }
-        ];
+        // Scene objects
+        let circuitComponents = [];
+        let particles = [];
+        let connections = [];
+        let proofVisualizations = [];
+        let activeAnimations = [];
+        let componentLabels = [];
 
-        // Particle system
-        class Particle {
-            constructor(x, y, vx, vy, color, size = 2) {
-                this.x = x;
-                this.y = y;
-                this.vx = vx;
-                this.vy = vy;
-                this.color = color;
-                this.size = size;
-                this.life = 100;
-                this.maxLife = 100;
+        // Camera animations
+        let orbitAnimation, flythroughAnimation, focusAnimation, matrixAnimation;
+        let cinematicActive = false;
+
+        // FPS tracking variables
+        let lastFrameTime = performance.now();
+        let frameCount = 0;
+        let fpsUpdateInterval = 250; // Update FPS 4 times per second
+        let lastFpsUpdate = performance.now();
+
+        // Active proof tracking
+        let activeProof = null;
+        let proofLifetime = null;
+
+        // Enhanced particle system shader code - OPTIMIZED
+        const particleVertexShader = `
+            attribute float aSize;
+            attribute vec3 aVelocity;
+            attribute float aLife;
+            attribute float aType;
+            attribute vec3 aColor;
+            
+            varying vec3 vColor;
+            varying float vLife;
+            varying float vType;
+            
+            uniform float uTime;
+            uniform float uDeltaTime;
+            
+            void main() {
+                vColor = aColor;
+                vLife = aLife;
+                vType = aType;
+                
+                vec3 pos = position;
+                
+                // Simplified movement
+                pos += aVelocity * uDeltaTime * 10.0;
+                pos.y += sin(uTime * 0.001 + pos.x * 0.1) * 0.1;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                
+                float size = aSize * (1.0 + sin(uTime * 0.001) * 0.2);
+                gl_PointSize = size * (300.0 / -mvPosition.z);
+                gl_Position = projectionMatrix * mvPosition;
             }
+        `;
 
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.life--;
-                this.vy += 0.05; // gravity
+        const particleFragmentShader = `
+            varying vec3 vColor;
+            varying float vLife;
+            varying float vType;
+            
+            uniform float uTime;
+            
+            void main() {
+                vec2 coord = gl_PointCoord;
+                float dist = length(coord - vec2(0.5));
+                
+                if(dist > 0.5) discard;
+                
+                float alpha = 1.0 - smoothstep(0.3, 0.5, dist);
+                alpha *= vLife;
+                
+                vec3 color = vColor;
+                color *= 1.0 + sin(uTime * 0.001) * 0.2;
+                
+                gl_FragColor = vec4(color, alpha);
             }
+        `;
 
-            draw(ctx) {
-                const alpha = this.life / this.maxLife;
-                ctx.fillStyle = this.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size * alpha, 0, Math.PI * 2);
-                ctx.fill();
+        // Loading Manager
+        const loadingManager = new THREE.LoadingManager();
+        let loadingProgress = 0;
+
+        loadingManager.onStart = () => {
+            updateLoadingStatus('Loading 3D assets...');
+        };
+
+        loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            loadingProgress = (itemsLoaded / itemsTotal) * 100;
+            document.getElementById('loadingProgress').style.width = loadingProgress + '%';
+        };
+
+        loadingManager.onLoad = () => {
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    startExperience();
+                }, 500);
+            }, 500);
+        };
+
+        function updateLoadingStatus(status) {
+            document.getElementById('loadingStatus').textContent = status;
+        }
+
+        // Initialize camera controls variables
+        let updateCameraRotation;
+
+        // Initialize Three.js
+        function initThree() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x000000, 0.002);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 5, 20);
+
+            // Renderer - OPTIMIZED settings
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('zkp-canvas'),
+                antialias: quality === 'high' || quality === 'ultra',
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'ultra' ? 2 : 1.5));
+            renderer.shadowMap.enabled = quality !== 'low';
+            renderer.shadowMap.type = quality === 'low' ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+
+            // Initialize controls and mouse
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Add lights
+            setupLighting();
+
+            // Setup camera controls
+            updateCameraRotation = setupCameraControls();
+
+            // Create scene objects
+            createCircuitVisualization();
+            createEnhancedParticleSystem();
+            createConnections();
+
+            // Start animation
+            animate();
+        }
+
+        // Setup lighting - OPTIMIZED
+        function setupLighting() {
+            // Ambient light
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+            scene.add(ambientLight);
+
+            // Main directional light
+            const mainLight = new THREE.DirectionalLight(0xF59E0B, 1);
+            mainLight.position.set(10, 20, 10);
+            mainLight.castShadow = quality !== 'low';
+            if (mainLight.castShadow) {
+                mainLight.shadow.mapSize.width = quality === 'ultra' ? 2048 : 1024;
+                mainLight.shadow.mapSize.height = quality === 'ultra' ? 2048 : 1024;
+            }
+            scene.add(mainLight);
+
+            // Accent lights - reduced for performance
+            if (quality !== 'low') {
+                const accentLight1 = new THREE.PointLight(0x8B5CF6, 0.8, 50);
+                accentLight1.position.set(-10, 5, -10);
+                scene.add(accentLight1);
+
+                const accentLight2 = new THREE.PointLight(0x10B981, 0.8, 50);
+                accentLight2.position.set(10, 5, -10);
+                scene.add(accentLight2);
             }
         }
 
-        // Data packet animation
-        class DataPacket {
-            constructor(connection, speed = 1) {
-                this.connection = connection;
-                this.progress = 0;
-                this.speed = speed;
-                this.size = 6;
-                this.trail = [];
+        // Enhanced Circuit Component class - FIXED labels
+        class CircuitComponent {
+            constructor(type, position, data) {
+                this.type = type;
+                this.data = data;
+                this.position = position;
+                this.originalPosition = position.clone();
+                this.mesh = null;
+                this.glowMesh = null;
+                this.active = false;
+                this.label = null;
+                this.createMesh();
+                this.createLabel();
             }
 
-            update() {
-                this.progress += this.speed * 0.02;
-                if (this.progress > 1) {
-                    return false;
+            createMesh() {
+                let geometry, material;
+
+                switch (this.type) {
+                    case 'input':
+                        geometry = new THREE.IcosahedronGeometry(1, 1);
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: 0xEF4444,
+                            emissive: 0xEF4444,
+                            emissiveIntensity: 0.2,
+                            metalness: 0.8,
+                            roughness: 0.2
+                        });
+                        break;
+                    case 'circuit':
+                        geometry = new THREE.TorusKnotGeometry(1, 0.3, 64, 16);
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: 0xF59E0B,
+                            emissive: 0xF59E0B,
+                            emissiveIntensity: 0.3,
+                            metalness: 0.9,
+                            roughness: 0.1
+                        });
+                        break;
+                    case 'prover':
+                        geometry = new THREE.DodecahedronGeometry(1.2);
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: 0x8B5CF6,
+                            emissive: 0x8B5CF6,
+                            emissiveIntensity: 0.2,
+                            metalness: 0.7,
+                            roughness: 0.3
+                        });
+                        break;
+                    case 'proof':
+                        geometry = new THREE.OctahedronGeometry(1);
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: 0x10B981,
+                            emissive: 0x10B981,
+                            emissiveIntensity: 0.4,
+                            metalness: 0.6,
+                            roughness: 0.2
+                        });
+                        break;
+                    case 'verifier':
+                        geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+                        material = new THREE.MeshPhysicalMaterial({
+                            color: 0x3B82F6,
+                            emissive: 0x3B82F6,
+                            emissiveIntensity: 0.3,
+                            metalness: 0.8,
+                            roughness: 0.15
+                        });
+                        break;
                 }
 
-                const fromNode = nodes.find(n => n.id === this.connection.from);
-                const toNode = nodes.find(n => n.id === this.connection.to);
-                
-                // Bezier curve for smooth path
-                const t = this.progress;
-                const cp1x = fromNode.x * canvas.width + 100;
-                const cp1y = fromNode.y * canvas.height;
-                const cp2x = toNode.x * canvas.width - 100;
-                const cp2y = toNode.y * canvas.height;
-                
-                this.x = Math.pow(1-t, 3) * fromNode.x * canvas.width +
-                         3 * Math.pow(1-t, 2) * t * cp1x +
-                         3 * (1-t) * Math.pow(t, 2) * cp2x +
-                         Math.pow(t, 3) * toNode.x * canvas.width;
-                         
-                this.y = Math.pow(1-t, 3) * fromNode.y * canvas.height +
-                         3 * Math.pow(1-t, 2) * t * cp1y +
-                         3 * (1-t) * Math.pow(t, 2) * cp2y +
-                         Math.pow(t, 3) * toNode.y * canvas.height;
+                this.mesh = new THREE.Mesh(geometry, material);
+                this.mesh.position.copy(this.position);
+                this.mesh.castShadow = true;
+                this.mesh.receiveShadow = true;
+                this.mesh.userData = { component: this };
 
-                // Add to trail
-                this.trail.push({ x: this.x, y: this.y });
-                if (this.trail.length > 10) {
-                    this.trail.shift();
+                // Create glow effect - simplified for performance
+                if (quality !== 'low') {
+                    const glowGeometry = geometry.clone();
+                    const glowMaterial = new THREE.MeshBasicMaterial({
+                        color: material.color || 0xffffff,
+                        transparent: true,
+                        opacity: 0.2,
+                        side: THREE.BackSide
+                    });
+                    this.glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
+                    this.glowMesh.position.copy(this.position);
+                    this.glowMesh.scale.multiplyScalar(1.3);
+                    scene.add(this.glowMesh);
                 }
 
-                return true;
+                scene.add(this.mesh);
+                circuitComponents.push(this);
             }
 
-            draw(ctx) {
-                // Draw trail
-                this.trail.forEach((point, i) => {
-                    const alpha = i / this.trail.length;
-                    ctx.fillStyle = '#F59E0B' + Math.floor(alpha * 100).toString(16).padStart(2, '0');
-                    ctx.beginPath();
-                    ctx.arc(point.x, point.y, this.size * alpha, 0, Math.PI * 2);
-                    ctx.fill();
+            createLabel() {
+                const labelDiv = document.createElement('div');
+                labelDiv.className = 'component-label';
+                labelDiv.innerHTML = `${this.data.icon} ${this.data.label}`;
+                document.body.appendChild(labelDiv);
+                this.label = labelDiv;
+                componentLabels.push(labelDiv);
+                
+                // Set initial visibility
+                const showLabels = document.getElementById('showLabels');
+                if (!showLabels || !showLabels.checked) {
+                    labelDiv.classList.add('hidden');
+                }
+            }
+
+            updateLabelPosition() {
+                if (!this.label) return;
+                
+                const vector = new THREE.Vector3();
+                this.mesh.getWorldPosition(vector);
+                
+                // Add offset to position label above component
+                vector.y += 2;
+                
+                vector.project(camera);
+
+                const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+                const y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
+
+                this.label.style.transform = `translate(-50%, -50%) translate(${x}px, ${y}px)`;
+                
+                // Hide label if behind camera
+                this.label.style.display = vector.z > 1 ? 'none' : 'block';
+            }
+
+            activate() {
+                this.active = true;
+                // Animate activation
+                gsap.to(this.mesh.scale, {
+                    x: 1.2,
+                    y: 1.2,
+                    z: 1.2,
+                    duration: 0.3,
+                    ease: "back.out"
+                });
+                gsap.to(this.mesh.material, {
+                    emissiveIntensity: 0.8,
+                    duration: 0.3
+                });
+                if (this.glowMesh) {
+                    gsap.to(this.glowMesh.material, {
+                        opacity: 0.6,
+                        duration: 0.3
+                    });
+                }
+
+                // Trigger audio
+                if (audioEnabled && synth) {
+                    playComponentSound(this.type);
+                }
+            }
+
+            deactivate() {
+                this.active = false;
+                gsap.to(this.mesh.scale, {
+                    x: 1,
+                    y: 1,
+                    z: 1,
+                    duration: 0.3
+                });
+                gsap.to(this.mesh.material, {
+                    emissiveIntensity: 0.2,
+                    duration: 0.3
+                });
+                if (this.glowMesh) {
+                    gsap.to(this.glowMesh.material, {
+                        opacity: 0.2,
+                        duration: 0.3
+                    });
+                }
+            }
+
+            update(time) {
+                // Floating animation
+                this.mesh.position.y = this.position.y + Math.sin(time * 0.001 + this.position.x) * 0.1;
+                if (this.glowMesh) {
+                    this.glowMesh.position.y = this.mesh.position.y;
+                }
+
+                // Rotation
+                this.mesh.rotation.x += 0.005;
+                this.mesh.rotation.y += 0.01;
+                if (this.glowMesh) {
+                    this.glowMesh.rotation.x = this.mesh.rotation.x;
+                    this.glowMesh.rotation.y = this.mesh.rotation.y;
+                }
+
+                // Update label position
+                this.updateLabelPosition();
+            }
+
+            updatePositions() {
+                // Update glow mesh position to match main mesh
+                if (this.glowMesh) {
+                    this.glowMesh.position.copy(this.mesh.position);
+                }
+            }
+        }
+
+        // Create circuit visualization - IMPROVED icons
+        function createCircuitVisualization() {
+            const componentData = [
+                { type: 'input', position: new THREE.Vector3(-10, 0, 0), data: { label: 'Private Input', icon: '◈' } },
+                { type: 'circuit', position: new THREE.Vector3(-5, 0, 0), data: { label: 'ZK Circuit', icon: '◉' } },
+                { type: 'prover', position: new THREE.Vector3(0, 3, 0), data: { label: 'Prover', icon: '▣' } },
+                { type: 'proof', position: new THREE.Vector3(5, 0, 0), data: { label: 'ZK Proof', icon: '◆' } },
+                { type: 'verifier', position: new THREE.Vector3(10, 0, 0), data: { label: 'Verifier', icon: '✓' } }
+            ];
+
+            componentData.forEach(comp => {
+                new CircuitComponent(comp.type, comp.position, comp.data);
+            });
+        }
+
+        // Enhanced Particle System - OPTIMIZED
+        class EnhancedParticleSystem {
+            constructor() {
+                this.particleCount = quality === 'ultra' ? 5000 : quality === 'high' ? 3000 : quality === 'medium' ? 2000 : 1000;
+                this.particles = new THREE.BufferGeometry();
+                this.positions = new Float32Array(this.particleCount * 3);
+                this.colors = new Float32Array(this.particleCount * 3);
+                this.sizes = new Float32Array(this.particleCount);
+                this.lifetimes = new Float32Array(this.particleCount);
+                this.types = new Float32Array(this.particleCount);
+                this.velocities = new Float32Array(this.particleCount * 3);
+                
+                this.init();
+            }
+            
+            init() {
+                // Initialize particle data
+                for (let i = 0; i < this.particleCount; i++) {
+                    // Position
+                    this.positions[i * 3] = (Math.random() - 0.5) * 30;
+                    this.positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+                    this.positions[i * 3 + 2] = (Math.random() - 0.5) * 30;
+                    
+                    // Color
+                    const hue = 0.1 + Math.random() * 0.1;
+                    const color = new THREE.Color();
+                    color.setHSL(hue, 0.8, 0.6);
+                    this.colors[i * 3] = color.r;
+                    this.colors[i * 3 + 1] = color.g;
+                    this.colors[i * 3 + 2] = color.b;
+                    
+                    // Size
+                    this.sizes[i] = Math.random() * 2 + 0.5;
+                    
+                    // Lifetime
+                    this.lifetimes[i] = Math.random();
+                    
+                    // Type
+                    this.types[i] = Math.floor(Math.random() * 3);
+                    
+                    // Velocity
+                    this.velocities[i * 3] = (Math.random() - 0.5) * 0.02;
+                    this.velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.02;
+                    this.velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.02;
+                }
+                
+                this.particles.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
+                this.particles.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
+                this.particles.setAttribute('aSize', new THREE.BufferAttribute(this.sizes, 1));
+                this.particles.setAttribute('aLife', new THREE.BufferAttribute(this.lifetimes, 1));
+                this.particles.setAttribute('aType', new THREE.BufferAttribute(this.types, 1));
+                this.particles.setAttribute('aVelocity', new THREE.BufferAttribute(this.velocities, 3));
+                this.particles.setAttribute('aColor', new THREE.BufferAttribute(this.colors, 3));
+                
+                // Simpler shader material for performance
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uDeltaTime: { value: 0.016 }
+                    },
+                    vertexShader: particleVertexShader,
+                    fragmentShader: particleFragmentShader,
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false,
+                    transparent: true,
+                    vertexColors: true
+                });
+                
+                this.mesh = new THREE.Points(this.particles, material);
+                scene.add(this.mesh);
+            }
+            
+            update(time, deltaTime) {
+                this.mesh.material.uniforms.uTime.value = time * 0.001;
+                this.mesh.material.uniforms.uDeltaTime.value = Math.min(deltaTime * 0.001, 0.1);
+                
+                // Update positions
+                const positions = this.particles.attributes.position.array;
+                const velocities = this.particles.attributes.aVelocity.array;
+                const lifetimes = this.particles.attributes.aLife.array;
+                
+                for (let i = 0; i < this.particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Update position
+                    positions[i3] += velocities[i3];
+                    positions[i3 + 1] += velocities[i3 + 1];
+                    positions[i3 + 2] += velocities[i3 + 2];
+                    
+                    // Update lifetime
+                    lifetimes[i] -= 0.005;
+                    if (lifetimes[i] <= 0) {
+                        lifetimes[i] = 1.0;
+                        // Respawn particle
+                        positions[i3] = (Math.random() - 0.5) * 30;
+                        positions[i3 + 1] = (Math.random() - 0.5) * 20;
+                        positions[i3 + 2] = (Math.random() - 0.5) * 30;
+                    }
+                    
+                    // Boundary check
+                    if (Math.abs(positions[i3]) > 20) positions[i3] *= -0.9;
+                    if (Math.abs(positions[i3 + 1]) > 15) positions[i3 + 1] *= -0.9;
+                    if (Math.abs(positions[i3 + 2]) > 20) positions[i3 + 2] *= -0.9;
+                }
+                
+                this.particles.attributes.aLife.needsUpdate = true;
+                this.particles.attributes.position.needsUpdate = true;
+                
+                // Update particle count stat
+                stats.particleCount = this.particleCount;
+            }
+        }
+
+        let particleSystem;
+
+        function createEnhancedParticleSystem() {
+            if (document.getElementById('showParticles') && document.getElementById('showParticles').checked) {
+                particleSystem = new EnhancedParticleSystem();
+                particles.push(particleSystem);
+            }
+        }
+
+        // Enhanced Data Connection class - FIXED for data flow
+        class DataConnection {
+            constructor(startComponent, endComponent) {
+                this.start = startComponent;
+                this.end = endComponent;
+                this.active = false;
+                this.particles = [];
+                this.curve = null;
+                this.mesh = null;
+                this.createMesh();
+            }
+
+            createMesh() {
+                this.updatePath();
+            }
+
+            updatePath() {
+                const points = [];
+                const startPos = this.start.mesh.position.clone();
+                const endPos = this.end.mesh.position.clone();
+                
+                // Create curved path
+                const midPoint = new THREE.Vector3().lerpVectors(startPos, endPos, 0.5);
+                midPoint.y += 3;
+
+                this.curve = new THREE.QuadraticBezierCurve3(startPos, midPoint, endPos);
+                points.push(...this.curve.getPoints(50));
+
+                if (this.mesh) {
+                    this.mesh.geometry.setFromPoints(points);
+                } else {
+                    const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                    const material = new THREE.LineBasicMaterial({
+                        color: 0xF59E0B,
+                        transparent: true,
+                        opacity: 0.3,
+                        linewidth: 2
+                    });
+
+                    this.mesh = new THREE.Line(geometry, material);
+                    scene.add(this.mesh);
+                }
+            }
+
+            activate() {
+                this.active = true;
+                gsap.to(this.mesh.material, {
+                    opacity: 0.8,
+                    duration: 0.3
                 });
 
-                // Draw packet
-                const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 2);
-                gradient.addColorStop(0, '#F59E0B');
-                gradient.addColorStop(0.5, '#F59E0B80');
-                gradient.addColorStop(1, 'transparent');
-                ctx.fillStyle = gradient;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size * 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        // Proof visualization
-        class ProofVisualization {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.size = 0;
-                this.targetSize = 50;
-                this.rotation = 0;
-                this.complete = false;
+                // Create data flow animation
+                this.createDataFlow();
             }
 
-            update() {
-                if (this.size < this.targetSize) {
-                    this.size += (this.targetSize - this.size) * 0.1;
+            createDataFlow() {
+                if (!this.active) return;
+
+                const packet = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.3, 16, 16),
+                    new THREE.MeshPhysicalMaterial({
+                        color: 0xF59E0B,
+                        emissive: 0xF59E0B,
+                        emissiveIntensity: 1,
+                        metalness: 0.5,
+                        roughness: 0
+                    })
+                );
+
+                packet.position.copy(this.start.mesh.position);
+                scene.add(packet);
+
+                // Add glow to packet
+                if (quality !== 'low') {
+                    const glowGeometry = new THREE.SphereGeometry(0.5, 16, 16);
+                    const glowMaterial = new THREE.MeshBasicMaterial({
+                        color: 0xF59E0B,
+                        transparent: true,
+                        opacity: 0.3
+                    });
+                    const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                    packet.add(glow);
                 }
-                this.rotation += 0.02;
+
+                // Animate packet along curve
+                const duration = 2;
+                const tween = { t: 0 };
                 
-                if (this.size >= this.targetSize * 0.95 && !this.complete) {
-                    this.complete = true;
-                    // Spawn success particles
-                    for (let i = 0; i < 20; i++) {
-                        const angle = (Math.PI * 2 * i) / 20;
-                        const speed = 2 + Math.random() * 2;
-                        flowState.particles.push(new Particle(
-                            this.x, this.y,
-                            Math.cos(angle) * speed,
-                            Math.sin(angle) * speed,
-                            '#10B981', 3
-                        ));
+                gsap.to(tween, {
+                    t: 1,
+                    duration: duration,
+                    ease: "power2.inOut",
+                    onUpdate: () => {
+                        const point = this.curve.getPoint(tween.t);
+                        packet.position.copy(point);
+                    },
+                    onComplete: () => {
+                        scene.remove(packet);
+                        // Create continuous flow
+                        if (this.active) {
+                            setTimeout(() => this.createDataFlow(), 500);
+                        }
                     }
-                }
-            }
-
-            draw(ctx) {
-                ctx.save();
-                ctx.translate(this.x, this.y);
-                ctx.rotate(this.rotation);
-
-                // Outer ring
-                ctx.strokeStyle = '#10B981';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-                ctx.stroke();
-
-                // Inner pattern
-                const segments = 8;
-                for (let i = 0; i < segments; i++) {
-                    const angle = (Math.PI * 2 * i) / segments;
-                    const nextAngle = (Math.PI * 2 * (i + 1)) / segments;
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(0, 0);
-                    ctx.lineTo(Math.cos(angle) * this.size * 0.8, Math.sin(angle) * this.size * 0.8);
-                    ctx.lineTo(Math.cos(nextAngle) * this.size * 0.8, Math.sin(nextAngle) * this.size * 0.8);
-                    ctx.closePath();
-                    
-                    ctx.fillStyle = i % 2 === 0 ? '#10B98120' : '#10B98140';
-                    ctx.fill();
-                }
-
-                // Center icon
-                ctx.font = `${this.size * 0.4}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillText('✓', 0, 0);
-
-                ctx.restore();
-            }
-        }
-        
-        function drawZKPFlow() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw grid background
-            ctx.strokeStyle = 'rgba(245, 158, 11, 0.05)';
-            ctx.lineWidth = 1;
-            const gridSize = 50;
-            
-            for (let x = 0; x < canvas.width; x += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-            
-            for (let y = 0; y < canvas.height; y += gridSize) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-
-            // Draw connections
-            flowState.connections.forEach(conn => {
-                const fromNode = nodes.find(n => n.id === conn.from);
-                const toNode = nodes.find(n => n.id === conn.to);
-                
-                ctx.strokeStyle = 'rgba(245, 158, 11, 0.2)';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([10, 5]);
-                
-                ctx.beginPath();
-                ctx.moveTo(fromNode.x * canvas.width, fromNode.y * canvas.height);
-                
-                // Bezier curve
-                const cp1x = fromNode.x * canvas.width + 100;
-                const cp1y = fromNode.y * canvas.height;
-                const cp2x = toNode.x * canvas.width - 100;
-                const cp2y = toNode.y * canvas.height;
-                
-                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, toNode.x * canvas.width, toNode.y * canvas.height);
-                ctx.stroke();
-                
-                ctx.setLineDash([]);
-            });
-
-            // Update and draw data packets
-            flowState.connections.forEach(conn => {
-                conn.particles = conn.particles.filter(packet => {
-                    const alive = packet.update();
-                    if (alive) {
-                        packet.draw(ctx);
-                    }
-                    return alive;
                 });
-            });
 
-            // Draw nodes
-            nodes.forEach((node, index) => {
-                const x = node.x * canvas.width;
-                const y = node.y * canvas.height;
-                const isActive = index <= flowState.phase;
-                const isHovered = Math.hypot(flowState.mouseX - x, flowState.mouseY - y) < 60;
+                this.particles.push(packet);
+            }
+
+            deactivate() {
+                this.active = false;
+                gsap.to(this.mesh.material, {
+                    opacity: 0.3,
+                    duration: 0.3
+                });
                 
-                const scale = isActive ? 1 + Math.sin(Date.now() * 0.002) * 0.05 : 1;
-                const hoverScale = isHovered ? 1.1 : 1;
-                const finalScale = scale * hoverScale;
-                
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.scale(finalScale, finalScale);
-                
-                // Glow effect
-                if (isActive || isHovered) {
-                    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 80);
-                    gradient.addColorStop(0, node.color + '40');
-                    gradient.addColorStop(1, 'transparent');
-                    ctx.fillStyle = gradient;
-                    ctx.beginPath();
-                    ctx.arc(0, 0, 80, 0, Math.PI * 2);
-                    ctx.fill();
+                // Clean up particles
+                this.particles.forEach(p => {
+                    if (p.parent) scene.remove(p);
+                });
+                this.particles = [];
+            }
+
+            remove() {
+                this.deactivate();
+                if (this.mesh) {
+                    scene.remove(this.mesh);
                 }
-                
-                // Outer ring
-                ctx.strokeStyle = isActive ? node.color : '#1F2937';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.arc(0, 0, 50, 0, Math.PI * 2);
-                ctx.stroke();
-                
-                // Inner circle
-                const innerGradient = ctx.createRadialGradient(0, 0, 0, 0, 0, 50);
-                innerGradient.addColorStop(0, isActive ? node.color + '40' : '#1F293740');
-                innerGradient.addColorStop(1, isActive ? node.color : '#1F2937');
-                ctx.fillStyle = innerGradient;
-                ctx.beginPath();
-                ctx.arc(0, 0, 48, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Icon
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(node.icon, 0, 0);
-                
-                ctx.restore();
-                
-                // Label
-                ctx.fillStyle = isActive ? node.color : '#64748B';
-                ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText(node.label, x, y + 80);
-                
-                // Show details on hover
-                if (isHovered) {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-                    ctx.fillRect(x - 100, y - 120, 200, 40);
-                    ctx.fillStyle = '#FFFFFF';
-                    ctx.font = '12px -apple-system, BlinkMacSystemFont, sans-serif';
-                    const details = [
-                        'Sensitive data remains hidden',
-                        'R1CS constraints satisfied',
-                        'Generating cryptographic proof',
-                        '192 bytes of pure math',
-                        'Verification complete!'
-                    ];
-                    ctx.fillText(details[index], x, y - 100);
-                }
-            });
+            }
+        }
 
-            // Update and draw particles
-            flowState.particles = flowState.particles.filter(particle => {
-                particle.update();
-                if (particle.life > 0) {
-                    particle.draw(ctx);
-                    return true;
-                }
-                return false;
-            });
+        function createConnections() {
+            const showConnectionsToggle = document.getElementById('showConnections');
+            if (!showConnectionsToggle || !showConnectionsToggle.checked) return;
 
-            // Update and draw proofs
-            flowState.proofs.forEach(proof => {
-                proof.update();
-                proof.draw(ctx);
-            });
+            // Clear existing connections
+            connections.forEach(conn => conn.remove());
+            connections = [];
 
-            // Status text
-            ctx.fillStyle = '#F8FAFC';
-            ctx.font = 'bold 18px -apple-system, BlinkMacSystemFont, sans-serif';
-            ctx.textAlign = 'center';
+            // Create connections between adjacent components
+            for (let i = 0; i < circuitComponents.length - 1; i++) {
+                const connection = new DataConnection(
+                    circuitComponents[i],
+                    circuitComponents[i + 1]
+                );
+                connections.push(connection);
+            }
+        }
+
+        // Audio System
+        function initAudio() {
+            try {
+                // Initialize synthesizers
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.set({
+                    oscillator: { type: "sawtooth" },
+                    envelope: {
+                        attack: 0.01,
+                        decay: 0.3,
+                        sustain: 0.4,
+                        release: 1.2
+                    }
+                });
+
+                // Effects
+                reverb = new Tone.Reverb(3).toDestination();
+                delay = new Tone.Delay(0.5, 0.7).toDestination();
+                panner = new Tone.Panner3D().toDestination();
+
+                synth.connect(reverb);
+                synth.connect(delay);
+                synth.connect(panner);
+            } catch (e) {
+                console.log('Audio initialization skipped');
+            }
+        }
+
+        function playComponentSound(type) {
+            if (!audioEnabled || !synth || typeof Tone === 'undefined') return;
+
+            const notes = {
+                'input': ['C4', 'E4', 'G4'],
+                'circuit': ['D4', 'F#4', 'A4'],
+                'prover': ['E4', 'G#4', 'B4'],
+                'proof': ['F4', 'A4', 'C5'],
+                'verifier': ['G4', 'B4', 'D5']
+            };
+
+            const chord = notes[type] || ['C4'];
+            try {
+                synth.triggerAttackRelease(chord, '8n');
+            } catch (e) {
+                console.log('Audio playback skipped');
+            }
+        }
+
+        function playVerificationSound() {
+            if (!audioEnabled || !synth || typeof Tone === 'undefined') return;
             
-            const statusMessages = [
-                'Initializing Zero-Knowledge Protocol...',
-                'Loading private inputs into secure memory...',
-                'Compiling arithmetic circuit constraints...',
-                'Generating cryptographic witness...',
-                '✨ Zero-Knowledge Proof Verified! ✨'
+            // Success chord progression
+            const progression = [
+                ['C4', 'E4', 'G4', 'B4'],
+                ['D4', 'F#4', 'A4', 'C#5'],
+                ['E4', 'G#4', 'B4', 'D#5'],
+                ['F4', 'A4', 'C5', 'E5']
             ];
             
-            if (flowState.phase < statusMessages.length) {
-                ctx.fillText(statusMessages[flowState.phase], canvas.width / 2, 50);
-            }
-            
-            // Progress animation
-            flowState.progress += 0.005;
-            if (flowState.progress > 1) {
-                flowState.progress = 0;
-                flowState.phase = (flowState.phase + 1) % 5;
+            progression.forEach((chord, i) => {
+                setTimeout(() => {
+                    try {
+                        synth.triggerAttackRelease(chord, '4n');
+                    } catch (e) {
+                        console.log('Audio playback skipped');
+                    }
+                }, i * 200);
+            });
+        }
+
+        // Camera Controls
+        function setupCameraControls() {
+            let isMouseDown = false;
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetRotationX = 0;
+            let targetRotationY = 0;
+
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.tagName === 'CANVAS') {
+                    isMouseDown = true;
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isMouseDown && currentView !== 'cinematic') {
+                    const deltaX = e.clientX - mouseX;
+                    const deltaY = e.clientY - mouseY;
+                    targetRotationY += deltaX * 0.01;
+                    targetRotationX += deltaY * 0.01;
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                }
+
+                // Update mouse position for raycasting
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                // Update custom cursor
+                const cursor = document.getElementById('customCursor');
+                if (cursor) {
+                    cursor.style.left = e.clientX + 'px';
+                    cursor.style.top = e.clientY + 'px';
+                }
+            });
+
+            // Mouse wheel zoom
+            document.addEventListener('wheel', (e) => {
+                if (currentView !== 'cinematic') {
+                    const zoomSpeed = 0.1;
+                    const distance = camera.position.length();
+                    const newDistance = distance * (1 + e.deltaY * zoomSpeed * 0.01);
+                    
+                    if (newDistance > 5 && newDistance < 50) {
+                        camera.position.multiplyScalar(newDistance / distance);
+                    }
+                }
+            });
+
+            // Smooth camera rotation
+            function updateCameraRotation() {
+                if (currentView === 'cinematic') return;
                 
-                // Trigger data packet animation
-                if (flowState.phase > 0 && flowState.phase < 5) {
-                    const connIndex = flowState.phase - 1;
-                    if (connIndex < flowState.connections.length) {
-                        flowState.connections[connIndex].particles.push(
-                            new DataPacket(flowState.connections[connIndex], 0.5 + Math.random() * 0.5)
+                const cameraDistance = camera.position.length();
+                camera.position.x = Math.sin(targetRotationY) * Math.cos(targetRotationX) * cameraDistance;
+                camera.position.y = Math.sin(targetRotationX) * cameraDistance;
+                camera.position.z = Math.cos(targetRotationY) * Math.cos(targetRotationX) * cameraDistance;
+                camera.lookAt(0, 0, 0);
+            }
+
+            return updateCameraRotation;
+        }
+
+        // View Mode Management
+        function setViewMode(mode) {
+            currentView = mode;
+
+            // Kill any active camera animations
+            if (orbitAnimation) orbitAnimation.kill();
+            if (flythroughAnimation) flythroughAnimation.kill();
+            if (focusAnimation) focusAnimation.kill();
+            if (matrixAnimation) matrixAnimation.kill();
+
+            // Update UI
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+
+            // Reset component positions
+            resetComponentPositions();
+
+            // Apply view-specific settings
+            switch (mode) {
+                case 'circuit':
+                    showCircuitView();
+                    break;
+                case 'flow':
+                    showDataFlowView();
+                    break;
+                case 'proof':
+                    showProofGenerationView();
+                    break;
+                case 'network':
+                    showNetworkView();
+                    break;
+                case 'cinematic':
+                    startCinematicMode();
+                    break;
+            }
+        }
+
+        function resetComponentPositions() {
+            circuitComponents.forEach(comp => {
+                gsap.to(comp.mesh.position, {
+                    x: comp.originalPosition.x,
+                    y: comp.originalPosition.y,
+                    z: comp.originalPosition.z,
+                    duration: 1,
+                    ease: "power2.inOut",
+                    onUpdate: () => comp.updatePositions()
+                });
+            });
+            
+            // Deactivate all connections
+            connections.forEach(conn => conn.deactivate());
+        }
+
+        function showCircuitView() {
+            cinematicActive = false;
+            document.getElementById('cinematicUI').classList.remove('visible');
+            showUIControls();
+            
+            gsap.to(camera.position, {
+                x: 0,
+                y: 5,
+                z: 20,
+                duration: 2,
+                ease: "power2.inOut"
+            });
+        }
+
+        function showDataFlowView() {
+            cinematicActive = false;
+            document.getElementById('cinematicUI').classList.remove('visible');
+            showUIControls();
+            
+            // Clear and recreate connections
+            connections.forEach(conn => conn.remove());
+            connections = [];
+            
+            // Arrange components in linear flow
+            const spacing = 8;
+            circuitComponents.forEach((comp, i) => {
+                gsap.to(comp.mesh.position, {
+                    x: (i - 2) * spacing,
+                    y: 0,
+                    z: 0,
+                    duration: 1.5,
+                    ease: "power2.inOut",
+                    onUpdate: () => comp.updatePositions()
+                });
+            });
+
+            // Camera position for optimal viewing
+            gsap.to(camera.position, {
+                x: 0,
+                y: 10,
+                z: 25,
+                duration: 2,
+                ease: "power2.inOut",
+                onUpdate: () => camera.lookAt(0, 0, 0),
+                onComplete: () => {
+                    // Create new connections after positioning
+                    for (let i = 0; i < circuitComponents.length - 1; i++) {
+                        const connection = new DataConnection(
+                            circuitComponents[i],
+                            circuitComponents[i + 1]
                         );
+                        connections.push(connection);
+                        
+                        // Activate connections with delay
+                        setTimeout(() => connection.activate(), i * 300);
+                    }
+                }
+            });
+        }
+
+        function showProofGenerationView() {
+            cinematicActive = false;
+            document.getElementById('cinematicUI').classList.remove('visible');
+            showUIControls();
+            
+            // Focus camera on prover component
+            const prover = circuitComponents.find(c => c.type === 'prover');
+            if (prover) {
+                gsap.to(camera.position, {
+                    x: prover.position.x,
+                    y: prover.position.y + 5,
+                    z: prover.position.z + 10,
+                    duration: 2,
+                    ease: "power2.inOut",
+                    onUpdate: () => camera.lookAt(prover.mesh.position)
+                });
+
+                // Generate proof automatically
+                setTimeout(() => generateProof(), 1500);
+            }
+        }
+
+        function showNetworkView() {
+            cinematicActive = false;
+            document.getElementById('cinematicUI').classList.remove('visible');
+            showUIControls();
+            
+            // Arrange components in circular network topology
+            const radius = 12;
+            const angleStep = (Math.PI * 2) / circuitComponents.length;
+            
+            circuitComponents.forEach((comp, i) => {
+                const angle = angleStep * i;
+                gsap.to(comp.mesh.position, {
+                    x: Math.cos(angle) * radius,
+                    y: 0,
+                    z: Math.sin(angle) * radius,
+                    duration: 1.5,
+                    ease: "power2.inOut",
+                    onUpdate: () => comp.updatePositions()
+                });
+            });
+            
+            // Update camera
+            gsap.to(camera.position, {
+                x: 0,
+                y: 20,
+                z: 5,
+                duration: 2,
+                ease: "power2.inOut"
+            });
+            
+            // Create network connections
+            createNetworkConnections();
+        }
+
+        function createNetworkConnections() {
+            // Remove existing connections
+            connections.forEach(conn => conn.remove());
+            connections = [];
+            
+            // Create mesh connections between all nodes
+            for (let i = 0; i < circuitComponents.length; i++) {
+                for (let j = i + 1; j < circuitComponents.length; j++) {
+                    const connection = new DataConnection(
+                        circuitComponents[i],
+                        circuitComponents[j]
+                    );
+                    connections.push(connection);
+                    
+                    // Randomly activate some connections
+                    if (Math.random() > 0.5) {
+                        setTimeout(() => connection.activate(), Math.random() * 3000);
                     }
                 }
             }
-            
-            requestAnimationFrame(drawZKPFlow);
         }
-        
-        drawZKPFlow();
-        
-        // Mouse tracking
-        canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            flowState.mouseX = e.clientX - rect.left;
-            flowState.mouseY = e.clientY - rect.top;
-        });
 
-        // Click to generate proof
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+        function startCinematicMode() {
+            cinematicActive = true;
+            document.getElementById('cinematicUI').classList.add('visible');
+            hideUIControls();
             
-            // Create proof visualization at click location
-            flowState.proofs.push(new ProofVisualization(x, y));
+            // Start with orbit camera
+            setCameraPreset('orbit');
             
-            // Create explosion of particles
-            for (let i = 0; i < 30; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 1 + Math.random() * 3;
-                flowState.particles.push(new Particle(
-                    x, y,
-                    Math.cos(angle) * speed,
-                    Math.sin(angle) * speed,
-                    '#F59E0B', 2 + Math.random() * 2
-                ));
+            // Cycle through different camera modes
+            const cinematicSequence = [
+                { mode: 'orbit', duration: 8000 },
+                { mode: 'flythrough', duration: 12000 },
+                { mode: 'focus', duration: 10000 },
+                { mode: 'matrix', duration: 6000 }
+            ];
+            
+            let currentIndex = 0;
+            function nextCinematicMode() {
+                if (!cinematicActive) return;
+                
+                const current = cinematicSequence[currentIndex];
+                setCameraPreset(current.mode);
+                
+                currentIndex = (currentIndex + 1) % cinematicSequence.length;
+                setTimeout(nextCinematicMode, current.duration);
             }
-        });
+            
+            setTimeout(() => nextCinematicMode(), cinematicSequence[0].duration);
+        }
+
+        function hideUIControls() {
+            document.querySelector('.control-panel').style.opacity = '0';
+            document.querySelector('.stats-display').style.opacity = '0';
+            document.querySelector('.voice-control').style.opacity = '0';
+            document.querySelector('.fps-display').style.opacity = '0';
+        }
+
+        function showUIControls() {
+            document.querySelector('.control-panel').style.opacity = '1';
+            document.querySelector('.stats-display').style.opacity = '1';
+            document.querySelector('.voice-control').style.opacity = '1';
+            document.querySelector('.fps-display').style.opacity = '1';
+        }
+
+        // Enhanced Proof Generation Visualization - FIXED lifetime
+        class ProofVisualization {
+            constructor() {
+                this.group = new THREE.Group();
+                this.createVisualization();
+            }
+
+            createVisualization() {
+                // Create proof structure
+                const geometry = new THREE.IcosahedronGeometry(2, 2);
+                const material = new THREE.MeshPhysicalMaterial({
+                    color: 0x10B981,
+                    emissive: 0x10B981,
+                    emissiveIntensity: 0.5,
+                    metalness: 0.7,
+                    roughness: 0.1,
+                    transmission: quality === 'ultra' ? 0.8 : 0,
+                    thickness: 1,
+                    clearcoat: quality !== 'low' ? 1 : 0,
+                    clearcoatRoughness: 0
+                });
+
+                this.mesh = new THREE.Mesh(geometry, material);
+                this.group.add(this.mesh);
+
+                // Add wireframe for higher quality
+                if (quality !== 'low') {
+                    const wireframe = new THREE.WireframeGeometry(geometry);
+                    const lineMaterial = new THREE.LineBasicMaterial({
+                        color: 0xF59E0B,
+                        linewidth: 2,
+                        transparent: true,
+                        opacity: 0.5
+                    });
+                    const lines = new THREE.LineSegments(wireframe, lineMaterial);
+                    this.group.add(lines);
+                }
+
+                // Add glow sphere
+                const glowGeometry = new THREE.SphereGeometry(3, 32, 32);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x10B981,
+                    transparent: true,
+                    opacity: 0.2,
+                    side: THREE.BackSide
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                this.group.add(glow);
+
+                this.group.position.set(0, 0, 0);
+                scene.add(this.group);
+            }
+
+            animate() {
+                this.mesh.rotation.x += 0.01;
+                this.mesh.rotation.y += 0.005;
+
+                // Pulsing effect
+                const scale = 1 + Math.sin(Date.now() * 0.002) * 0.1;
+                this.group.scale.set(scale, scale, scale);
+            }
+
+            remove() {
+                scene.remove(this.group);
+            }
+        }
+
+        function generateProof() {
+            // Clear any existing proof
+            if (activeProof) {
+                activeProof.remove();
+                activeProof = null;
+            }
+            if (proofLifetime) {
+                clearTimeout(proofLifetime);
+                proofLifetime = null;
+            }
+
+            // Activate components in sequence
+            const sequence = ['input', 'circuit', 'prover', 'proof', 'verifier'];
+            let index = 0;
+
+            const activateNext = () => {
+                if (index < circuitComponents.length) {
+                    circuitComponents[index].activate();
+                    
+                    if (index > 0 && connections[index - 1]) {
+                        connections[index - 1].activate();
+                    }
+
+                    index++;
+                    setTimeout(activateNext, 500);
+                } else {
+                    // Complete
+                    stats.proofCount++;
+                    stats.verifyTime = Math.floor(Math.random() * 20 + 60) + 'ms';
+                    updateStats();
+
+                    // Create proof visualization
+                    activeProof = new ProofVisualization();
+                    proofVisualizations.push(activeProof);
+
+                    // Keep proof active until user clicks verify
+                    // Deactivate components after 2 seconds but keep proof
+                    setTimeout(() => {
+                        circuitComponents.forEach(comp => {
+                            if (comp.type !== 'proof') {
+                                comp.deactivate();
+                            }
+                        });
+                        connections.forEach(conn => conn.deactivate());
+                    }, 2000);
+                }
+            };
+
+            activateNext();
+        }
+
+        // Enhanced Proof Verification Visualization
+        function verifyProof() {
+            if (!activeProof) {
+                // No proof to verify
+                return;
+            }
+
+            const verifier = circuitComponents.find(c => c.type === 'verifier');
+            const proof = circuitComponents.find(c => c.type === 'proof');
+            
+            if (!verifier || !proof) return;
+            
+            // Create verification sequence
+            createVerificationSequence();
+        }
+
+        function createVerificationSequence() {
+            const verifier = circuitComponents.find(c => c.type === 'verifier');
+            const proof = circuitComponents.find(c => c.type === 'proof');
+            
+            if (!verifier || !proof) return;
+            
+            // Step 1: Energy beam from proof to verifier
+            const beamGeometry = new THREE.CylinderGeometry(0.1, 0.3, 10, 8);
+            const beamMaterial = new THREE.MeshBasicMaterial({
+                color: 0x10B981,
+                transparent: true,
+                opacity: 0
+            });
+            const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+            
+            const midPoint = new THREE.Vector3().lerpVectors(
+                proof.mesh.position,
+                verifier.mesh.position,
+                0.5
+            );
+            beam.position.copy(midPoint);
+            beam.lookAt(verifier.mesh.position);
+            beam.rotateX(Math.PI / 2);
+            scene.add(beam);
+            
+            // Step 2: Verification rings
+            const rings = [];
+            for (let i = 0; i < 3; i++) {
+                const ringGeometry = new THREE.TorusGeometry(2 + i * 0.5, 0.1, 16, 100);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x3B82F6,
+                    transparent: true,
+                    opacity: 0
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.position.copy(verifier.mesh.position);
+                scene.add(ring);
+                rings.push(ring);
+            }
+            
+            // Step 3: Success particles
+            const successParticles = new THREE.Group();
+            for (let i = 0; i < 50; i++) {
+                const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                const particleMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color().setHSL(0.3, 1, 0.5),
+                    transparent: true,
+                    opacity: 0
+                });
+                const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const radius = Math.random() * 3 + 2;
+                particle.position.set(
+                    verifier.mesh.position.x + Math.cos(angle) * radius,
+                    verifier.mesh.position.y + (Math.random() - 0.5) * 2,
+                    verifier.mesh.position.z + Math.sin(angle) * radius
+                );
+                
+                successParticles.add(particle);
+            }
+            scene.add(successParticles);
+            
+            // Animation sequence
+            const timeline = gsap.timeline();
+            
+            timeline.call(() => {
+                proof.activate();
+                verifier.activate();
+            });
+            
+            timeline.to(beam.material, {
+                opacity: 1,
+                duration: 0.5,
+                ease: "power2.in"
+            });
+            
+            timeline.to(beam.scale, {
+                x: 2,
+                z: 2,
+                duration: 0.3,
+                ease: "power2.out"
+            });
+            
+            rings.forEach((ring, i) => {
+                timeline.to(ring.material, {
+                    opacity: 0.8,
+                    duration: 0.3,
+                    ease: "power2.out"
+                }, `-=${0.2 - i * 0.1}`);
+                
+                timeline.to(ring.scale, {
+                    x: 1.5,
+                    y: 1.5,
+                    z: 1.5,
+                    duration: 1,
+                    ease: "power2.out"
+                }, `-=${0.3}`);
+                
+                timeline.to(ring.rotation, {
+                    z: Math.PI * 2,
+                    duration: 2,
+                    ease: "power2.inOut"
+                }, `-=${1}`);
+            });
+            
+            timeline.call(() => {
+                successParticles.children.forEach((particle, i) => {
+                    gsap.to(particle.position, {
+                        y: particle.position.y + Math.random() * 3 + 2,
+                        duration: 2,
+                        delay: i * 0.02,
+                        ease: "power2.out"
+                    });
+                    
+                    gsap.to(particle.material, {
+                        opacity: 1,
+                        duration: 0.3,
+                        delay: i * 0.02
+                    });
+                    
+                    gsap.to(particle.material, {
+                        opacity: 0,
+                        duration: 0.5,
+                        delay: i * 0.02 + 1.5,
+                        ease: "power2.in"
+                    });
+                });
+            });
+            
+            // Cleanup
+            timeline.call(() => {
+                setTimeout(() => {
+                    scene.remove(beam);
+                    rings.forEach(ring => scene.remove(ring));
+                    scene.remove(successParticles);
+                    proof.deactivate();
+                    verifier.deactivate();
+                    
+                    // Remove active proof
+                    if (activeProof) {
+                        activeProof.remove();
+                        proofVisualizations = proofVisualizations.filter(p => p !== activeProof);
+                        activeProof = null;
+                    }
+                }, 1000);
+            }, null, "+=1");
+            
+            // Update stats
+            stats.verifyTime = Math.floor(Math.random() * 20 + 60) + 'ms';
+            updateStats();
+            
+            // Play sound
+            if (audioEnabled && synth) {
+                playVerificationSound();
+            }
+        }
+
+        // Camera Preset Implementations - FIXED for flythrough
+        function setCameraPreset(preset) {
+            // Kill any existing animations
+            if (orbitAnimation) orbitAnimation.kill();
+            if (flythroughAnimation) flythroughAnimation.kill();
+            if (focusAnimation) focusAnimation.kill();
+            if (matrixAnimation) matrixAnimation.kill();
+            
+            switch (preset) {
+                case 'orbit':
+                    startOrbitCamera();
+                    break;
+                case 'flythrough':
+                    startFlythrough();
+                    break;
+                case 'focus':
+                    startFocusMode();
+                    break;
+                case 'matrix':
+                    startMatrixView();
+                    break;
+            }
+        }
+
+        function startOrbitCamera() {
+            const radius = 25;
+            
+            orbitAnimation = gsap.timeline({ repeat: -1 })
+                .to(camera.position, {
+                    duration: 20,
+                    ease: "none",
+                    onUpdate: function() {
+                        const progress = this.progress();
+                        const angle = progress * Math.PI * 2;
+                        camera.position.x = Math.cos(angle) * radius;
+                        camera.position.z = Math.sin(angle) * radius;
+                        camera.position.y = 10 + Math.sin(angle * 2) * 5;
+                        camera.lookAt(0, 0, 0);
+                    }
+                });
+        }
+
+        function startFlythrough() {
+            const path = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(-30, 5, 20),
+                new THREE.Vector3(-15, 2, 5),
+                new THREE.Vector3(0, 10, -10),
+                new THREE.Vector3(15, 3, 5),
+                new THREE.Vector3(30, 8, 20),
+                new THREE.Vector3(0, 15, 30)
+            ]);
+            
+            flythroughAnimation = gsap.timeline({ repeat: -1 })
+                .to(camera.position, {
+                    duration: 30,
+                    ease: "none",
+                    onUpdate: function() {
+                        const point = path.getPoint(this.progress());
+                        camera.position.copy(point);
+                        
+                        const lookPoint = path.getPoint((this.progress() + 0.05) % 1);
+                        camera.lookAt(lookPoint);
+                    }
+                });
+        }
+
+        function startFocusMode() {
+            let currentFocus = 0;
+            
+            function focusNext() {
+                if (!cinematicActive || currentView !== 'cinematic') return;
+                
+                const component = circuitComponents[currentFocus];
+                
+                focusAnimation = gsap.timeline()
+                    .to(camera.position, {
+                        x: component.mesh.position.x + 5,
+                        y: component.mesh.position.y + 3,
+                        z: component.mesh.position.z + 5,
+                        duration: 2,
+                        ease: "power2.inOut",
+                        onUpdate: () => camera.lookAt(component.mesh.position)
+                    })
+                    .call(() => {
+                        component.activate();
+                        createFocusParticles(component.mesh.position);
+                    })
+                    .to(camera.position, {
+                        x: component.mesh.position.x + 10,
+                        y: component.mesh.position.y + 5,
+                        z: component.mesh.position.z + 10,
+                        duration: 3,
+                        ease: "power2.inOut",
+                        onUpdate: () => camera.lookAt(component.mesh.position)
+                    })
+                    .call(() => {
+                        component.deactivate();
+                        currentFocus = (currentFocus + 1) % circuitComponents.length;
+                        setTimeout(focusNext, 1000);
+                    });
+            }
+            
+            focusNext();
+        }
+
+        function createFocusParticles(position) {
+            const particleCount = 20;
+            const particles = [];
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.2, 8, 8),
+                    new THREE.MeshBasicMaterial({
+                        color: 0xF59E0B,
+                        transparent: true,
+                        opacity: 0
+                    })
+                );
+                
+                const angle = (i / particleCount) * Math.PI * 2;
+                const radius = 3;
+                particle.position.set(
+                    position.x + Math.cos(angle) * radius,
+                    position.y,
+                    position.z + Math.sin(angle) * radius
+                );
+                
+                scene.add(particle);
+                particles.push(particle);
+                
+                gsap.to(particle.material, {
+                    opacity: 1,
+                    duration: 0.5,
+                    delay: i * 0.05
+                });
+                
+                gsap.to(particle.position, {
+                    x: position.x + Math.cos(angle) * radius * 2,
+                    y: position.y + Math.random() * 2,
+                    z: position.z + Math.sin(angle) * radius * 2,
+                    duration: 2,
+                    delay: i * 0.05
+                });
+                
+                gsap.to(particle.material, {
+                    opacity: 0,
+                    duration: 0.5,
+                    delay: i * 0.05 + 1.5,
+                    onComplete: () => scene.remove(particle)
+                });
+            }
+        }
+
+        function startMatrixView() {
+            gsap.globalTimeline.timeScale(0.2);
+            
+            matrixAnimation = gsap.timeline()
+                .to(camera.position, {
+                    x: 40,
+                    y: 0,
+                    z: 0,
+                    duration: 3,
+                    ease: "power2.out"
+                })
+                .to(camera.position, {
+                    x: 0,
+                    y: 0,
+                    z: 40,
+                    duration: 4,
+                    ease: "power2.inOut",
+                    onUpdate: () => camera.lookAt(0, 0, 0)
+                })
+                .to(camera.position, {
+                    x: -40,
+                    y: 0,
+                    z: 0,
+                    duration: 4,
+                    ease: "power2.inOut"
+                })
+                .to(camera.position, {
+                    x: 0,
+                    y: 40,
+                    z: 0,
+                    duration: 3,
+                    ease: "power2.in"
+                })
+                .call(() => {
+                    gsap.globalTimeline.timeScale(1);
+                    if (currentView === 'cinematic') {
+                        startOrbitCamera();
+                    }
+                });
+        }
+
+        // Animation Loop - FIXED FPS calculation
+        let lastTime = 0;
+        let deltaTime = 0;
         
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const offsetTop = target.offsetTop - 80;
-                    window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const time = Date.now();
+            deltaTime = time - lastTime;
+            lastTime = time;
+
+            // Update FPS counter
+            updateFPS();
+
+            // Update components
+            circuitComponents.forEach(comp => comp.update(time));
+
+            // Update particles
+            if (particleSystem) {
+                particleSystem.update(time, deltaTime);
+            }
+
+            // Update proof visualizations
+            proofVisualizations.forEach(proof => proof.animate());
+
+            // Update camera
+            if (updateCameraRotation && currentView !== 'cinematic') {
+                updateCameraRotation();
+            }
+
+            // Update connections in data flow and network views
+            if (currentView === 'flow' || currentView === 'network') {
+                connections.forEach(conn => {
+                    if (conn.mesh) {
+                        conn.updatePath();
+                    }
+                });
+            }
+
+            // Raycasting for hover effects
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+
+            // Reset cursor
+            const cursor = document.getElementById('customCursor');
+            if (cursor) {
+                cursor.classList.remove('hover');
+            }
+
+            if (intersects.length > 0) {
+                const object = intersects[0].object;
+                if (object.userData.component) {
+                    if (cursor) {
+                        cursor.classList.add('hover');
+                    }
+                    showInfoPanel(object.userData.component);
+                }
+            } else {
+                hideInfoPanel();
+            }
+
+            // Render
+            renderer.render(scene, camera);
+        }
+
+        // UI Functions
+        function showInfoPanel(component) {
+            const panel = document.getElementById('infoPanel');
+            const content = document.getElementById('infoPanelContent');
+            
+            const info = {
+                'input': 'Private inputs remain encrypted. Only the proof of their validity is revealed.',
+                'circuit': 'R1CS constraints define the computational relationship that must be satisfied.',
+                'prover': 'Generates a succinct proof using elliptic curve pairings and polynomial commitments.',
+                'proof': 'A 192-byte proof that can be verified in constant time, regardless of computation complexity.',
+                'verifier': 'Verifies the proof in ~80ms using pairing checks on the BN254 curve.'
+            };
+
+            content.textContent = info[component.type] || 'Component information';
+            panel.classList.add('visible');
+        }
+
+        function hideInfoPanel() {
+            document.getElementById('infoPanel').classList.remove('visible');
+        }
+
+        function updateStats() {
+            document.getElementById('proofCount').textContent = stats.proofCount;
+            document.getElementById('verifyTime').textContent = stats.verifyTime;
+            document.getElementById('particleCount').textContent = stats.particleCount;
+        }
+
+        // FIXED: Proper FPS calculation
+        function updateFPS() {
+            frameCount++;
+            
+            const now = performance.now();
+            if (now - lastFpsUpdate >= fpsUpdateInterval) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                stats.fps = fps;
+                document.getElementById('fpsCounter').textContent = fps;
+                
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // View mode buttons
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    setViewMode(e.target.dataset.mode);
+                });
+            });
+
+            // Control buttons
+            document.getElementById('generateProofBtn').addEventListener('click', generateProof);
+            document.getElementById('verifyProofBtn').addEventListener('click', verifyProof);
+            document.getElementById('resetSceneBtn').addEventListener('click', () => {
+                // Reset scene
+                resetComponentPositions();
+                
+                // Clear active proof
+                if (activeProof) {
+                    activeProof.remove();
+                    activeProof = null;
+                }
+                
+                // Clear all visualizations
+                proofVisualizations.forEach(proof => proof.remove());
+                proofVisualizations = [];
+                
+                // Reset camera
+                gsap.to(camera.position, {
+                    x: 0,
+                    y: 5,
+                    z: 20,
+                    duration: 1,
+                    ease: "power2.inOut"
+                });
+            });
+
+            // Camera presets
+            document.querySelectorAll('.camera-preset').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    setCameraPreset(e.target.dataset.camera);
+                });
+            });
+
+            // Quality settings
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    quality = e.target.dataset.quality;
+                    
+                    // Update renderer settings
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'ultra' ? 2 : 1.5));
+                    renderer.shadowMap.enabled = quality !== 'low';
+                    renderer.shadowMap.type = quality === 'low' ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
+                    
+                    // Recreate particle system with new quality
+                    if (particleSystem) {
+                        scene.remove(particleSystem.mesh);
+                        particles = [];
+                        createEnhancedParticleSystem();
+                    }
+                });
+            });
+
+            // Visualization toggles
+            document.getElementById('showParticles').addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    createEnhancedParticleSystem();
+                } else if (particleSystem) {
+                    scene.remove(particleSystem.mesh);
+                    particleSystem = null;
+                    particles = [];
+                }
+            });
+
+            document.getElementById('showConnections').addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    createConnections();
+                } else {
+                    connections.forEach(conn => conn.remove());
+                    connections = [];
+                }
+            });
+
+            document.getElementById('showLabels').addEventListener('change', (e) => {
+                componentLabels.forEach(label => {
+                    if (e.target.checked) {
+                        label.classList.remove('hidden');
+                    } else {
+                        label.classList.add('hidden');
+                    }
+                });
+            });
+
+            // Audio controls
+            const audioToggle = document.getElementById('audioToggle');
+            const volumeSlider = document.getElementById('volumeSlider');
+
+            audioToggle.addEventListener('click', async () => {
+                if (!audioEnabled) {
+                    if (typeof Tone !== 'undefined' && Tone.context.state === 'suspended') {
+                        await Tone.start();
+                    }
+                    audioEnabled = true;
+                    audioToggle.textContent = '🔊';
+                    audioToggle.classList.add('active');
+                } else {
+                    audioEnabled = false;
+                    audioToggle.textContent = '🔇';
+                    audioToggle.classList.remove('active');
+                }
+            });
+
+            volumeSlider.addEventListener('input', (e) => {
+                const volume = e.target.value / 100;
+                if (typeof Tone !== 'undefined') {
+                    Tone.Destination.volume.value = Tone.gainToDb(volume);
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                // Check if input is focused
+                if (document.activeElement.tagName === 'INPUT') return;
+
+                switch(e.key) {
+                    case '1':
+                        setViewMode('circuit');
+                        break;
+                    case '2':
+                        setViewMode('flow');
+                        break;
+                    case '3':
+                        setViewMode('proof');
+                        break;
+                    case '4':
+                        setViewMode('network');
+                        break;
+                    case '5':
+                        setViewMode('cinematic');
+                        break;
+                    case 'g':
+                    case 'G':
+                        generateProof();
+                        break;
+                    case 'v':
+                    case 'V':
+                        verifyProof();
+                        break;
+                    case 'r':
+                    case 'R':
+                        document.getElementById('resetSceneBtn').click();
+                        break;
+                    case 'm':
+                    case 'M':
+                        audioToggle.click();
+                        break;
+                    case 'f':
+                    case 'F':
+                        if (!e.ctrlKey && !e.metaKey) {
+                            toggleFullscreen();
+                        }
+                        break;
+                    case 'Escape':
+                        if (cinematicActive) {
+                            setViewMode('circuit');
+                        }
+                        if (document.getElementById('helpOverlay').style.display === 'flex') {
+                            document.getElementById('helpOverlay').style.display = 'none';
+                        }
+                        if (document.getElementById('commandPalette').classList.contains('active')) {
+                            document.getElementById('commandPalette').classList.remove('active');
+                        }
+                        break;
+                    case '?':
+                    case 'h':
+                    case 'H':
+                        document.getElementById('helpOverlay').style.display = 'flex';
+                        break;
+                }
+
+                // Command palette
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    const palette = document.getElementById('commandPalette');
+                    palette.classList.toggle('active');
+                    if (palette.classList.contains('active')) {
+                        document.getElementById('commandInput').focus();
+                    }
+                }
+
+                // Screenshot
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    takeScreenshot();
+                }
+            });
+
+            // Voice control (placeholder)
+            document.getElementById('voiceControl').addEventListener('click', () => {
+                const voiceControl = document.getElementById('voiceControl');
+                voiceControl.classList.toggle('active');
+                // Voice control implementation would go here
+            });
+
+            // Help overlay close
+            document.getElementById('helpOverlay').addEventListener('click', (e) => {
+                if (e.target.id === 'helpOverlay') {
+                    document.getElementById('helpOverlay').style.display = 'none';
+                }
+            });
+
+            // Command palette
+            const commandInput = document.getElementById('commandInput');
+            const commandResults = document.getElementById('commandResults');
+
+            const commands = [
+                { name: 'Generate Proof', action: () => generateProof() },
+                { name: 'Verify Proof', action: () => verifyProof() },
+                { name: 'Reset Scene', action: () => document.getElementById('resetSceneBtn').click() },
+                { name: 'Circuit View', action: () => setViewMode('circuit') },
+                { name: 'Data Flow View', action: () => setViewMode('flow') },
+                { name: 'Proof Generation View', action: () => setViewMode('proof') },
+                { name: 'Network View', action: () => setViewMode('network') },
+                { name: 'Cinematic Mode', action: () => setViewMode('cinematic') },
+                { name: 'Toggle Audio', action: () => audioToggle.click() },
+                { name: 'Toggle Fullscreen', action: () => toggleFullscreen() },
+                { name: 'Take Screenshot', action: () => takeScreenshot() },
+                { name: 'Show Help', action: () => document.getElementById('helpOverlay').style.display = 'flex' }
+            ];
+
+            commandInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase();
+                commandResults.innerHTML = '';
+                
+                if (query) {
+                    const matches = commands.filter(cmd => 
+                        cmd.name.toLowerCase().includes(query)
+                    );
+                    
+                    matches.forEach(cmd => {
+                        const item = document.createElement('div');
+                        item.className = 'command-item';
+                        item.textContent = cmd.name;
+                        item.addEventListener('click', () => {
+                            cmd.action();
+                            document.getElementById('commandPalette').classList.remove('active');
+                            commandInput.value = '';
+                        });
+                        commandResults.appendChild(item);
                     });
                 }
             });
-        });
-
-        // Intersection Observer for animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-
-        // Observe elements
-        document.querySelectorAll('.use-case-card, .perf-metric, .privacy-feature, .roadmap-item').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'all 0.6s ease-out';
-            observer.observe(el);
-        });
-
-        // Developer Portal button placeholder
-        document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
-        });
-
-// Mobile Dropdown Toggle
-const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-const dropdown = document.querySelector('.nav-dropdown');
-
-if (dropdownToggle) {
-    dropdownToggle.addEventListener('click', function(e) {
-        if (window.innerWidth <= 968) {
-            e.preventDefault();
-            dropdown.classList.toggle('active');
         }
-    });
-}
 
-// Prevent dropdown from closing on desktop when hovering
-if (window.innerWidth > 968 && dropdownToggle) {
-    dropdownToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-    });
-}
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function takeScreenshot() {
+            const flash = document.getElementById('screenshotFlash');
+            flash.style.opacity = '1';
+            
+            setTimeout(() => {
+                flash.style.opacity = '0';
+                
+                // Create download link
+                const dataURL = renderer.domElement.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'zkp-visualization-' + Date.now() + '.png';
+                link.href = dataURL;
+                link.click();
+            }, 100);
+        }
+
+        // Start experience
+        function startExperience() {
+            initThree();
+            initAudio();
+            setupEventListeners();
+            updateStats();
+        }
+
+        // Initialize loading
+        loadingManager.onLoad();
     </script>
 </body>
 </html>
