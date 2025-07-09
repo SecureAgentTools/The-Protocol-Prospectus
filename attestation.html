@@ -3,15 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Attestation Network - Decentralized Trust Layer | The Protocol</title>
-    
-    <!-- SEO & Open Graph -->
-    <meta name="description" content="Immutable, cryptographically-signed proof of registry integrity. The foundation for trillion-dollar autonomous commerce.">
-    <meta property="og:title" content="The Attestation Network: Decentralized Notary for the Agent Economy">
-    <meta property="og:description" content="Witness and verify registry states with cryptographic certainty. Enable dispute resolution and compliance at protocol level.">
-    <meta property="og:image" content="https://www.theprotocol.cloud/attestation-preview.png">
-    <meta property="og:url" content="https://www.theprotocol.cloud/attestation.html">
-    <meta property="og:type" content="website">
+    <title>The Protocol - Attestation Vault</title>
     
     <style>
         * {
@@ -19,2340 +11,1483 @@
             padding: 0;
             box-sizing: border-box;
         }
-
-        :root {
-            --primary-glow: #3B82F6;
-            --secondary-glow: #8B5CF6;
-            --accent-glow: #10B981;
-            --attestation-glow: #FBBF24;
-            --danger-glow: #EF4444;
-            --bg-void: #000000;
-            --bg-deep: #0a0a0a;
-            --bg-dark: #0F172A;
-            --bg-card: rgba(15, 23, 42, 0.6);
-            --text-bright: #FFFFFF;
-            --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --text-muted: #475569;
-            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            --gradient-attestation: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-            --gradient-trust: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
-            --gradient-security: linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%);
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: var(--bg-void);
-            color: var(--text-primary);
-            line-height: 1.6;
-            overflow-x: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            background: #000;
+            color: #fff;
         }
-
-        /* Loading Screen */
-        .loading-screen {
+        
+        #canvas-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-void);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            transition: opacity 0.5s ease;
+            background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
         }
-
-        .loading-screen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-spinner {
-            width: 100px;
-            height: 100px;
-            position: relative;
-        }
-
-        .loading-ring {
-            position: absolute;
+        
+        /* Loading Screen */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            border: 3px solid transparent;
-            border-top-color: var(--attestation-glow);
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+        
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(249, 191, 35, 0.2);
+            border-top-color: #f9bf23;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-
-        .loading-ring:nth-child(2) {
-            width: 80%;
-            height: 80%;
-            top: 10%;
-            left: 10%;
-            border-top-color: var(--primary-glow);
-            animation-duration: 0.8s;
-            animation-direction: reverse;
-        }
-
-        .loading-ring:nth-child(3) {
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-            border-top-color: var(--accent-glow);
-            animation-duration: 0.6s;
-        }
-
+        
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-
-        /* Three.js Canvas */
-        #attestation-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -3;
+        
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #f9bf23;
+            text-align: center;
         }
-
-        /* Animated Background */
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--bg-void);
-            z-index: -4;
+        
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(249, 191, 35, 0.2);
+            border-radius: 2px;
+            margin-top: 20px;
             overflow: hidden;
         }
-
-        .animated-bg::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(251, 191, 36, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.06) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.04) 0%, transparent 40%);
-            animation: bgFloat 40s ease-in-out infinite;
-        }
-
-        @keyframes bgFloat {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(-2%, -2%) rotate(1deg); }
-            50% { transform: translate(2%, -1%) rotate(-1deg); }
-            75% { transform: translate(-1%, 2%) rotate(0.5deg); }
-        }
-
-        /* Attestation Particles */
-        .attestation-particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: -2;
-            pointer-events: none;
-        }
-
-        .attestation-particle {
-            position: absolute;
-            font-size: 2rem;
-            opacity: 0.1;
-            animation: floatAttestation 30s linear infinite;
-            filter: drop-shadow(0 0 10px currentColor);
-        }
-
-        @keyframes floatAttestation {
-            0% {
-                transform: translateY(100vh) translateZ(0) rotate(0deg) scale(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.1;
-                transform: scale(1);
-            }
-            90% {
-                opacity: 0.1;
-            }
-            100% {
-                transform: translateY(-100vh) translateZ(100px) rotate(720deg) scale(0.5);
-                opacity: 0;
-            }
-        }
-
-        /* Navigation Header */
-        .nav-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
-
-        .nav-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 80px;
-        }
-
-        .nav-logo {
-            font-size: 1.5rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-decoration: none;
-            letter-spacing: -0.02em;
-        }
-
-        .nav-menu {
-            display: flex;
-            align-items: center;
-            gap: 2.5rem;
-            list-style: none;
-        }
-
-        .nav-link {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.95rem;
-            letter-spacing: 0.01em;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--gradient-primary);
+        
+        .loading-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #f9bf23, #3b82f6);
+            width: 0%;
             transition: width 0.3s ease;
         }
-
-        .nav-link:hover {
-            color: var(--text-bright);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .nav-link.active {
-            color: var(--attestation-glow);
-        }
-
-        .nav-link.active::after {
-            width: 100%;
-            background: var(--gradient-attestation);
-        }
-
-        .nav-link.nav-cta {
-            background: var(--gradient-primary);
-            color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .nav-link.nav-cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
-        }
-
-        .nav-link.nav-cta::after {
-            display: none;
-        }
-
-        .nav-link.nav-dev-portal {
-            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
-            color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-
-        .nav-link.nav-dev-portal:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        }
-
-        .nav-link.nav-dev-portal::after {
-            display: none;
-        }
-
-        /* Mobile Navigation */
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .nav-toggle span {
-            width: 25px;
-            height: 2px;
-            background: var(--text-bright);
-            transition: all 0.3s ease;
-        }
-
-        @media (max-width: 1200px) {
-            .nav-menu {
-                position: fixed;
-                top: 80px;
-                left: 0;
-                right: 0;
-                background: rgba(10, 10, 10, 0.98);
-                flex-direction: column;
-                padding: 2rem;
-                gap: 1.5rem;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                border-bottom: 1px solid rgba(251, 191, 36, 0.2);
-                max-height: calc(100vh - 80px);
-                overflow-y: auto;
-            }
-
-            .nav-menu.active {
-                transform: translateX(0);
-            }
-
-            .nav-toggle {
-                display: flex;
-            }
-
-            .nav-toggle.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-
-            .nav-toggle.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .nav-toggle.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(5px, -5px);
-            }
-        }
-
-        /* Enhanced Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 8rem 2rem 4rem;
-            overflow: hidden;
-        }
-
-        /* Animated Bank Vault Background */
-        .vault-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            z-index: -1;
-        }
-
-        .vault-ring {
-            position: absolute;
-            border: 2px solid;
-            border-radius: 50%;
-            opacity: 0.1;
-            animation: vaultRotate 30s linear infinite;
-        }
-
-        .vault-ring:nth-child(1) {
-            width: 600px;
-            height: 600px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-color: var(--attestation-glow);
-            animation-duration: 25s;
-        }
-
-        .vault-ring:nth-child(2) {
-            width: 800px;
-            height: 800px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-color: var(--primary-glow);
-            animation-duration: 35s;
-            animation-direction: reverse;
-        }
-
-        .vault-ring:nth-child(3) {
-            width: 1000px;
-            height: 1000px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-color: var(--secondary-glow);
-            animation-duration: 45s;
-        }
-
-        @keyframes vaultRotate {
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-
-        /* Floating Trust Symbols */
-        .trust-symbols {
-            position: absolute;
+        
+        /* HUD Interface */
+        #hud {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 100;
         }
-
-        .trust-symbol {
+        
+        .hud-element {
             position: absolute;
-            font-size: 4rem;
-            opacity: 0.05;
-            animation: floatSymbol 20s ease-in-out infinite;
-            filter: drop-shadow(0 0 20px currentColor);
-        }
-
-        @keyframes floatSymbol {
-            0%, 100% {
-                transform: translateY(0) translateX(0) rotate(0deg) scale(1);
-            }
-            25% {
-                transform: translateY(-30px) translateX(20px) rotate(90deg) scale(1.1);
-            }
-            50% {
-                transform: translateY(20px) translateX(-30px) rotate(180deg) scale(0.9);
-            }
-            75% {
-                transform: translateY(-20px) translateX(-20px) rotate(270deg) scale(1.05);
-            }
-        }
-
-        .trust-symbol:nth-child(1) { 
-            top: 10%; 
-            left: 10%; 
-            color: var(--attestation-glow);
-            animation-delay: 0s;
-        }
-        .trust-symbol:nth-child(2) { 
-            top: 20%; 
-            right: 15%; 
-            color: var(--primary-glow);
-            animation-delay: 5s;
-        }
-        .trust-symbol:nth-child(3) { 
-            bottom: 25%; 
-            left: 15%; 
-            color: var(--accent-glow);
-            animation-delay: 10s;
-        }
-        .trust-symbol:nth-child(4) { 
-            bottom: 15%; 
-            right: 20%; 
-            color: var(--secondary-glow);
-            animation-delay: 15s;
-        }
-
-        .hero-content {
-            text-align: center;
-            z-index: 10;
-            max-width: 1000px;
-            width: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(249, 191, 35, 0.3);
+            border-radius: 8px;
+            padding: 20px;
             backdrop-filter: blur(10px);
-            background: rgba(0, 0, 0, 0.3);
-            padding: 4rem 2rem;
-            border-radius: 2rem;
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            position: relative;
-            overflow: hidden;
+            pointer-events: auto;
+            transition: all 0.3s ease;
         }
-
-        .hero-content::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: var(--gradient-attestation);
-            border-radius: 2rem;
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.3s ease;
+        
+        #vault-stats {
+            top: 80px;
+            left: 20px;
+            min-width: 250px;
         }
-
-        .hero-content:hover::before {
-            opacity: 0.1;
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 900;
-            margin-bottom: 1.5rem;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-
-        /* Enhanced Gradient Text with Glow */
-        .gradient-text {
-            background: linear-gradient(to right, #FFFFFF 0%, #FBBF24 25%, #8B5CF6 50%, #3B82F6 75%, #FFFFFF 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: shine 4s linear infinite;
-            position: relative;
-            display: inline-block;
-        }
-
-        .gradient-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            background: var(--gradient-attestation);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: blur(20px);
-            opacity: 0.5;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        .hero .subtitle {
-            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            font-weight: 300;
-            letter-spacing: 0.02em;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            text-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-        }
-
-        /* Animated Hero CTA */
-        .hero-cta-group {
+        
+        .stat-row {
             display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 3rem;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
-
-        .hero-cta {
-            background: var(--gradient-attestation);
-            color: var(--bg-void);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 0.5rem;
+        
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .stat-value {
+            color: #f9bf23;
+            font-weight: 600;
+            font-feature-settings: "tnum";
+        }
+        
+        /* Controls Panel */
+        #controls-panel {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            pointer-events: auto;
+            z-index: 200;
+        }
+        
+        .control-button {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(249, 191, 35, 0.3);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
+            font-size: 14px;
+            backdrop-filter: blur(10px);
         }
-
-        .hero-cta::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .hero-cta:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .hero-cta:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 20px 50px rgba(251, 191, 36, 0.7);
-        }
-
-        .hero-cta-secondary {
-            background: transparent;
-            color: var(--attestation-glow);
-            border: 2px solid var(--attestation-glow);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-cta-secondary:hover {
-            background: rgba(251, 191, 36, 0.1);
+        
+        .control-button:hover {
+            background: rgba(249, 191, 35, 0.1);
+            border-color: #f9bf23;
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
         }
-
-        /* Section Styles */
-        section {
-            padding: 6rem 0;
-            position: relative;
+        
+        .control-button:active {
+            transform: translateY(0);
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-title {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: var(--gradient-attestation);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 40px rgba(251, 191, 36, 0.5);
-        }
-
-        .section-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            max-width: 800px;
-            margin: 0 auto;
-            font-weight: 300;
-            line-height: 1.8;
-        }
-
-        /* Enhanced Core Concept Section */
-        .concept-section {
-            background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .concept-grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                linear-gradient(rgba(251, 191, 36, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(251, 191, 36, 0.03) 1px, transparent 1px);
-            background-size: 100px 100px;
-            animation: gridSlide 60s linear infinite;
-            opacity: 0.5;
-        }
-
-        @keyframes gridSlide {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100px, 100px); }
-        }
-
-        .concept-card {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            margin-bottom: 3rem;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
-        }
-
-        .concept-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-attestation);
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.5s ease;
-        }
-
-        .concept-card:hover::before {
-            transform: scaleX(1);
-        }
-
-        .concept-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--attestation-glow);
-            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
-        }
-
-        .concept-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--text-bright);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .concept-icon {
-            font-size: 2.5rem;
-            animation: pulse 2s ease-in-out infinite;
-            filter: drop-shadow(0 0 20px var(--attestation-glow));
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        .concept-content {
-            font-size: 1.125rem;
-            line-height: 1.8;
-            color: var(--text-primary);
-        }
-
-        .highlight-text {
-            color: var(--attestation-glow);
-            font-weight: 600;
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        /* Enhanced Process Flow Section */
-        .process-section {
-            background: var(--bg-deep);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .process-section::before {
-            content: '';
-            position: absolute;
+        
+        /* Command Palette */
+        #command-palette {
+            position: fixed;
             top: 50%;
             left: 50%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.05) 0%, transparent 70%);
             transform: translate(-50%, -50%);
-            animation: processPulse 10s ease-in-out infinite;
+            width: 600px;
+            max-width: 90%;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(249, 191, 35, 0.3);
+            border-radius: 12px;
+            padding: 0;
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
         }
-
-        @keyframes processPulse {
-            0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        
+        #command-palette.active {
+            display: block;
+            animation: fadeIn 0.2s ease-out;
         }
-
-        .process-timeline {
-            position: relative;
-            margin-top: 4rem;
-            z-index: 1;
-        }
-
-        .process-timeline::before {
-            content: '';
-            position: absolute;
-            left: 50px;
-            top: 50px;
-            width: 2px;
-            height: calc(100% - 100px);
-            background: var(--gradient-attestation);
-            opacity: 0.5;
-            box-shadow: 0 0 20px var(--attestation-glow);
-        }
-
-        .process-step {
-            display: grid;
-            grid-template-columns: 100px 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            position: relative;
-            opacity: 0;
-            transform: translateX(-50px);
-            animation: slideIn 0.6s forwards;
-        }
-
-        .process-step:nth-child(1) { animation-delay: 0.1s; }
-        .process-step:nth-child(2) { animation-delay: 0.2s; }
-        .process-step:nth-child(3) { animation-delay: 0.3s; }
-        .process-step:nth-child(4) { animation-delay: 0.4s; }
-
-        @keyframes slideIn {
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -45%);
+            }
             to {
                 opacity: 1;
-                transform: translateX(0);
+                transform: translate(-50%, -50%);
             }
         }
-
-        .step-number {
-            background: var(--gradient-attestation);
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
+        
+        #command-search {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            padding: 20px;
+            outline: none;
+            border-bottom: 1px solid rgba(249, 191, 35, 0.2);
+        }
+        
+        .command-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .command-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            position: relative;
-            margin: 0 auto;
-            color: var(--bg-void);
-            box-shadow: 0 0 50px rgba(251, 191, 36, 0.7);
-            animation: stepFloat 3s ease-in-out infinite;
         }
-
-        @keyframes stepFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(5deg); }
+        
+        .command-item:hover {
+            background: rgba(249, 191, 35, 0.1);
         }
-
-        .step-number::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 3rem;
-            background: linear-gradient(to bottom, var(--attestation-glow) 0%, transparent 100%);
+        
+        .command-item.selected {
+            background: rgba(249, 191, 35, 0.2);
         }
-
-        .process-step:last-child .step-number::after {
+        
+        .command-shortcut {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        /* Info Panel */
+        #info-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(249, 191, 35, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            pointer-events: auto;
+        }
+        
+        /* Performance Indicator */
+        #performance-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: monospace;
             display: none;
         }
-
-        .step-content {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 1rem;
-            padding: 2.5rem;
-            position: relative;
-            transition: all 0.3s ease;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-
-        .step-content::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--gradient-attestation);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .step-content:hover {
-            transform: translateY(-5px);
-            border-color: var(--attestation-glow);
-            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.4);
-        }
-
-        .step-content:hover::before {
-            opacity: 0.05;
-        }
-
-        .step-arrow {
-            position: absolute;
-            left: -20px;
-            top: 40px;
-            width: 0;
-            height: 0;
-            border-top: 10px solid transparent;
-            border-bottom: 10px solid transparent;
-            border-right: 20px solid rgba(251, 191, 36, 0.2);
-            filter: drop-shadow(0 0 10px var(--attestation-glow));
-        }
-
-        .step-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--text-bright);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .step-icon {
-            font-size: 1.5rem;
-            color: var(--attestation-glow);
-            animation: spin 4s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .step-description {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            margin-bottom: 1rem;
-        }
-
-        /* Enhanced Code Block */
-        .code-block {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-top: 1rem;
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.875rem;
-            color: var(--accent-glow);
-            overflow-x: auto;
-            position: relative;
-            box-shadow: inset 0 0 20px rgba(251, 191, 36, 0.1);
-        }
-
-        .code-block::before {
-            content: 'ATTESTATION';
-            position: absolute;
-            top: 0.5rem;
-            right: 1rem;
-            font-size: 0.75rem;
-            color: var(--attestation-glow);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            opacity: 0.5;
-        }
-
-        .code-block::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .code-block::-webkit-scrollbar-track {
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        .code-block::-webkit-scrollbar-thumb {
-            background: var(--attestation-glow);
-            border-radius: 3px;
-        }
-
-        /* Enhanced Benefits Section */
-        .benefits-section {
-            background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-dark) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .benefits-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .benefit-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid transparent;
-            border-radius: 1rem;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            cursor: pointer;
-        }
-
-        .benefit-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: var(--gradient-trust);
-            border-radius: 1rem;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-
-        .benefit-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: transparent;
-            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.4);
-        }
-
-        .benefit-card:hover::before {
-            opacity: 1;
-        }
-
-        .benefit-icon {
-            width: 80px;
-            height: 80px;
-            background: var(--gradient-trust);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            font-size: 2rem;
-            position: relative;
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
-            animation: iconFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes iconFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-5px) rotate(5deg); }
-        }
-
-        .benefit-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-bright);
-            position: relative;
-            z-index: 1;
-        }
-
-        .benefit-description {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Enhanced Key Holders Section */
-        .keyholders-section {
-            background: var(--bg-void);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .keyholders-intro {
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto 4rem;
-            font-size: 1.125rem;
-            line-height: 1.8;
-        }
-
-        .keyholders-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .keyholder-card {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 1rem;
-            padding: 2.5rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
-            cursor: pointer;
-        }
-
-        .keyholder-card::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: radial-gradient(circle, rgba(251, 191, 36, 0.3) 0%, transparent 70%);
-            transition: all 0.5s ease;
-            transform: translate(-50%, -50%);
-        }
-
-        .keyholder-card:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        .keyholder-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            border-color: var(--attestation-glow);
-            box-shadow: 0 20px 40px rgba(251, 191, 36, 0.3);
-        }
-
-        .keyholder-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: keyPulse 3s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px currentColor);
-        }
-
-        @keyframes keyPulse {
-            0%, 100% { 
-                transform: scale(1) rotate(0deg); 
-                filter: drop-shadow(0 0 30px currentColor);
-            }
-            50% { 
-                transform: scale(1.1) rotate(5deg); 
-                filter: drop-shadow(0 0 50px currentColor);
-            }
-        }
-
-        .keyholder-type {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-bright);
-            margin-bottom: 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .keyholder-example {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            line-height: 1.6;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* Interactive Attestation Demo */
-        .demo-section {
-            background: linear-gradient(to bottom, var(--bg-dark) 0%, var(--bg-deep) 100%);
-            padding: 6rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .demo-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 1.5rem;
-            padding: 3rem;
-            backdrop-filter: blur(20px);
-            position: relative;
-        }
-
-        .demo-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .demo-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: var(--gradient-attestation);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .demo-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .demo-input {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            color: var(--text-bright);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-        }
-
-        .demo-input:focus {
-            outline: none;
-            border-color: var(--attestation-glow);
-            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
-        }
-
-        .demo-button {
-            background: var(--gradient-attestation);
-            color: var(--bg-void);
-            border: none;
-            padding: 1rem 2rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .demo-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.5);
-        }
-
-        .demo-result {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
-            color: var(--accent-glow);
-            min-height: 150px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .demo-result.success {
-            animation: successGlow 1s ease;
-        }
-
-        @keyframes successGlow {
-            0% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
-            50% { box-shadow: 0 0 50px rgba(16, 185, 129, 0.5); }
-            100% { box-shadow: 0 0 0 rgba(16, 185, 129, 0); }
-        }
-
-        /* Enhanced CTA Section */
-        .cta-section {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-            padding: 8rem 0;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cta-bg-animation {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-        }
-
-        .cta-particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: var(--attestation-glow);
-            border-radius: 50%;
-            animation: ctaFloat 20s linear infinite;
-        }
-
-        @keyframes ctaFloat {
-            0% {
-                transform: translateY(100vh) translateX(0);
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh) translateX(100px);
-                opacity: 0;
-            }
-        }
-
-        .cta-content {
-            max-width: 800px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .cta-title {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 800;
-            margin-bottom: 1.5rem;
-            background: var(--gradient-attestation);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 60px rgba(251, 191, 36, 0.5);
-        }
-
-        .cta-description {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            line-height: 1.8;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: var(--gradient-attestation);
-            color: var(--bg-void);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 700;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(251, 191, 36, 0.6);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 20px 60px rgba(251, 191, 36, 0.8);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--attestation-glow);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border: 2px solid var(--attestation-glow);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(251, 191, 36, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(251, 191, 36, 0.5);
-        }
-
-        /* Footer */
-        footer {
-            background: var(--bg-void);
-            padding: 4rem 0 2rem;
-            border-top: 1px solid rgba(251, 191, 36, 0.1);
-        }
-
-        .footer-content {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .footer-links {
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            color: var(--attestation-glow);
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        .footer-legal {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(251, 191, 36, 0.1);
-        }
-
-        .footer-legal a {
-            color: var(--attestation-glow);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-legal a:hover {
-            color: var(--secondary-glow);
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--attestation-glow);
-            border-radius: 5px;
-            box-shadow: 0 0 10px var(--attestation-glow);
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-glow);
-        }
-
-        /* Dropdown Styles */
-        .nav-dropdown {
-            position: relative;
-        }
-
-        .nav-dropdown-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-        }
-
-        .dropdown-arrow {
-            transition: transform 0.3s ease;
-        }
-
-        .nav-dropdown:hover .dropdown-arrow,
-        .nav-dropdown.active .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .nav-dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            min-width: 220px;
-            background: rgba(10, 10, 10, 0.98);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            border-radius: 0.75rem;
-            padding: 0.5rem 0;
-            margin-top: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateX(-50%) translateY(-10px);
-            transition: all 0.3s ease;
-            list-style: none;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-dropdown-menu::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            background: rgba(10, 10, 10, 0.98);
-            border-top: 1px solid rgba(251, 191, 36, 0.2);
-            border-left: 1px solid rgba(251, 191, 36, 0.2);
-            transform: translateX(-50%) rotate(45deg);
-        }
-
-        .nav-dropdown:hover .nav-dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .nav-dropdown-link {
-            display: block;
-            padding: 0.75rem 1.5rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-
-        .nav-dropdown-link:hover {
-            color: var(--text-bright);
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        /* Mobile Dropdown */
-        @media (max-width: 968px) {
-            .nav-dropdown-toggle {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .nav-dropdown-menu {
-                position: static;
-                opacity: 1;
-                visibility: visible;
-                transform: none;
-                display: none;
-                width: 100%;
-                margin-top: 0.5rem;
-                margin-left: 1rem;
-                background: transparent;
-                border: none;
-                box-shadow: none;
-            }
-
-            .nav-dropdown-menu::before {
-                display: none;
-            }
-
-            .nav-dropdown.active .nav-dropdown-menu {
-                display: block;
-            }
-
-            .nav-dropdown-link {
-                padding: 0.75rem 1rem;
-                font-size: 0.875rem;
-            }
-        }
-
-        /* Responsive */
+        
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            .demo-grid {
-                grid-template-columns: 1fr;
+            #vault-stats {
+                top: 120px;
+                left: 10px;
+                padding: 15px;
+                min-width: auto;
             }
-
-            .process-step {
-                grid-template-columns: 60px 1fr;
-                gap: 1rem;
+            
+            #controls-panel {
+                flex-wrap: wrap;
+                gap: 5px;
+                padding: 0 10px;
             }
-
-            .step-number {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
+            
+            .control-button {
+                padding: 10px 16px;
+                font-size: 12px;
             }
-
-            .cta-buttons {
-                flex-direction: column;
-                width: 100%;
-            }
-
-            .btn-primary,
-            .btn-secondary {
-                width: 100%;
-                text-align: center;
-            }
-
-            .trust-symbol {
-                font-size: 3rem;
-            }
+        }
+        
+        /* Visual effects */
+        .glow {
+            box-shadow: 0 0 20px rgba(249, 191, 35, 0.5);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
         }
     </style>
 </head>
 <body>
     <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-spinner">
-            <div class="loading-ring"></div>
-            <div class="loading-ring"></div>
-            <div class="loading-ring"></div>
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Initializing Attestation Vault</div>
+        <div class="loading-progress">
+            <div class="loading-progress-bar"></div>
         </div>
     </div>
-
-    <!-- Three.js Canvas -->
-    <canvas id="attestation-canvas"></canvas>
-
-    <!-- Animated Background -->
-    <div class="animated-bg"></div>
-
-    <!-- Attestation Particles -->
-    <div class="attestation-particles" id="attestationParticles"></div>
-
-    <!-- Navigation Header -->
-    <header class="nav-header">
-        <div class="nav-container">
-            <a href="/" class="nav-logo">The Protocol</a>
-            <nav>
-                <ul class="nav-menu" id="navMenu">
-                    <li class="nav-dropdown">
-                        <a href="#" class="nav-link nav-dropdown-toggle">
-                            Ecosystem
-                            <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
-                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
-                            </svg>
-                        </a>
-                        <ul class="nav-dropdown-menu">
-                            <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
-                            <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
-                            <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
-                            <li><a href="/attestation.html" class="nav-dropdown-link active">Attestation Network</a></li>
-                            <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
-                    <li><a href="/#application" class="nav-link nav-cta">Join Beta</a></li>
-                </ul>
-                <div class="nav-toggle" id="navToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="vault-bg">
-            <div class="vault-ring"></div>
-            <div class="vault-ring"></div>
-            <div class="vault-ring"></div>
-        </div>
-        
-        <div class="trust-symbols">
-            <div class="trust-symbol">🔐</div>
-            <div class="trust-symbol">✨</div>
-            <div class="trust-symbol">🛡️</div>
-            <div class="trust-symbol">⚡</div>
-        </div>
-        
-        <div class="hero-content">
-            <h1>
-                <span class="gradient-text" data-text="The Attestation Network">The Attestation Network</span><br>
-                <span style="font-size: 0.7em; font-weight: 600;">A Decentralized Notary for the Agent Economy</span>
-            </h1>
-            <p class="subtitle">
-                Your registry's cryptographic integrity, witnessed by a consortium of neutral parties. 
-                This is how we enable trillion-dollar autonomous commerce with protocol-level trust.
-            </p>
-            <div class="hero-cta-group">
-                <a href="#demo" class="hero-cta">Try Live Demo</a>
-                <a href="#process" class="hero-cta-secondary">Learn How It Works</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Core Concept Section -->
-    <section class="concept-section">
-        <div class="concept-grid-bg"></div>
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Beyond Federation: The Trust Layer</h2>
-                <p class="section-subtitle">
-                    Federation establishes peer-to-peer trust. But how do you prove that a registry 
-                    hasn't been compromised? Enter the Attestation Network—our architectural immune system.
-                </p>
-            </div>
-            
-            <div class="concept-card">
-                <h3 class="concept-title">
-                    <span class="concept-icon">🏛️</span>
-                    The Core Innovation: A Digital Notary Public Network
-                </h3>
-                <div class="concept-content">
-                    <p>
-                        The <span class="highlight-text">Federation of Peers</span> model establishes secure, 
-                        point-to-point trust between registries using cryptographic identities (mTLS/SPIFFE). 
-                        This is the foundation.
-                    </p>
-                    <p style="margin-top: 1.5rem;">
-                        The next evolutionary step is the <span class="highlight-text">Attestation Network</span>—a 
-                        specialized, distributed database that stores one thing of immense value: 
-                        <strong>immutable, cryptographically-signed proof that a registry's state was valid 
-                        at a specific point in time.</strong>
-                    </p>
-                    <p style="margin-top: 1.5rem;">
-                        Think of it as the "BANK" where we store the most valuable asset in a decentralized 
-                        economy: <span class="highlight-text">verifiable truth</span>. The "keys" to this bank 
-                        are distributed among a carefully selected consortium of trusted, neutral partners.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Process Flow Section -->
-    <section class="process-section" id="process">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">How the Attestation Network Works</h2>
-                <p class="section-subtitle">
-                    A four-step process that transforms registry state into immutable, verifiable proof.
-                </p>
-            </div>
-            
-            <div class="process-timeline">
-                <div class="process-step">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <div class="step-arrow"></div>
-                        <h3 class="step-title">
-                            <span class="step-icon">📸</span>
-                            State Snapshot (The Merkle Root)
-                        </h3>
-                        <p class="step-description">
-                            At regular intervals (e.g., every hour), each sovereign registry calculates a 
-                            <strong>Merkle root</strong> of its entire agent catalog. This is a single, unique 
-                            hash that represents a verifiable 'snapshot' of the registry's state at that moment.
-                        </p>
-                        <div class="code-block">
-merkle_root = calculate_merkle_root(agent_catalog)
-timestamp = current_utc_time()
-state_snapshot = {registry_id, timestamp, merkle_root}</div>
-                    </div>
-                </div>
-                
-                <div class="process-step">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <div class="step-arrow"></div>
-                        <h3 class="step-title">
-                            <span class="step-icon">📤</span>
-                            Attestation Request
-                        </h3>
-                        <p class="step-description">
-                            The registry sends this Merkle root to a quorum of the Attestation Partners. 
-                            It is asking them: "Please bear witness that this was my exact state at this 
-                            exact time." The partners never see the full agent list—only the root hash.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="process-step">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <div class="step-arrow"></div>
-                        <h3 class="step-title">
-                            <span class="step-icon">🖊️</span>
-                            The Notarization (The Signing)
-                        </h3>
-                        <p class="step-description">
-                            The Attestation Partners verify the registry's identity, timestamp the request, 
-                            and then use their private keys to <strong>cryptographically sign the Merkle root</strong>. 
-                            This creates an unforgeable attestation of the registry's state.
-                        </p>
-                        <div class="code-block">
-attestation = {
-    registry_id: "sovereign_registry_001",
-    timestamp: "2025-07-08T14:30:00Z",
-    merkle_root: "0x7d3f...",
-    partner_signature: sign(private_key, merkle_root)
-}</div>
-                    </div>
-                </div>
-                
-                <div class="process-step">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <div class="step-arrow"></div>
-                        <h3 class="step-title">
-                            <span class="step-icon">📜</span>
-                            Public Record
-                        </h3>
-                        <p class="step-description">
-                            The signed attestation is published to the Verifiable Attestation Ledger. 
-                            This is the 'deposit' into the 'bank'—creating an unforgeable, public audit 
-                            trail of every registry's state over time.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Interactive Demo Section -->
-    <section class="demo-section" id="demo">
-        <div class="container">
-            <div class="demo-container">
-                <div class="demo-header">
-                    <h3 class="demo-title">Try It Live: Generate an Attestation</h3>
-                    <p class="section-subtitle">See how registry states are cryptographically attested</p>
-                </div>
-                
-                <div class="demo-grid">
-                    <input type="text" class="demo-input" id="registryId" placeholder="Registry ID (e.g., tokyo-registry-001)" value="tokyo-registry-001">
-                    <input type="text" class="demo-input" id="agentCount" placeholder="Number of Agents (e.g., 1547)" value="1547">
-                </div>
-                
-                <button class="demo-button" onclick="generateAttestation()">Generate Attestation</button>
-                
-                <div class="demo-result" id="demoResult">
-                    <div style="color: var(--text-muted);">Click "Generate Attestation" to see the cryptographic proof...</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Benefits Section -->
-    <section class="benefits-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Why This Enables a Trillion-Dollar Economy</h2>
-                <p class="section-subtitle">
-                    The Attestation Network unlocks capabilities that make high-stakes autonomous commerce possible.
-                </p>
-            </div>
-            
-            <div class="benefits-grid">
-                <div class="benefit-card">
-                    <div class="benefit-icon">⚖️</div>
-                    <h3 class="benefit-title">Conflict Resolution</h3>
-                    <p class="benefit-description">
-                        If two agents have a dispute over a transaction, they have a provable, notarized 
-                        record of what the state of the network was when the agreement was made.
-                    </p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">🛡️</div>
-                    <h3 class="benefit-title">Preventing Fraud</h3>
-                    <p class="benefit-description">
-                        A registry cannot retroactively add or remove an agent from its catalog to 
-                        influence a dispute without invalidating its entire chain of attested Merkle roots.
-                    </p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">📊</div>
-                    <h3 class="benefit-title">Auditing & Compliance</h3>
-                    <p class="benefit-description">
-                        Enterprises can prove to regulators that their agents were operating under 
-                        specific, verifiable network conditions at a specific time.
-                    </p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">💎</div>
-                    <h3 class="benefit-title">Insurance & Derivatives</h3>
-                    <p class="benefit-description">
-                        This verifiable state history becomes the foundation for advanced economic 
-                        products, like insurance against registry downtime or fraud.
-                    </p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">🚀</div>
-                    <h3 class="benefit-title">Real-Time Verification</h3>
-                    <p class="benefit-description">
-                        Instant verification of registry states enables high-frequency agent trading 
-                        and millisecond-precision commerce protocols.
-                    </p>
-                </div>
-                
-                <div class="benefit-card">
-                    <div class="benefit-icon">🌍</div>
-                    <h3 class="benefit-title">Global Trust Network</h3>
-                    <p class="benefit-description">
-                        Cross-jurisdiction trust without relying on any single government or corporation, 
-                        enabling truly borderless agent commerce.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Key Holders Section -->
-    <section class="keyholders-section">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Who Holds the Keys to the Bank?</h2>
-                <p class="section-subtitle">
-                    The Consortium of Neutral Partners
-                </p>
-            </div>
-            
-            <div class="keyholders-intro">
-                <p>
-                    The Attestation Partners <strong>cannot</strong> be the major cloud providers or any 
-                    single entity with a dominant market position. Doing so would simply re-centralize trust. 
-                    Instead, we invite a <strong>founding cohort of neutral, trusted organizations</strong> 
-                    to act as the initial attestors.
-                </p>
-            </div>
-            
-            <div class="keyholders-grid">
-                <div class="keyholder-card">
-                    <div class="keyholder-icon">🏛️</div>
-                    <h3 class="keyholder-type">Non-Profit Foundations</h3>
-                    <p class="keyholder-example">
-                        The Linux Foundation, Apache Foundation, or other standards bodies with 
-                        proven track records of neutral governance.
-                    </p>
-                </div>
-                
-                <div class="keyholder-card">
-                    <div class="keyholder-icon">🎓</div>
-                    <h3 class="keyholder-type">Academic Institutions</h3>
-                    <p class="keyholder-example">
-                        Leading university computer science departments with expertise in 
-                        distributed systems and cryptography.
-                    </p>
-                </div>
-                
-                <div class="keyholder-card">
-                    <div class="keyholder-icon">🌍</div>
-                    <h3 class="keyholder-type">Diverse Enterprises</h3>
-                    <p class="keyholder-example">
-                        A major bank from Europe, a manufacturing firm from Asia, a logistics 
-                        company from North America—entities with vested interest but no platform dominance.
-                    </p>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 3rem;">
-                <p style="font-size: 1.125rem; color: var(--text-bright);">
-                    By distributing the 'keys to the bank' among a consortium of respected, neutral, 
-                    and diversified partners, we ensure that <strong>no single entity—not even us—can 
-                    control the integrity of the federated network</strong>.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-bg-animation" id="ctaBg"></div>
-        <div class="container">
-            <div class="cta-content">
-                <h2 class="cta-title">Build on Verifiable Truth</h2>
-                <p class="cta-description">
-                    The Attestation Network is the foundation for a new economic reality where 
-                    trust is cryptographic, disputes are resolvable, and commerce operates at the speed of light.
-                </p>
-                <div class="cta-buttons">
-                    <a href="/technical-page.html" class="btn-primary">Explore Technical Details</a>
-                    <a href="/governance.html" class="btn-secondary">Learn About Governance</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="/terms.html">Terms of Service</a>
-                <a href="/privacy.html">Privacy Policy</a>
-                <a href="/dpa.html">Data Processing Agreement</a>
-                <a href="/cookies.html">Cookie Policy</a>
-                <a href="/disclaimer.html">Risk Notice</a>
-                <a href="/sla.html">Enterprise SLA</a>
-            </div>
-            <div class="footer-content">
-                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/" style="color: var(--attestation-glow); text-decoration: none;">Raphael Jeziorny</a></p>
-            </div>
-            <div class="footer-legal">
-                <p>
-                    <a href="/imprint.html">Impressum</a> | 
-                    <a href="/privacy.html">Datenschutzerklärung</a>
-                </p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <script>
-        // Three.js Attestation Network Visualization
-        let scene, camera, renderer, nodes = [], connections = [];
-        let mouseX = 0, mouseY = 0;
-        let windowHalfX = window.innerWidth / 2;
-        let windowHalfY = window.innerHeight / 2;
-
-        function initThree() {
-            // Scene
-            scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x000000, 0.0008);
-
-            // Camera
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 5000);
-            camera.position.z = 1500;
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ 
-                canvas: document.getElementById('attestation-canvas'),
-                antialias: true,
-                alpha: true 
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-
-            // Create attestation network nodes
-            const nodeGeometry = new THREE.SphereGeometry(30, 16, 16);
-            const nodeMaterials = [
-                new THREE.MeshBasicMaterial({ color: 0xFBBF24, wireframe: true, transparent: true, opacity: 0.8 }),
-                new THREE.MeshBasicMaterial({ color: 0x3B82F6, wireframe: true, transparent: true, opacity: 0.8 }),
-                new THREE.MeshBasicMaterial({ color: 0x8B5CF6, wireframe: true, transparent: true, opacity: 0.8 }),
-                new THREE.MeshBasicMaterial({ color: 0x10B981, wireframe: true, transparent: true, opacity: 0.8 })
-            ];
-
-            // Create central attestation node
-            const centralGeometry = new THREE.OctahedronGeometry(80, 2);
-            const centralMaterial = new THREE.MeshBasicMaterial({
-                color: 0xFBBF24,
-                wireframe: true,
-                transparent: true,
-                opacity: 1
-            });
-            const centralNode = new THREE.Mesh(centralGeometry, centralMaterial);
-            centralNode.userData = { 
-                baseScale: 1,
-                rotationSpeed: { x: 0.001, y: 0.002, z: 0.001 }
-            };
-            scene.add(centralNode);
-            nodes.push(centralNode);
-
-            // Create surrounding nodes
-            const nodeCount = 12;
-            for (let i = 0; i < nodeCount; i++) {
-                const material = nodeMaterials[i % nodeMaterials.length];
-                const node = new THREE.Mesh(nodeGeometry, material);
+    <!-- Main Canvas Container -->
+    <div id="canvas-container" role="application" aria-label="Attestation Vault 3D Visualization"></div>
+    
+    <!-- HUD Interface -->
+    <div id="hud">
+        <!-- Control Panel -->
+        <div id="controls-panel">
+            <button class="control-button" id="generate-attestation" aria-label="Generate new attestation">
+                Generate Attestation
+            </button>
+            <button class="control-button" id="toggle-view" aria-label="Toggle view mode">
+                Toggle View
+            </button>
+            <button class="control-button" id="cinematic-mode" aria-label="Enter cinematic mode">
+                Cinematic
+            </button>
+            <button class="control-button" id="toggle-audio" aria-label="Toggle audio">
+                🔊 Audio
+            </button>
+        </div>
+        
+        <!-- Vault Statistics -->
+        <div id="vault-stats" class="hud-element" role="region" aria-label="Vault Statistics">
+            <h2 style="font-size: 16px; margin-bottom: 15px; color: #f9bf23;">Attestation Vault</h2>
+            <div class="stat-row">
+                <span class="stat-label">Current Epoch</span>
+                <span class="stat-value" id="current-epoch">2,847,193</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Total Stored</span>
+                <span class="stat-value" id="total-stored">12.4M</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Partners Online</span>
+                <span class="stat-value" id="partners-online">47/50</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Verification Rate</span>
+                <span class="stat-value" id="verification-rate">99.97%</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Network Health</span>
+                <span class="stat-value" id="network-health" style="color: #22c55e;">Optimal</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Command Palette -->
+    <div id="command-palette" role="dialog" aria-label="Command Palette">
+        <input 
+            type="text" 
+            id="command-search" 
+            placeholder="Type a command..." 
+            autocomplete="off"
+            aria-label="Search commands"
+        >
+        <div class="command-list" role="listbox">
+            <div class="command-item" role="option" data-command="generate">
+                <span>Generate New Attestation</span>
+                <span class="command-shortcut">Space</span>
+            </div>
+            <div class="command-item" role="option" data-command="verify">
+                <span>Toggle Verification View</span>
+                <span class="command-shortcut">V</span>
+            </div>
+            <div class="command-item" role="option" data-command="time">
+                <span>Time Navigation Mode</span>
+                <span class="command-shortcut">T</span>
+            </div>
+            <div class="command-item" role="option" data-command="cinematic">
+                <span>Cinematic Mode</span>
+                <span class="command-shortcut">C</span>
+            </div>
+            <div class="command-item" role="option" data-command="quality">
+                <span>Change Quality Settings</span>
+                <span class="command-shortcut">Q</span>
+            </div>
+            <div class="command-item" role="option" data-command="stats">
+                <span>Toggle Performance Stats</span>
+                <span class="command-shortcut">P</span>
+            </div>
+            <div class="command-item" role="option" data-command="help">
+                <span>Show Help</span>
+                <span class="command-shortcut">?</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Panel -->
+    <div id="info-panel">
+        <div>Press <strong>Ctrl/Cmd + K</strong> for commands</div>
+        <div>Use mouse to rotate • Scroll to zoom</div>
+    </div>
+    
+    <!-- Performance Indicator -->
+    <div id="performance-indicator" aria-hidden="true"></div>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+        <script>
+        // Main application class
+        class AttestationVault {
+            constructor() {
+                this.scene = null;
+                this.camera = null;
+                this.renderer = null;
+                this.composer = null;
                 
-                const angle = (i / nodeCount) * Math.PI * 2;
-                const radius = 400 + Math.random() * 200;
+                this.vaultMesh = null;
+                this.merkleForest = [];
+                this.signatureFlow = null;
+                this.attestationRings = [];
+                this.particleSystems = [];
                 
-                node.position.x = Math.cos(angle) * radius;
-                node.position.y = (Math.random() - 0.5) * 400;
-                node.position.z = Math.sin(angle) * radius;
+                this.clock = new THREE.Clock();
+                this.stats = {
+                    currentEpoch: 2847193,
+                    totalStored: 12400000,
+                    partnersOnline: 47,
+                    verificationRate: 99.97
+                };
                 
-                node.userData = {
-                    angle: angle,
-                    radius: radius,
-                    yOffset: node.position.y,
-                    speed: 0.0005 + Math.random() * 0.001,
-                    rotationSpeed: {
-                        x: (Math.random() - 0.5) * 0.01,
-                        y: (Math.random() - 0.5) * 0.01,
-                        z: (Math.random() - 0.5) * 0.01
+                this.audioContext = null;
+                this.sounds = {};
+                this.audioEnabled = false;
+                
+                this.init();
+            }
+            
+            async init() {
+                try {
+                    // Show loading screen
+                    this.updateLoadingProgress(0, 'Initializing WebGL...');
+                    
+                    // Setup Three.js
+                    this.setupRenderer();
+                    this.updateLoadingProgress(10, 'Creating scene...');
+                    
+                    this.setupScene();
+                    this.updateLoadingProgress(20, 'Loading shaders...');
+                    
+                    // Create vault visualization
+                    await this.createVault();
+                    this.updateLoadingProgress(40, 'Generating merkle forest...');
+                    
+                    this.createMerkleForest();
+                    this.updateLoadingProgress(50, 'Initializing particle systems...');
+                    
+                    this.createSignatureFlow();
+                    this.updateLoadingProgress(60, 'Creating attestation rings...');
+                    
+                    this.createAttestationRings();
+                    this.updateLoadingProgress(70, 'Setting up lighting...');
+                    
+                    this.setupLighting();
+                    this.updateLoadingProgress(80, 'Configuring effects...');
+                    
+                    this.createBackgroundElements();
+                    this.updateLoadingProgress(90, 'Initializing controls...');
+                    
+                    // Setup systems
+                    await this.setupAudio();
+                    this.setupControls();
+                    this.setupEventListeners();
+                    this.setupPerformanceMonitoring();
+                    
+                    this.updateLoadingProgress(100, 'Ready!');
+                    
+                    // Hide loading screen
+                    setTimeout(() => {
+                        const loadingScreen = document.getElementById('loading-screen');
+                        loadingScreen.style.opacity = '0';
+                        setTimeout(() => loadingScreen.style.display = 'none', 1000);
+                    }, 500);
+                    
+                    // Start animation loop
+                    this.animate();
+                    
+                    // Start background updates
+                    this.startBackgroundUpdates();
+                    
+                } catch (error) {
+                    console.error('Initialization failed:', error);
+                    this.showError('Failed to initialize attestation vault');
+                }
+            }
+            
+            updateLoadingProgress(percent, text) {
+                const progressBar = document.querySelector('.loading-progress-bar');
+                const loadingText = document.querySelector('.loading-text');
+                
+                if (progressBar) progressBar.style.width = percent + '%';
+                if (loadingText) loadingText.textContent = text;
+            }
+            
+            setupRenderer() {
+                this.canvas = document.createElement('canvas');
+                const container = document.getElementById('canvas-container');
+                container.appendChild(this.canvas);
+                
+                this.renderer = new THREE.WebGLRenderer({
+                    canvas: this.canvas,
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: 'high-performance'
+                });
+                
+                this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.setSize(window.innerWidth, window.innerHeight);
+                this.renderer.outputEncoding = THREE.sRGBEncoding;
+                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+                this.renderer.toneMappingExposure = 0.8; // Reduced exposure
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            }
+            
+            setupScene() {
+                // Scene
+                this.scene = new THREE.Scene();
+                this.scene.fog = new THREE.FogExp2(0x000511, 0.02);
+                
+                // Camera
+                this.camera = new THREE.PerspectiveCamera(
+                    60,
+                    window.innerWidth / window.innerHeight,
+                    0.1,
+                    1000
+                );
+                this.camera.position.set(30, 20, 30);
+                this.camera.lookAt(0, 0, 0);
+            }
+            
+            async createVault() {
+                // Create central vault structure
+                const vaultGroup = new THREE.Group();
+                
+                // Main octahedron
+                const vaultGeometry = new THREE.OctahedronGeometry(5, 2);
+                
+                // Custom shader material
+                const vaultMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                        uColor1: { value: new THREE.Color(0xf9bf23) },
+                        uColor2: { value: new THREE.Color(0x3b82f6) },
+                        uColor3: { value: new THREE.Color(0x8b5cf6) },
+                        uGlowIntensity: { value: 0.5 }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        varying vec2 vUv;
+                        uniform float uTime;
+                        
+                        void main() {
+                            vNormal = normalize(normalMatrix * normal);
+                            vPosition = position;
+                            vUv = uv;
+                            
+                            vec3 pos = position;
+                            pos *= 1.0 + sin(position.y * 2.0 + uTime) * 0.1;
+                            
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform vec2 uResolution;
+                        uniform vec2 uMouse;
+                        uniform vec3 uColor1;
+                        uniform vec3 uColor2;
+                        uniform vec3 uColor3;
+                        uniform float uGlowIntensity;
+                        
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        varying vec2 vUv;
+                        
+                        vec3 hash3(vec3 p) {
+                            p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
+                                    dot(p, vec3(269.5, 183.3, 246.1)),
+                                    dot(p, vec3(113.5, 271.9, 124.6)));
+                            return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+                        }
+                        
+                        float noise(vec3 p) {
+                            vec3 i = floor(p);
+                            vec3 f = fract(p);
+                            f = f * f * (3.0 - 2.0 * f);
+                            
+                            return mix(mix(mix(dot(hash3(i + vec3(0,0,0)), f - vec3(0,0,0)),
+                                             dot(hash3(i + vec3(1,0,0)), f - vec3(1,0,0)), f.x),
+                                         mix(dot(hash3(i + vec3(0,1,0)), f - vec3(0,1,0)),
+                                             dot(hash3(i + vec3(1,1,0)), f - vec3(1,1,0)), f.x), f.y),
+                                     mix(mix(dot(hash3(i + vec3(0,0,1)), f - vec3(0,0,1)),
+                                             dot(hash3(i + vec3(1,0,1)), f - vec3(1,0,1)), f.x),
+                                         mix(dot(hash3(i + vec3(0,1,1)), f - vec3(0,1,1)),
+                                             dot(hash3(i + vec3(1,1,1)), f - vec3(1,1,1)), f.x), f.y), f.z);
+                        }
+                        
+                        void main() {
+                            vec3 normal = normalize(vNormal);
+                            vec3 viewDir = normalize(cameraPosition - vPosition);
+                            
+                            // Fresnel effect
+                            float fresnel = pow(1.0 - dot(normal, viewDir), 2.0);
+                            
+                            // Animated noise
+                            float n = noise(vPosition * 2.0 + uTime * 0.5) * 0.5 + 0.5;
+                            
+                            // Color gradient
+                            vec3 color = mix(uColor1, uColor2, n);
+                            color = mix(color, uColor3, fresnel);
+                            
+                            // Holographic effect
+                            float stripe = sin(vPosition.y * 10.0 + uTime * 2.0) * 0.5 + 0.5;
+                            color = mix(color, vec3(1.0), stripe * fresnel * 0.3);
+                            
+                            // Glow
+                            color += fresnel * uGlowIntensity * uColor1;
+                            
+                            // Final color with reduced intensity
+                            gl_FragColor = vec4(color * 0.8, 0.9 + fresnel * 0.1);
+                        }
+                    `,
+                    transparent: true,
+                    side: THREE.DoubleSide,
+                    depthWrite: true
+                });
+                
+                this.vaultMaterial = vaultMaterial;
+                this.vaultMesh = new THREE.Mesh(vaultGeometry, vaultMaterial);
+                vaultGroup.add(this.vaultMesh);
+                
+                // Add inner core
+                const coreGeometry = new THREE.IcosahedronGeometry(2, 1);
+                const coreMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0xf9bf23,
+                    emissive: 0xf9bf23,
+                    emissiveIntensity: 0.2,
+                    metalness: 0.8,
+                    roughness: 0.2,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.1
+                });
+                const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
+                vaultGroup.add(coreMesh);
+                
+                // Add wireframe overlay
+                const wireframeGeometry = new THREE.OctahedronGeometry(5.1, 2);
+                const wireframeMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xf9bf23,
+                    wireframe: true,
+                    transparent: true,
+                    opacity: 0.1
+                });
+                const wireframeMesh = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+                vaultGroup.add(wireframeMesh);
+                
+                this.scene.add(vaultGroup);
+                this.vaultGroup = vaultGroup;
+            }
+            
+            createMerkleForest() {
+                const merkleGroup = new THREE.Group();
+                
+                // Create 8 merkle trees around the vault
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i / 8) * Math.PI * 2;
+                    const radius = 15;
+                    const x = Math.cos(angle) * radius;
+                    const z = Math.sin(angle) * radius;
+                    
+                    const tree = this.createMerkleTree(x, 0, z);
+                    merkleGroup.add(tree);
+                    this.merkleForest.push(tree);
+                }
+                
+                this.scene.add(merkleGroup);
+            }
+            
+            createMerkleTree(x, y, z) {
+                const treeGroup = new THREE.Group();
+                treeGroup.position.set(x, y, z);
+                
+                // Create branches using cylinders
+                const branchMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0x2a4858,
+                    emissive: 0x3b82f6,
+                    emissiveIntensity: 0.1,
+                    metalness: 0.3,
+                    roughness: 0.7,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                
+                const createBranch = (parent, level, position, scale) => {
+                    if (level > 4) return;
+                    
+                    const height = 2 * scale;
+                    const radius = 0.1 * scale;
+                    
+                    const geometry = new THREE.CylinderGeometry(radius * 0.8, radius, height, 8);
+                    const branch = new THREE.Mesh(geometry, branchMaterial);
+                    branch.position.copy(position);
+                    
+                    parent.add(branch);
+                    
+                    // Create child branches
+                    if (level < 4) {
+                        const branches = level < 2 ? 3 : 2;
+                        for (let i = 0; i < branches; i++) {
+                            const angle = (i / branches) * Math.PI * 2;
+                            const newPos = position.clone();
+                            newPos.y += height * 0.8;
+                            newPos.x += Math.cos(angle) * scale * 0.5;
+                            newPos.z += Math.sin(angle) * scale * 0.5;
+                            
+                            createBranch(parent, level + 1, newPos, scale * 0.7);
+                        }
+                    }
+                    
+                    // Add data nodes at branch tips
+                    if (level === 4) {
+                        const nodeGeometry = new THREE.SphereGeometry(0.3, 8, 6);
+                        const nodeMaterial = new THREE.MeshStandardMaterial({
+							color: 0xf9bf23,
+							emissive: 0xf9bf23,
+							emissiveIntensity: 0.5,
+							transparent: true,
+							opacity: 0.8
+						});
+                        const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
+                        node.position.copy(position);
+                        node.position.y += height * 0.5;
+                        parent.add(node);
                     }
                 };
                 
-                scene.add(node);
-                nodes.push(node);
-
-                // Create connections
-                const connectionGeometry = new THREE.BufferGeometry();
-                const connectionMaterial = new THREE.LineBasicMaterial({
-                    color: 0xFBBF24,
+                // Start tree generation
+                createBranch(treeGroup, 0, new THREE.Vector3(0, 0, 0), 1);
+                
+                return treeGroup;
+            }
+            
+            createSignatureFlow() {
+                // Particle system for signature flows
+                const particleCount = 2000;
+                const geometry = new THREE.BufferGeometry();
+                
+                const positions = new Float32Array(particleCount * 3);
+                const colors = new Float32Array(particleCount * 3);
+                const sizes = new Float32Array(particleCount);
+                const alphas = new Float32Array(particleCount);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    
+                    // Create paths from merkle trees to vault
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = 15 + Math.random() * 5;
+                    const height = Math.random() * 10;
+                    
+                    positions[i3] = Math.cos(angle) * radius;
+                    positions[i3 + 1] = height;
+                    positions[i3 + 2] = Math.sin(angle) * radius;
+                    
+                    // Color gradient
+                    const t = i / particleCount;
+                    colors[i3] = 0.98 * (1 - t) + 0.23 * t;
+                    colors[i3 + 1] = 0.75 * (1 - t) + 0.51 * t;
+                    colors[i3 + 2] = 0.14 * (1 - t) + 0.96 * t;
+                    
+                    sizes[i] = Math.random() * 3 + 1;
+                    alphas[i] = Math.random();
+                }
+                
+                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+                geometry.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1));
+                
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uPixelRatio: { value: this.renderer.getPixelRatio() }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        attribute float alpha;
+                        
+                        varying vec3 vColor;
+                        varying float vAlpha;
+                        
+                        uniform float uTime;
+                        uniform float uPixelRatio;
+                        
+                        void main() {
+                            vColor = color;
+                            vAlpha = alpha;
+                            
+                            vec3 pos = position;
+                            
+                            // Flow animation
+                            float flowSpeed = 0.5;
+                            float t = fract(uTime * flowSpeed + alpha);
+                            
+                            // Move towards center
+                            pos = mix(position, vec3(0.0, 0.0, 0.0), t);
+                            pos.y += sin(t * 3.14159) * 2.0;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            gl_Position = projectionMatrix * mvPosition;
+                            
+                            gl_PointSize = size * 50.0 * uPixelRatio / -mvPosition.z;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        varying float vAlpha;
+                        
+                        void main() {
+                            vec2 center = vec2(0.5);
+                            float dist = distance(gl_PointCoord, center);
+                            
+                            if (dist > 0.5) discard;
+                            
+                            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                            alpha *= vAlpha * 0.8;
+                            
+                            gl_FragColor = vec4(vColor, alpha);
+                        }
+                    `,
                     transparent: true,
-                    opacity: 0.2
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending,
+                    vertexColors: true
                 });
                 
-                const positions = new Float32Array(6);
-                connectionGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                
-                const connection = new THREE.Line(connectionGeometry, connectionMaterial);
-                scene.add(connection);
-                connections.push({ line: connection, start: centralNode, end: node });
+                this.signatureFlow = new THREE.Points(geometry, material);
+                this.scene.add(this.signatureFlow);
+                this.particleSystems.push(this.signatureFlow);
             }
-
-            // Add floating signature particles
-            const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 2000;
-            const posArray = new Float32Array(particlesCount * 3);
-            const colors = new Float32Array(particlesCount * 3);
-
-            for (let i = 0; i < particlesCount * 3; i += 3) {
-                posArray[i] = (Math.random() - 0.5) * 3000;
-                posArray[i + 1] = (Math.random() - 0.5) * 3000;
-                posArray[i + 2] = (Math.random() - 0.5) * 3000;
+            
+            createAttestationRings() {
+                const ringGroup = new THREE.Group();
                 
-                // Golden particles
-                colors[i] = 0.984;
-                colors[i + 1] = 0.749;
-                colors[i + 2] = 0.141;
-            }
-
-            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-            const particlesMaterial = new THREE.PointsMaterial({
-                size: 2,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.6,
-                blending: THREE.AdditiveBlending
-            });
-
-            const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-            scene.add(particles);
-
-            // Event listeners
-            document.addEventListener('mousemove', onDocumentMouseMove);
-            window.addEventListener('resize', onWindowResize);
-
-            animate();
-        }
-
-        function onDocumentMouseMove(event) {
-            mouseX = (event.clientX - windowHalfX) * 0.05;
-            mouseY = (event.clientY - windowHalfY) * 0.05;
-        }
-
-        function onWindowResize() {
-            windowHalfX = window.innerWidth / 2;
-            windowHalfY = window.innerHeight / 2;
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-
-            // Animate nodes
-            nodes.forEach((node, index) => {
-                if (index === 0) {
-                    // Central node
-                    node.rotation.x += node.userData.rotationSpeed.x;
-                    node.rotation.y += node.userData.rotationSpeed.y;
-                    node.rotation.z += node.userData.rotationSpeed.z;
+                // Create multiple rings at different heights
+                for (let i = 0; i < 5; i++) {
+                    const radius = 8 + i * 2;
+                    const height = (i - 2) * 3;
                     
-                    const scale = node.userData.baseScale + Math.sin(Date.now() * 0.001) * 0.1;
-                    node.scale.set(scale, scale, scale);
-                } else {
-                    // Orbiting nodes
-                    node.userData.angle += node.userData.speed;
-                    node.position.x = Math.cos(node.userData.angle) * node.userData.radius;
-                    node.position.z = Math.sin(node.userData.angle) * node.userData.radius;
-                    node.position.y = node.userData.yOffset + Math.sin(Date.now() * 0.001 + index) * 50;
+                    const ringGeometry = new THREE.TorusGeometry(radius, 0.2, 8, 32);
+                    const ringMaterial = new THREE.MeshPhysicalMaterial({
+                        color: i % 2 === 0 ? 0xf9bf23 : 0x3b82f6,
+                        emissive: i % 2 === 0 ? 0xf9bf23 : 0x3b82f6,
+                        emissiveIntensity: 0.3,
+                        metalness: 0.8,
+                        roughness: 0.2,
+                        transparent: true,
+                        opacity: 0.6
+                    });
                     
-                    node.rotation.x += node.userData.rotationSpeed.x;
-                    node.rotation.y += node.userData.rotationSpeed.y;
-                    node.rotation.z += node.userData.rotationSpeed.z;
+                    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                    ring.position.y = height;
+                    ring.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.2;
+                    
+                    ring.userData = {
+                        rotationSpeed: (Math.random() - 0.5) * 0.01,
+                        orbitSpeed: (Math.random() - 0.5) * 0.005,
+                        originalY: height
+                    };
+                    
+                    ringGroup.add(ring);
+                    this.attestationRings.push(ring);
                 }
-            });
-
-            // Update connections
-            connections.forEach((connection) => {
-                const positions = connection.line.geometry.attributes.position.array;
-                positions[0] = connection.start.position.x;
-                positions[1] = connection.start.position.y;
-                positions[2] = connection.start.position.z;
-                positions[3] = connection.end.position.x;
-                positions[4] = connection.end.position.y;
-                positions[5] = connection.end.position.z;
-                connection.line.geometry.attributes.position.needsUpdate = true;
                 
-                // Pulse effect
-                connection.line.material.opacity = 0.2 + Math.sin(Date.now() * 0.002) * 0.1;
-            });
-
-            // Camera follow mouse
-            camera.position.x += (mouseX - camera.position.x) * 0.05;
-            camera.position.y += (-mouseY - camera.position.y) * 0.05;
-            camera.lookAt(scene.position);
-
-            renderer.render(scene, camera);
-        }
-
-        // Initialize Three.js when page loads
-        window.addEventListener('load', () => {
-            initThree();
-            
-            // Hide loading screen
-            setTimeout(() => {
-                document.getElementById('loadingScreen').classList.add('hidden');
-            }, 1000);
-        });
-
-        // Attestation Particles
-        function createAttestationParticles() {
-            const container = document.getElementById('attestationParticles');
-            const symbols = ['🔐', '📜', '✓', '🔑', '⚡', '🛡️', '📋', '🖊️'];
-            
-            for (let i = 0; i < 20; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'attestation-particle';
-                particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 30 + 's';
-                particle.style.animationDuration = (20 + Math.random() * 10) + 's';
-                particle.style.color = i % 2 === 0 ? 'var(--attestation-glow)' : 'var(--primary-glow)';
-                container.appendChild(particle);
-            }
-        }
-
-        createAttestationParticles();
-
-        // CTA Background Animation
-        function createCTAParticles() {
-            const container = document.getElementById('ctaBg');
-            
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'cta-particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-                container.appendChild(particle);
-            }
-        }
-
-        createCTAParticles();
-
-        // Mobile Navigation Toggle
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
-        
-        navToggle.addEventListener('click', function() {
-            navToggle.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                navToggle.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-        
-        // Header scroll effect
-        let lastScroll = 0;
-        const header = document.querySelector('.nav-header');
-        
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll <= 0) {
-                header.style.boxShadow = 'none';
-            } else {
-                header.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.5)';
+                this.scene.add(ringGroup);
             }
             
-            lastScroll = currentScroll;
-        });
-
-        // Interactive Demo
-        function generateAttestation() {
-            const button = document.querySelector('.demo-button');
-            const result = document.getElementById('demoResult');
-            const registryId = document.getElementById('registryId').value || 'tokyo-registry-001';
-            const agentCount = document.getElementById('agentCount').value || '1547';
+            createBackgroundElements() {
+                // Add starfield
+                const starsGeometry = new THREE.BufferGeometry();
+                const starCount = 5000;
+                const starPositions = new Float32Array(starCount * 3);
+                
+                for (let i = 0; i < starCount * 3; i += 3) {
+                    const radius = 100 + Math.random() * 300;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos((Math.random() * 2) - 1);
+                    
+                    starPositions[i] = radius * Math.sin(phi) * Math.cos(theta);
+                    starPositions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                    starPositions[i + 2] = radius * Math.cos(phi);
+                }
+                
+                starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+                
+                const starsMaterial = new THREE.PointsMaterial({
+                    color: 0xffffff,
+                    size: 0.5,
+                    transparent: true,
+                    opacity: 0.6,
+                    sizeAttenuation: true
+                });
+                
+                const stars = new THREE.Points(starsGeometry, starsMaterial);
+                this.scene.add(stars);
+                
+                // Add grid floor
+                const gridHelper = new THREE.GridHelper(100, 50, 0x1a1a2e, 0x0f0f1e);
+                gridHelper.position.y = -10;
+                this.scene.add(gridHelper);
+            }
             
-            button.textContent = 'Generating...';
-            button.disabled = true;
+            setupLighting() {
+                // Ambient light
+                const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.4);
+                this.scene.add(ambientLight);
+                
+                // Main directional light
+                const mainLight = new THREE.DirectionalLight(0xffffff, 0.6);
+                mainLight.position.set(20, 30, 20);
+                mainLight.castShadow = true;
+                mainLight.shadow.camera.left = -30;
+                mainLight.shadow.camera.right = 30;
+                mainLight.shadow.camera.top = 30;
+                mainLight.shadow.camera.bottom = -30;
+                mainLight.shadow.camera.near = 1;
+                mainLight.shadow.camera.far = 100;
+                mainLight.shadow.mapSize.width = 2048;
+                mainLight.shadow.mapSize.height = 2048;
+                this.scene.add(mainLight);
+                
+                // Colored rim lights
+                const rimLight1 = new THREE.DirectionalLight(0x3b82f6, 0.3);
+                rimLight1.position.set(-30, 20, -30);
+                this.scene.add(rimLight1);
+                
+                const rimLight2 = new THREE.DirectionalLight(0xf9bf23, 0.3);
+                rimLight2.position.set(30, 20, -30);
+                this.scene.add(rimLight2);
+                
+                // Point light in vault
+                const vaultLight = new THREE.PointLight(0xf9bf23, 0.5, 20);
+                vaultLight.position.set(0, 0, 0);
+                this.scene.add(vaultLight);
+            }
             
-            // Simulate processing
-            setTimeout(() => {
-                const timestamp = new Date().toISOString();
-                const merkleRoot = '0x' + Array.from({length: 64}, () => Math.floor(Math.random() * 16).toString(16)).join('');
-                const signature = '0x' + Array.from({length: 128}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            async setupAudio() {
+                try {
+                    // Initialize on first user interaction
+                    const initAudio = async () => {
+                        await Tone.start();
+                        
+                        // Ambient drone
+                        const drone = new Tone.Synth({
+                            oscillator: { type: 'sine' },
+                            envelope: { attack: 2, decay: 1, sustain: 0.8, release: 4 }
+                        }).toDestination();
+                        
+                        drone.volume.value = -25;
+                        
+                        // Store synths
+                        this.sounds.drone = drone;
+                        
+                        // Attestation sound
+                        this.sounds.attestation = new Tone.PolySynth(Tone.Synth, {
+                            oscillator: { type: 'sawtooth' },
+                            envelope: { attack: 0.05, decay: 0.2, sustain: 0.3, release: 1 }
+                        }).toDestination();
+                        
+                        // Remove listener after init
+                        document.removeEventListener('click', initAudio);
+                        document.removeEventListener('touchstart', initAudio);
+                    };
+                    
+                    // Wait for user interaction
+                    document.addEventListener('click', initAudio, { once: true });
+                    document.addEventListener('touchstart', initAudio, { once: true });
+                    
+                } catch (error) {
+                    console.warn('Audio initialization failed:', error);
+                }
+            }
+            
+            setupControls() {
+                // Basic mouse controls
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.autoRotate = true;
                 
-                result.innerHTML = `
-                    <div style="color: var(--accent-glow); margin-bottom: 1rem;">✅ Attestation Generated Successfully</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>Registry ID:</strong> ${registryId}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>Agent Count:</strong> ${agentCount}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>Timestamp:</strong> ${timestamp}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>Merkle Root:</strong></div>
-                    <div style="word-break: break-all; margin-bottom: 1rem; color: var(--attestation-glow);">${merkleRoot}</div>
-                    <div style="margin-bottom: 0.5rem;"><strong>Attestation Signature:</strong></div>
-                    <div style="word-break: break-all; color: var(--primary-glow);">${signature}</div>
-                `;
+                // Mouse move handler
+                window.addEventListener('mousemove', (e) => {
+                    this.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
                 
-                result.classList.add('success');
-                setTimeout(() => result.classList.remove('success'), 1000);
+                // Mouse wheel for zoom
+                window.addEventListener('wheel', (e) => {
+                    const zoomSpeed = 0.1;
+                    const direction = e.deltaY > 0 ? 1 : -1;
+                    const currentDistance = this.camera.position.length();
+                    const newDistance = Math.max(15, Math.min(80, currentDistance + direction * zoomSpeed * currentDistance));
+                    this.camera.position.normalize().multiplyScalar(newDistance);
+                });
                 
-                button.textContent = 'Generate Attestation';
-                button.disabled = false;
-            }, 1500);
-        }
-
-        // Smooth scrolling
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const offsetTop = target.offsetTop - 80;
-                    window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
+                // Mouse drag for rotation
+                let mouseDown = false;
+                let mouseXOnMouseDown = 0;
+                let targetRotationOnMouseDown = 0;
+                let targetRotation = 0;
+                
+                this.canvas.addEventListener('mousedown', (e) => {
+                    mouseDown = true;
+                    mouseXOnMouseDown = e.clientX;
+                    targetRotationOnMouseDown = targetRotation;
+                    this.autoRotate = false;
+                });
+                
+                window.addEventListener('mouseup', () => {
+                    mouseDown = false;
+                });
+                
+                window.addEventListener('mousemove', (e) => {
+                    if (mouseDown) {
+                        const deltaX = e.clientX - mouseXOnMouseDown;
+                        targetRotation = targetRotationOnMouseDown + deltaX * 0.01;
+                    }
+                });
+                
+                this.targetRotation = targetRotation;
+            }
+            
+            setupEventListeners() {
+                // Window resize
+                window.addEventListener('resize', () => this.handleResize());
+                
+                // Keyboard controls
+                window.addEventListener('keydown', (e) => this.handleKeyPress(e));
+                
+                // Button controls
+                document.getElementById('generate-attestation').addEventListener('click', () => {
+                    this.generateAttestation();
+                });
+                
+                document.getElementById('toggle-view').addEventListener('click', () => {
+                    this.toggleView();
+                });
+                
+                document.getElementById('cinematic-mode').addEventListener('click', () => {
+                    this.startCinematicMode();
+                });
+                
+                document.getElementById('toggle-audio').addEventListener('click', () => {
+                    this.toggleAudio();
+                });
+                
+                // Command palette
+                const commandPalette = document.getElementById('command-palette');
+                const commandSearch = document.getElementById('command-search');
+                
+                // Open command palette
+                window.addEventListener('keydown', (e) => {
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        commandPalette.classList.toggle('active');
+                        if (commandPalette.classList.contains('active')) {
+                            commandSearch.focus();
+                            commandSearch.value = '';
+                        }
+                    }
+                });
+                
+                // Close on escape
+                window.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        commandPalette.classList.remove('active');
+                    }
+                });
+                
+                // Command execution
+                document.querySelectorAll('.command-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const command = item.dataset.command;
+                        this.executeCommand(command);
+                        commandPalette.classList.remove('active');
+                    });
+                });
+            }
+            
+            handleResize() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                this.camera.aspect = width / height;
+                this.camera.updateProjectionMatrix();
+                
+                this.renderer.setSize(width, height);
+                
+                // Update shader uniforms
+                if (this.vaultMaterial) {
+                    this.vaultMaterial.uniforms.uResolution.value.set(width, height);
+                }
+            }
+            
+            handleKeyPress(event) {
+                switch (event.key.toLowerCase()) {
+                    case ' ':
+                        event.preventDefault();
+                        this.generateAttestation();
+                        break;
+                    case 'v':
+                        this.toggleView();
+                        break;
+                    case 'c':
+                        this.startCinematicMode();
+                        break;
+                    case 'p':
+                        this.togglePerformanceStats();
+                        break;
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                        this.setViewPreset(parseInt(event.key));
+                        break;
+                }
+            }
+            
+            executeCommand(command) {
+                switch (command) {
+                    case 'generate':
+                        this.generateAttestation();
+                        break;
+                    case 'verify':
+                        this.toggleView();
+                        break;
+                    case 'cinematic':
+                        this.startCinematicMode();
+                        break;
+                    case 'stats':
+                        this.togglePerformanceStats();
+                        break;
+                }
+            }
+            
+            generateAttestation() {
+                // Visual effect
+                const burstCount = 100;
+                const burstGeometry = new THREE.BufferGeometry();
+                const burstPositions = new Float32Array(burstCount * 3);
+                const burstColors = new Float32Array(burstCount * 3);
+                const burstSizes = new Float32Array(burstCount);
+                
+                for (let i = 0; i < burstCount; i++) {
+                    const i3 = i * 3;
+                    
+                    burstPositions[i3] = 0;
+                    burstPositions[i3 + 1] = 0;
+                    burstPositions[i3 + 2] = 0;
+                    
+                    burstColors[i3] = 0.98;
+                    burstColors[i3 + 1] = 0.75;
+                    burstColors[i3 + 2] = 0.14;
+                    
+                    burstSizes[i] = Math.random() * 5 + 2;
+                }
+                
+                burstGeometry.setAttribute('position', new THREE.BufferAttribute(burstPositions, 3));
+                burstGeometry.setAttribute('color', new THREE.BufferAttribute(burstColors, 3));
+                burstGeometry.setAttribute('size', new THREE.BufferAttribute(burstSizes, 1));
+                
+                const burstMaterial = new THREE.PointsMaterial({
+                    size: 3,
+                    vertexColors: true,
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending,
+                    sizeAttenuation: true
+                });
+                
+                const burst = new THREE.Points(burstGeometry, burstMaterial);
+                this.scene.add(burst);
+                
+                // Animate burst
+                const startTime = Date.now();
+                const animateBurst = () => {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const positions = burst.geometry.attributes.position.array;
+                    
+                    for (let i = 0; i < burstCount; i++) {
+                        const i3 = i * 3;
+                        const speed = 20 + Math.random() * 20;
+                        const theta = Math.random() * Math.PI * 2;
+                        const phi = Math.acos(Math.random() * 2 - 1);
+                        
+                        positions[i3] = Math.sin(phi) * Math.cos(theta) * speed * elapsed;
+                        positions[i3 + 1] = Math.sin(phi) * Math.sin(theta) * speed * elapsed;
+                        positions[i3 + 2] = Math.cos(phi) * speed * elapsed;
+                    }
+                    
+                    burst.geometry.attributes.position.needsUpdate = true;
+                    burst.material.opacity = Math.max(0, 1 - elapsed);
+                    
+                    if (elapsed < 2) {
+                        requestAnimationFrame(animateBurst);
+                    } else {
+                        this.scene.remove(burst);
+                        burstGeometry.dispose();
+                        burstMaterial.dispose();
+                    }
+                };
+                animateBurst();
+                
+                // Play sound
+                if (this.sounds.attestation) {
+                    const notes = ['C4', 'E4', 'G4', 'C5'];
+                    notes.forEach((note, i) => {
+                        this.sounds.attestation.triggerAttackRelease(note, '8n', `+${i * 0.1}`);
                     });
                 }
-            });
-        });
-
-        // Developer Portal button
-        document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
-        });
-
-        // Mobile Dropdown Toggle
-        const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-        const dropdown = document.querySelector('.nav-dropdown');
-
-        if (dropdownToggle) {
-            dropdownToggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 968) {
-                    e.preventDefault();
-                    dropdown.classList.toggle('active');
+                
+                // Update stats
+                this.stats.totalStored += 1;
+                this.updateStats();
+                
+                // Flash vault
+                if (this.vaultMaterial) {
+                    gsap.to(this.vaultMaterial.uniforms.uGlowIntensity, {
+                        value: 1.0,
+                        duration: 0.2,
+                        yoyo: true,
+                        repeat: 1,
+                        ease: "power2.inOut"
+                    });
                 }
-            });
+            }
+            
+            toggleView() {
+                this.currentView = this.currentView === 'default' ? 'technical' : 'default';
+                
+                if (this.currentView === 'technical') {
+                    // Show more technical details
+                    this.attestationRings.forEach(ring => {
+                        ring.material.wireframe = true;
+                    });
+                } else {
+                    // Normal view
+                    this.attestationRings.forEach(ring => {
+                        ring.material.wireframe = false;
+                    });
+                }
+            }
+            
+            startCinematicMode() {
+                if (this.cinematicMode) return;
+                
+                this.cinematicMode = true;
+                this.autoRotate = false;
+                
+                // Define camera path
+                const points = [
+                    new THREE.Vector3(30, 20, 30),
+                    new THREE.Vector3(0, 40, 0),
+                    new THREE.Vector3(-30, 15, -30),
+                    new THREE.Vector3(0, 10, 40),
+                    new THREE.Vector3(30, 20, 30)
+                ];
+                
+                const curve = new THREE.CatmullRomCurve3(points, true);
+                
+                const cinematicDuration = 30; // 30 seconds
+                const startTime = Date.now();
+                
+                const animateCamera = () => {
+                    if (!this.cinematicMode) return;
+                    
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    const t = (elapsed % cinematicDuration) / cinematicDuration;
+                    
+                    const position = curve.getPoint(t);
+                    this.camera.position.copy(position);
+                    this.camera.lookAt(0, 0, 0);
+                    
+                    requestAnimationFrame(animateCamera);
+                };
+                
+                animateCamera();
+            }
+            
+            toggleAudio() {
+                this.audioEnabled = !this.audioEnabled;
+                const btn = document.getElementById('toggle-audio');
+                
+                if (this.audioEnabled && this.sounds.drone) {
+                    this.sounds.drone.triggerAttack('C1');
+                    btn.textContent = '🔊 Audio';
+                } else if (this.sounds.drone) {
+                    this.sounds.drone.triggerRelease();
+                    btn.textContent = '🔇 Audio';
+                }
+            }
+            
+            togglePerformanceStats() {
+                const indicator = document.getElementById('performance-indicator');
+                if (this.showPerformanceStats) {
+                    indicator.style.display = 'none';
+                    this.showPerformanceStats = false;
+                } else {
+                    indicator.style.display = 'block';
+                    this.showPerformanceStats = true;
+                }
+            }
+            
+            setViewPreset(preset) {
+                const presets = {
+                    1: { position: [30, 20, 30], target: [0, 0, 0] },
+                    2: { position: [0, 50, 0], target: [0, 0, 0] },
+                    3: { position: [50, 10, 0], target: [0, 0, 0] },
+                    4: { position: [0, 20, -50], target: [0, 0, 0] },
+                    5: { position: [20, 30, 20], target: [0, 5, 0] }
+                };
+                
+                const config = presets[preset];
+                if (!config) return;
+                
+                // Smooth transition
+                gsap.to(this.camera.position, {
+                    x: config.position[0],
+                    y: config.position[1],
+                    z: config.position[2],
+                    duration: 2,
+                    ease: 'power2.inOut',
+                    onUpdate: () => {
+                        this.camera.lookAt(...config.target);
+                    }
+                });
+            }
+            
+            setupPerformanceMonitoring() {
+                let lastTime = performance.now();
+                let frames = 0;
+                
+                const updatePerformance = () => {
+                    const now = performance.now();
+                    frames++;
+                    
+                    if (now >= lastTime + 1000) {
+                        const fps = Math.round((frames * 1000) / (now - lastTime));
+                        const ms = Math.round((now - lastTime) / frames);
+                        
+                        if (this.showPerformanceStats) {
+                            const info = this.renderer.info;
+                            
+                            document.getElementById('performance-indicator').innerHTML = `
+                                FPS: ${fps} (${ms}ms)<br>
+                                Calls: ${info.render.calls}<br>
+                                Triangles: ${info.render.triangles}<br>
+                                Points: ${info.render.points}
+                            `;
+                        }
+                        
+                        frames = 0;
+                        lastTime = now;
+                    }
+                    
+                    requestAnimationFrame(updatePerformance);
+                };
+                
+                updatePerformance();
+            }
+            
+            updateStats() {
+                document.getElementById('current-epoch').textContent = 
+                    this.stats.currentEpoch.toLocaleString();
+                document.getElementById('total-stored').textContent = 
+                    (this.stats.totalStored / 1000000).toFixed(1) + 'M';
+                document.getElementById('partners-online').textContent = 
+                    `${this.stats.partnersOnline}/50`;
+                document.getElementById('verification-rate').textContent = 
+                    this.stats.verificationRate.toFixed(2) + '%';
+            }
+            
+            startBackgroundUpdates() {
+                // Simulate real-time updates
+                setInterval(() => {
+                    this.stats.currentEpoch += Math.floor(Math.random() * 10) + 1;
+                    this.stats.totalStored += Math.floor(Math.random() * 100);
+                    this.updateStats();
+                }, 5000);
+                
+                // Partner status updates
+                setInterval(() => {
+                    const change = Math.random() > 0.5 ? 1 : -1;
+                    this.stats.partnersOnline = Math.max(40, Math.min(50, 
+                        this.stats.partnersOnline + change));
+                    this.updateStats();
+                }, 10000);
+            }
+            
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(0, 0, 0, 0.9);
+                    border: 1px solid #ff6b6b;
+                    color: #fff;
+                    padding: 30px;
+                    border-radius: 12px;
+                    text-align: center;
+                    z-index: 2000;
+                `;
+                errorDiv.innerHTML = `
+                    <h2 style="color: #ff6b6b; margin-bottom: 15px;">Error</h2>
+                    <p>${message}</p>
+                    <p style="margin-top: 20px; color: #888;">
+                        Please check your browser console for more details.
+                    </p>
+                `;
+                document.body.appendChild(errorDiv);
+            }
+            
+            animate() {
+                requestAnimationFrame(() => this.animate());
+                
+                const deltaTime = this.clock.getDelta();
+                const elapsedTime = this.clock.getElapsedTime();
+                
+                // Update controls
+                if (this.controls && this.controls.enabled) {
+                    this.controls.update();
+                }
+                
+                // Update vault shader
+                if (this.vaultMaterial) {
+                    this.vaultMaterial.uniforms.uTime.value = elapsedTime;
+                    this.vaultMaterial.uniforms.uMouse.value.x = this.mouseX;
+                    this.vaultMaterial.uniforms.uMouse.value.y = this.mouseY;
+                }
+                
+                // Rotate vault group
+                if (this.vaultGroup) {
+                    this.vaultGroup.rotation.y += deltaTime * 0.1;
+                }
+                
+                // Update merkle trees
+                this.merkleForest.forEach((tree, index) => {
+                    // Gentle swaying motion
+                    tree.rotation.z = Math.sin(elapsedTime * 0.5 + index) * 0.05;
+                    tree.rotation.x = Math.cos(elapsedTime * 0.3 + index) * 0.03;
+                });
+                
+                // Update signature flow
+                if (this.signatureFlow) {
+                    this.signatureFlow.material.uniforms.uTime.value = elapsedTime;
+                }
+                
+                // Update attestation rings
+                this.attestationRings.forEach((ring) => {
+                    ring.rotation.z += ring.userData.rotationSpeed;
+                    ring.rotation.y += ring.userData.orbitSpeed;
+                    ring.position.y = ring.userData.originalY + Math.sin(elapsedTime + ring.userData.originalY) * 0.5;
+                });
+                
+                // Render
+                this.renderer.render(this.scene, this.camera);
+            }
         }
-
-        // Animate elements on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
         
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        document.querySelectorAll('.concept-card, .benefit-card, .keyholder-card').forEach(element => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(20px)';
-            element.style.transition = 'all 0.6s ease';
-            observer.observe(element);
+        // Initialize application
+        window.addEventListener('DOMContentLoaded', () => {
+            new AttestationVault();
         });
     </script>
 </body>
