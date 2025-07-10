@@ -1372,6 +1372,43 @@
                 height: 100vh;
             }
         }
+
+        /* Universal Navigation Dropdown Hover */
+        .nav-dropdown:hover .nav-dropdown-menu {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+
+        .nav-dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .nav-dropdown-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .nav-dropdown-link:hover {
+            color: #fff;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Adjust existing UI elements for new header */
+        .view-toggle {
+            top: 100px;
+        }
+
+        .federation-stats {
+            top: 140px;
+        }
     </style>
 </head>
 <body>
@@ -1403,16 +1440,39 @@
 
     <!-- UI Overlay -->
     <div class="ui-overlay">
-        <!-- Logo -->
-        <a href="/" class="logo">The Protocol</a>
+        <!-- Universal Navigation Header -->
+        <header class="nav-header" style="position: fixed; top: 0; left: 0; right: 0; background: rgba(10, 10, 10, 0.8); backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid rgba(59, 130, 246, 0.2); z-index: 10000; pointer-events: auto; transition: all 0.3s ease;">
+            <div class="nav-container" style="max-width: 1400px; margin: 0 auto; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 80px;">
+                <a href="/" class="nav-logo" style="font-size: 1.5rem; font-weight: 900; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; letter-spacing: -0.02em; cursor: pointer; transition: all 0.3s ease;">The Protocol</a>
+                <nav>
+                    <ul class="nav-menu" style="display: flex; align-items: center; gap: 2.5rem; list-style: none;">
+                        <li class="nav-dropdown" style="position: relative;">
+                            <a href="#" class="nav-link nav-dropdown-toggle" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: rgba(255, 255, 255, 0.6); text-decoration: none; font-weight: 500; font-size: 0.95rem; letter-spacing: 0.01em; transition: all 0.3s ease; position: relative;">
+                                Ecosystem
+                                <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor" style="transition: transform 0.3s ease;">
+                                    <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </a>
+                            <ul class="nav-dropdown-menu" style="position: absolute; top: 100%; left: 50%; transform: translateX(-50%); min-width: 220px; background: rgba(10, 10, 10, 0.98); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 0.75rem; padding: 0.5rem 0; margin-top: 1rem; opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-10px); transition: all 0.3s ease; list-style: none; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);">
+                                <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
+                                <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
+                                <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
+                                <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
+                                <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                        <li><a href="#" class="nav-link nav-dev-portal" style="background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%); padding: 0.75rem 1.5rem; border-radius: 0.5rem; color: #fff;">Developer Portal →</a></li>
+                        <li><a href="#application" class="nav-link nav-cta" style="background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: #fff; padding: 0.75rem 1.5rem; border-radius: 0.5rem; transition: all 0.3s ease; position: relative; overflow: hidden;">Join Beta</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
 
-        <!-- Navigation -->
-        <nav class="nav-menu">
-            <a href="/technical-page.html" class="nav-link">Architecture</a>
-            <a href="/federation.html" class="nav-link active">Federation</a>
-            <a href="/zkp-page.html" class="nav-link">Zero-Knowledge</a>
-            <a href="/developers-page.html" class="nav-link">Developers</a>
-        </nav>
+        <!-- Oracle Documentation Button -->
+        <a href="/oracle.html" class="oracle-access-btn" style="position: fixed; bottom: 3rem; left: 50%; transform: translateX(-50%); padding: 0.75rem 2rem; background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%); color: #fff; text-decoration: none; border-radius: 50px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); z-index: 1000; pointer-events: auto;">
+            <span style="margin-right: 0.5rem;">📖</span> Access The Oracle Documentation
+        </a>
 
         <!-- View Mode Toggle -->
         <div class="view-toggle">

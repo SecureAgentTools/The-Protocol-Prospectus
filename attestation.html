@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Protocol - Attestation Vault</title>
+    <title>The Protocol - Cryptographic Vault</title>
     
     <style>
         * {
@@ -19,16 +19,148 @@
             color: #fff;
         }
         
+        /* Universal Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            z-index: 1000;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: #94A3B8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .nav-link:hover {
+            color: #F8FAFC;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.5rem;
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .nav-item:hover .dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 0.75rem 1rem;
+            color: #94A3B8;
+            text-decoration: none;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #F8FAFC;
+            transform: translateX(4px);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            color: #F8FAFC;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #F8FAFC;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+        
         #canvas-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(ellipse at center, #0a0a1a 0%, #000000 100%);
+            background: #000;
         }
         
-        /* Loading Screen */
+        /* Cinematic Loading Screen */
         #loading-screen {
             position: fixed;
             top: 0;
@@ -40,47 +172,98 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
-            transition: opacity 1s ease-out;
+            z-index: 2000;
+            transition: opacity 1.5s ease-out;
         }
         
-        .loading-spinner {
+        .loading-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+        
+        .loading-vault {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             width: 80px;
             height: 80px;
-            border: 3px solid rgba(249, 191, 35, 0.2);
+            background: linear-gradient(135deg, #f9bf23, #3b82f6);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            animation: rotate-vault 3s linear infinite;
+        }
+        
+        @keyframes rotate-vault {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        .loading-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            border: 2px solid transparent;
             border-top-color: #f9bf23;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 1.5s linear infinite;
+        }
+        
+        .loading-ring:nth-child(2) {
+            width: 180px;
+            height: 180px;
+            border-top-color: #3b82f6;
+            animation-duration: 2s;
+            animation-direction: reverse;
         }
         
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
         
         .loading-text {
-            margin-top: 20px;
-            font-size: 18px;
+            margin-top: 40px;
+            font-size: 20px;
             color: #f9bf23;
             text-align: center;
+            font-weight: 300;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: pulse-text 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
         
         .loading-progress {
             width: 300px;
-            height: 4px;
-            background: rgba(249, 191, 35, 0.2);
+            height: 2px;
+            background: rgba(249, 191, 35, 0.1);
             border-radius: 2px;
-            margin-top: 20px;
+            margin-top: 30px;
             overflow: hidden;
+            position: relative;
         }
         
         .loading-progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, #f9bf23, #3b82f6);
-            width: 0%;
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, transparent, #f9bf23, transparent);
+            width: 50%;
+            position: absolute;
+            left: -50%;
+            animation: sweep 1.5s linear infinite;
         }
         
-        /* HUD Interface */
+        @keyframes sweep {
+            to { left: 100%; }
+        }
+        
+        /* Advanced HUD Interface */
         #hud {
             position: fixed;
             top: 0;
@@ -93,415 +276,706 @@
         
         .hud-element {
             position: absolute;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(249, 191, 35, 0.3);
-            border-radius: 8px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(10, 10, 20, 0.8));
+            border: 1px solid;
+            border-image: linear-gradient(135deg, rgba(249, 191, 35, 0.5), rgba(59, 130, 246, 0.3)) 1;
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(20px);
             pointer-events: auto;
             transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+        
+        .hud-element::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(135deg, rgba(249, 191, 35, 0.2), transparent);
+            border-radius: 12px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+        
+        .hud-element:hover::before {
+            opacity: 1;
         }
         
         #vault-stats {
-            top: 80px;
+            top: 100px;
             left: 20px;
-            min-width: 250px;
+            min-width: 280px;
+        }
+        
+        .stats-header {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #f9bf23;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats-header::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(180deg, #f9bf23, #3b82f6);
+            border-radius: 2px;
         }
         
         .stat-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 16px;
             font-size: 14px;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(249, 191, 35, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-row:hover {
+            transform: translateX(4px);
+            border-bottom-color: rgba(249, 191, 35, 0.3);
         }
         
         .stat-label {
-            color: rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
         }
         
         .stat-value {
             color: #f9bf23;
             font-weight: 600;
             font-feature-settings: "tnum";
+            font-family: 'Courier New', monospace;
         }
         
-        /* Controls Panel */
+        .stat-value.optimal {
+            color: #22c55e;
+        }
+        
+        .stat-value.warning {
+            color: #f59e0b;
+        }
+        
+        .stat-value.critical {
+            color: #ef4444;
+        }
+        
+        /* Advanced Controls Panel */
         #controls-panel {
             position: fixed;
-            top: 20px;
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 10px;
+            gap: 16px;
             pointer-events: auto;
             z-index: 200;
         }
         
         .control-button {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(249, 191, 35, 0.3);
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(10, 10, 20, 0.8));
+            border: 1px solid transparent;
+            background-clip: padding-box;
             color: #fff;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 14px 28px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 14px;
-            backdrop-filter: blur(10px);
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .control-button::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, #f9bf23, #3b82f6);
+            border-radius: 8px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+        
+        .control-button:hover::before {
+            opacity: 0.3;
         }
         
         .control-button:hover {
-            background: rgba(249, 191, 35, 0.1);
-            border-color: #f9bf23;
             transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(249, 191, 35, 0.2);
         }
         
         .control-button:active {
             transform: translateY(0);
         }
         
-        /* Command Palette */
-        #command-palette {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 600px;
-            max-width: 90%;
-            background: rgba(0, 0, 0, 0.95);
-            border: 1px solid rgba(249, 191, 35, 0.3);
-            border-radius: 12px;
-            padding: 0;
-            display: none;
-            z-index: 1000;
-            backdrop-filter: blur(20px);
+        .control-button.active {
+            background: linear-gradient(135deg, rgba(249, 191, 35, 0.2), rgba(59, 130, 246, 0.1));
+            border-color: rgba(249, 191, 35, 0.5);
         }
         
-        #command-palette.active {
-            display: block;
-            animation: fadeIn 0.2s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -45%);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%);
-            }
-        }
-        
-        #command-search {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 18px;
-            padding: 20px;
-            outline: none;
-            border-bottom: 1px solid rgba(249, 191, 35, 0.2);
-        }
-        
-        .command-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        
-        .command-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .command-item:hover {
-            background: rgba(249, 191, 35, 0.1);
-        }
-        
-        .command-item.selected {
-            background: rgba(249, 191, 35, 0.2);
-        }
-        
-        .command-shortcut {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            background: rgba(255, 255, 255, 0.1);
-            padding: 2px 8px;
-            border-radius: 4px;
-        }
-        
-        /* Info Panel */
-        #info-panel {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(249, 191, 35, 0.3);
-            border-radius: 8px;
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.7);
-            pointer-events: auto;
-        }
-        
-        /* Performance Indicator */
-        #performance-indicator {
+        /* Security Terminal */
+        #security-terminal {
             position: fixed;
             bottom: 20px;
             left: 20px;
+            width: 350px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(249, 191, 35, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Courier New', monospace;
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
-            font-family: monospace;
+            color: #f9bf23;
+            backdrop-filter: blur(20px);
+            max-height: 200px;
+            overflow-y: auto;
+            pointer-events: auto;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        #security-terminal:hover {
+            opacity: 1;
+        }
+        
+        .terminal-line {
+            margin-bottom: 4px;
+            opacity: 0;
+            animation: terminal-fade-in 0.5s ease forwards;
+        }
+        
+        @keyframes terminal-fade-in {
+            to { opacity: 1; }
+        }
+        
+        .terminal-timestamp {
+            color: rgba(249, 191, 35, 0.5);
+            margin-right: 8px;
+        }
+        
+        /* Attestation Generator UI */
+        #attestation-generator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            width: 500px;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.98), rgba(10, 10, 20, 0.95));
+            border: 2px solid rgba(249, 191, 35, 0.5);
+            border-radius: 16px;
+            padding: 32px;
+            z-index: 1500;
+            backdrop-filter: blur(30px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
             display: none;
         }
         
-        /* Mobile Adjustments */
+        #attestation-generator.active {
+            display: block;
+            animation: generator-appear 0.5s ease forwards;
+        }
+        
+        @keyframes generator-appear {
+            to { transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .generator-header {
+            font-size: 24px;
+            color: #f9bf23;
+            margin-bottom: 24px;
+            text-align: center;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .generator-field {
+            margin-bottom: 20px;
+        }
+        
+        .generator-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .generator-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(249, 191, 35, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .generator-input:focus {
+            outline: none;
+            border-color: #f9bf23;
+            background: rgba(249, 191, 35, 0.05);
+        }
+        
+        .generator-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+        
+        .generator-button {
+            flex: 1;
+            background: linear-gradient(135deg, #f9bf23, #3b82f6);
+            border: none;
+            color: #000;
+            padding: 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .generator-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(249, 191, 35, 0.4);
+        }
+        
+        .generator-button.cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        /* Performance Visualizer */
+        #performance-visualizer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            height: 150px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            pointer-events: auto;
+            display: none;
+        }
+        
+        #performance-visualizer.active {
+            display: block;
+        }
+        
+        .perf-graph {
+            width: 100%;
+            height: 100px;
+            position: relative;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .perf-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 12px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .perf-stat {
+            text-align: center;
+        }
+        
+        .perf-value {
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Mobile Optimizations */
         @media (max-width: 768px) {
             #vault-stats {
                 top: 120px;
                 left: 10px;
-                padding: 15px;
+                padding: 20px;
                 min-width: auto;
+                max-width: calc(100% - 20px);
             }
             
             #controls-panel {
                 flex-wrap: wrap;
-                gap: 5px;
+                gap: 10px;
                 padding: 0 10px;
+                top: auto;
+                bottom: 80px;
             }
             
             .control-button {
-                padding: 10px 16px;
+                padding: 12px 20px;
                 font-size: 12px;
+            }
+            
+            #security-terminal {
+                width: calc(100% - 40px);
+                max-height: 150px;
+            }
+            
+            #attestation-generator {
+                width: calc(100% - 40px);
+                padding: 24px;
             }
         }
         
-        /* Visual effects */
-        .glow {
-            box-shadow: 0 0 20px rgba(249, 191, 35, 0.5);
+        /* Visual Effects */
+        .quantum-glow {
+            filter: drop-shadow(0 0 20px rgba(249, 191, 35, 0.6));
         }
         
-        @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+        .energy-pulse {
+            animation: energy-pulse 2s ease-in-out infinite;
         }
         
-        .pulse {
-            animation: pulse 2s ease-in-out infinite;
+        @keyframes energy-pulse {
+            0%, 100% { 
+                filter: brightness(1) drop-shadow(0 0 10px rgba(59, 130, 246, 0.4)); 
+            }
+            50% { 
+                filter: brightness(1.2) drop-shadow(0 0 30px rgba(59, 130, 246, 0.8)); 
+            }
+        }
+        
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            white-space: nowrap;
+            border: 0;
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
+    <!-- Universal Navigation -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/index.html" class="nav-logo">The Protocol</a>
+            <nav class="nav-menu">
+                <div class="nav-item">
+                    <a href="#" class="nav-link">
+                        Ecosystem
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="transition: transform 0.3s ease;">
+                            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown">
+                        <a href="/technical-page.html" class="dropdown-item">Technical Architecture</a>
+                        <a href="/federation.html" class="dropdown-item">Federation Model</a>
+                        <a href="/zkp-page.html" class="dropdown-item">Zero-Knowledge Proofs</a>
+                        <a href="/attestation.html" class="dropdown-item" style="background: rgba(59, 130, 246, 0.1); color: #F8FAFC;">Attestation Network</a>
+                        <a href="/governance.html" class="dropdown-item">Governance</a>
+                    </div>
+                </div>
+                <a href="/developers-page.html" class="nav-link">For Developers</a>
+                <a href="#" class="nav-link" style="display: flex; align-items: center; gap: 0.5rem;">
+                    Developer Portal
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M4.5 2.5L8.5 2.5L8.5 6.5M8.5 2.5L2.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <a href="#application" class="nav-cta">Join Beta</a>
+            </nav>
+            <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Cinematic Loading Screen -->
     <div id="loading-screen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">Initializing Attestation Vault</div>
+        <div class="loading-container">
+            <div class="loading-vault"></div>
+            <div class="loading-ring"></div>
+            <div class="loading-ring"></div>
+        </div>
+        <div class="loading-text">Initializing Cryptographic Vault</div>
         <div class="loading-progress">
             <div class="loading-progress-bar"></div>
         </div>
     </div>
     
     <!-- Main Canvas Container -->
-    <div id="canvas-container" role="application" aria-label="Attestation Vault 3D Visualization"></div>
+    <div id="canvas-container" role="application" aria-label="Cryptographic Vault 3D Visualization"></div>
     
-    <!-- HUD Interface -->
+    <!-- Advanced HUD Interface -->
     <div id="hud">
         <!-- Control Panel -->
         <div id="controls-panel">
             <button class="control-button" id="generate-attestation" aria-label="Generate new attestation">
+                <span class="sr-only">Generate new attestation</span>
                 Generate Attestation
             </button>
-            <button class="control-button" id="toggle-view" aria-label="Toggle view mode">
-                Toggle View
+            <button class="control-button" id="security-scan" aria-label="Initiate security scan">
+                <span class="sr-only">Initiate security scan</span>
+                Security Scan
+            </button>
+            <button class="control-button" id="vault-inspect" aria-label="Inspect vault contents">
+                <span class="sr-only">Inspect vault contents</span>
+                Vault Inspect
             </button>
             <button class="control-button" id="cinematic-mode" aria-label="Enter cinematic mode">
+                <span class="sr-only">Enter cinematic mode</span>
                 Cinematic
             </button>
             <button class="control-button" id="toggle-audio" aria-label="Toggle audio">
+                <span class="sr-only">Toggle audio</span>
                 🔊 Audio
             </button>
         </div>
         
         <!-- Vault Statistics -->
         <div id="vault-stats" class="hud-element" role="region" aria-label="Vault Statistics">
-            <h2 style="font-size: 16px; margin-bottom: 15px; color: #f9bf23;">Attestation Vault</h2>
+            <h2 class="stats-header">Cryptographic Vault</h2>
             <div class="stat-row">
-                <span class="stat-label">Current Epoch</span>
+                <span class="stat-label">Security Level</span>
+                <span class="stat-value optimal" id="security-level">MAXIMUM</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Active Epoch</span>
                 <span class="stat-value" id="current-epoch">2,847,193</span>
             </div>
             <div class="stat-row">
-                <span class="stat-label">Total Stored</span>
+                <span class="stat-label">Attestations Stored</span>
                 <span class="stat-value" id="total-stored">12.4M</span>
             </div>
             <div class="stat-row">
-                <span class="stat-label">Partners Online</span>
-                <span class="stat-value" id="partners-online">47/50</span>
+                <span class="stat-label">Network Nodes</span>
+                <span class="stat-value" id="network-nodes">47/50</span>
             </div>
             <div class="stat-row">
-                <span class="stat-label">Verification Rate</span>
-                <span class="stat-value" id="verification-rate">99.97%</span>
+                <span class="stat-label">Integrity Rate</span>
+                <span class="stat-value optimal" id="integrity-rate">99.97%</span>
             </div>
             <div class="stat-row">
-                <span class="stat-label">Network Health</span>
-                <span class="stat-value" id="network-health" style="color: #22c55e;">Optimal</span>
+                <span class="stat-label">Quantum Shield</span>
+                <span class="stat-value optimal" id="quantum-shield">ACTIVE</span>
             </div>
         </div>
     </div>
     
-    <!-- Command Palette -->
-    <div id="command-palette" role="dialog" aria-label="Command Palette">
-        <input 
-            type="text" 
-            id="command-search" 
-            placeholder="Type a command..." 
-            autocomplete="off"
-            aria-label="Search commands"
-        >
-        <div class="command-list" role="listbox">
-            <div class="command-item" role="option" data-command="generate">
-                <span>Generate New Attestation</span>
-                <span class="command-shortcut">Space</span>
-            </div>
-            <div class="command-item" role="option" data-command="verify">
-                <span>Toggle Verification View</span>
-                <span class="command-shortcut">V</span>
-            </div>
-            <div class="command-item" role="option" data-command="time">
-                <span>Time Navigation Mode</span>
-                <span class="command-shortcut">T</span>
-            </div>
-            <div class="command-item" role="option" data-command="cinematic">
-                <span>Cinematic Mode</span>
-                <span class="command-shortcut">C</span>
-            </div>
-            <div class="command-item" role="option" data-command="quality">
-                <span>Change Quality Settings</span>
-                <span class="command-shortcut">Q</span>
-            </div>
-            <div class="command-item" role="option" data-command="stats">
-                <span>Toggle Performance Stats</span>
-                <span class="command-shortcut">P</span>
-            </div>
-            <div class="command-item" role="option" data-command="help">
-                <span>Show Help</span>
-                <span class="command-shortcut">?</span>
-            </div>
+    <!-- Security Terminal -->
+    <div id="security-terminal" aria-label="Security Terminal">
+        <div class="terminal-line">
+            <span class="terminal-timestamp">[00:00:00]</span>
+            CRYPTOGRAPHIC VAULT ONLINE
+        </div>
+        <div class="terminal-line">
+            <span class="terminal-timestamp">[00:00:01]</span>
+            Initializing quantum encryption protocols...
+        </div>
+        <div class="terminal-line">
+            <span class="terminal-timestamp">[00:00:02]</span>
+            Merkle forest synchronization: COMPLETE
         </div>
     </div>
     
-    <!-- Info Panel -->
-    <div id="info-panel">
-        <div>Press <strong>Ctrl/Cmd + K</strong> for commands</div>
-        <div>Use mouse to rotate • Scroll to zoom</div>
+    <!-- Attestation Generator Modal -->
+    <div id="attestation-generator" role="dialog" aria-label="Attestation Generator">
+        <h3 class="generator-header">Generate New Attestation</h3>
+        <div class="generator-field">
+            <label class="generator-label" for="attestation-data">Data Payload</label>
+            <input type="text" id="attestation-data" class="generator-input" placeholder="Enter data to attest..." />
+        </div>
+        <div class="generator-field">
+            <label class="generator-label" for="attestation-signer">Signer Identity</label>
+            <input type="text" id="attestation-signer" class="generator-input" placeholder="0x..." />
+        </div>
+        <div class="generator-field">
+            <label class="generator-label" for="attestation-type">Attestation Type</label>
+            <select id="attestation-type" class="generator-input">
+                <option>Identity Verification</option>
+                <option>Document Integrity</option>
+                <option>Transaction Proof</option>
+                <option>State Transition</option>
+            </select>
+        </div>
+        <div class="generator-actions">
+            <button class="generator-button cancel" onclick="closeGenerator()">Cancel</button>
+            <button class="generator-button" onclick="submitAttestation()">Generate</button>
+        </div>
     </div>
     
-    <!-- Performance Indicator -->
-    <div id="performance-indicator" aria-hidden="true"></div>
+    <!-- Performance Visualizer -->
+    <div id="performance-visualizer" aria-hidden="true">
+        <div class="perf-graph">
+            <canvas id="perf-canvas" width="268" height="100"></canvas>
+        </div>
+        <div class="perf-stats">
+            <div class="perf-stat">
+                <div class="perf-value" id="fps-value">60</div>
+                <div>FPS</div>
+            </div>
+            <div class="perf-stat">
+                <div class="perf-value" id="ms-value">16</div>
+                <div>MS</div>
+            </div>
+            <div class="perf-stat">
+                <div class="perf-value" id="mb-value">128</div>
+                <div>MB</div>
+            </div>
+        </div>
+    </div>
     
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://unpkg.com/tone@14.7.77/build/Tone.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/FXAAShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
     
-        <script>
-        // Main application class
-        class AttestationVault {
+    <script>
+        // Enhanced Cryptographic Vault Visualization
+        class CryptographicVault {
             constructor() {
                 this.scene = null;
                 this.camera = null;
                 this.renderer = null;
                 this.composer = null;
                 
-                this.vaultMesh = null;
+                this.vaultCore = null;
+                this.vaultShield = null;
                 this.merkleForest = [];
-                this.signatureFlow = null;
-                this.attestationRings = [];
-                this.particleSystems = [];
+                this.dataStreams = [];
+                this.securityGrid = null;
+                this.quantumField = null;
                 
                 this.clock = new THREE.Clock();
+                this.raycaster = new THREE.Raycaster();
+                this.mouse = new THREE.Vector2();
+                
                 this.stats = {
+                    securityLevel: 'MAXIMUM',
                     currentEpoch: 2847193,
                     totalStored: 12400000,
-                    partnersOnline: 47,
-                    verificationRate: 99.97
+                    networkNodes: 47,
+                    integrityRate: 99.97,
+                    quantumShield: 'ACTIVE'
                 };
                 
                 this.audioContext = null;
                 this.sounds = {};
-                this.audioEnabled = false;
+                this.audioEnabled = true;
+                
+                this.cinematicMode = false;
+                this.securityScanActive = false;
                 
                 this.init();
             }
             
             async init() {
                 try {
-                    // Show loading screen
-                    this.updateLoadingProgress(0, 'Initializing WebGL...');
+                    // Cinematic loading sequence
+                    await this.cinematicLoading();
                     
-                    // Setup Three.js
+                    // Setup core systems
                     this.setupRenderer();
-                    this.updateLoadingProgress(10, 'Creating scene...');
-                    
                     this.setupScene();
-                    this.updateLoadingProgress(20, 'Loading shaders...');
+                    this.setupPostProcessing();
                     
-                    // Create vault visualization
-                    await this.createVault();
-                    this.updateLoadingProgress(40, 'Generating merkle forest...');
-                    
-                    this.createMerkleForest();
-                    this.updateLoadingProgress(50, 'Initializing particle systems...');
-                    
-                    this.createSignatureFlow();
-                    this.updateLoadingProgress(60, 'Creating attestation rings...');
-                    
-                    this.createAttestationRings();
-                    this.updateLoadingProgress(70, 'Setting up lighting...');
-                    
-                    this.setupLighting();
-                    this.updateLoadingProgress(80, 'Configuring effects...');
-                    
-                    this.createBackgroundElements();
-                    this.updateLoadingProgress(90, 'Initializing controls...');
+                    // Create the vault environment
+                    await this.createSecurityEnvironment();
+                    await this.createVaultCore();
+                    await this.createMerkleForest();
+                    await this.createDataStreams();
+                    await this.createQuantumField();
+                    await this.createSecurityGrid();
                     
                     // Setup systems
-                    await this.setupAudio();
+                    this.setupLighting();
                     this.setupControls();
                     this.setupEventListeners();
-                    this.setupPerformanceMonitoring();
+                    this.setupAudio();
                     
-                    this.updateLoadingProgress(100, 'Ready!');
+                    // Start systems
+                    this.startSecurityMonitoring();
+                    this.animate();
                     
-                    // Hide loading screen
+                    // Hide loading screen with cinematic fade
                     setTimeout(() => {
                         const loadingScreen = document.getElementById('loading-screen');
                         loadingScreen.style.opacity = '0';
-                        setTimeout(() => loadingScreen.style.display = 'none', 1000);
-                    }, 500);
-                    
-                    // Start animation loop
-                    this.animate();
-                    
-                    // Start background updates
-                    this.startBackgroundUpdates();
+                        setTimeout(() => loadingScreen.style.display = 'none', 1500);
+                        
+                        // Initial cinematic camera movement
+                        this.initialCameraAnimation();
+                    }, 1000);
                     
                 } catch (error) {
-                    console.error('Initialization failed:', error);
-                    this.showError('Failed to initialize attestation vault');
+                    console.error('Vault initialization failed:', error);
+                    this.showCriticalError('SECURITY BREACH: Vault initialization failed');
+                }
+            }
+            
+            async cinematicLoading() {
+                const stages = [
+                    { progress: 10, text: 'Establishing quantum encryption...' },
+                    { progress: 25, text: 'Initializing security protocols...' },
+                    { progress: 40, text: 'Constructing vault core...' },
+                    { progress: 55, text: 'Deploying merkle forest...' },
+                    { progress: 70, text: 'Activating quantum shield...' },
+                    { progress: 85, text: 'Synchronizing network nodes...' },
+                    { progress: 95, text: 'Finalizing security measures...' },
+                    { progress: 100, text: 'VAULT SECURE' }
+                ];
+                
+                for (const stage of stages) {
+                    await this.updateLoadingProgress(stage.progress, stage.text);
+                    await new Promise(resolve => setTimeout(resolve, 300));
                 }
             }
             
             updateLoadingProgress(percent, text) {
-                const progressBar = document.querySelector('.loading-progress-bar');
                 const loadingText = document.querySelector('.loading-text');
+                if (loadingText) {
+                    loadingText.textContent = text;
+                    if (percent === 100) {
+                        loadingText.style.color = '#22c55e';
+                    }
+                }
                 
-                if (progressBar) progressBar.style.width = percent + '%';
-                if (loadingText) loadingText.textContent = text;
+                return new Promise(resolve => setTimeout(resolve, 50));
             }
             
             setupRenderer() {
@@ -512,7 +986,7 @@
                 this.renderer = new THREE.WebGLRenderer({
                     canvas: this.canvas,
                     antialias: true,
-                    alpha: true,
+                    alpha: false,
                     powerPreference: 'high-performance'
                 });
                 
@@ -520,75 +994,313 @@
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
                 this.renderer.outputEncoding = THREE.sRGBEncoding;
                 this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                this.renderer.toneMappingExposure = 0.8; // Reduced exposure
+                this.renderer.toneMappingExposure = 1.2;
                 this.renderer.shadowMap.enabled = true;
                 this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                
+                // Set a dark background
+                this.renderer.setClearColor(0x000511, 1);
             }
             
             setupScene() {
-                // Scene
+                // Scene with fog for depth
                 this.scene = new THREE.Scene();
-                this.scene.fog = new THREE.FogExp2(0x000511, 0.02);
+                this.scene.fog = new THREE.FogExp2(0x000511, 0.008);
                 
-                // Camera
+                // Camera setup
                 this.camera = new THREE.PerspectiveCamera(
-                    60,
+                    55,
                     window.innerWidth / window.innerHeight,
                     0.1,
                     1000
                 );
-                this.camera.position.set(30, 20, 30);
-                this.camera.lookAt(0, 0, 0);
+                this.camera.position.set(40, 30, 40);
+                
+                // Advanced orbit controls
+                this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+                this.controls.enableDamping = true;
+                this.controls.dampingFactor = 0.05;
+                this.controls.rotateSpeed = 0.5;
+                this.controls.zoomSpeed = 0.8;
+                this.controls.minDistance = 20;
+                this.controls.maxDistance = 100;
+                this.controls.maxPolarAngle = Math.PI * 0.48;
+                
+                this.controls.target.set(0, 5, 0);
+                this.controls.update();
             }
             
-            async createVault() {
-                // Create central vault structure
-                const vaultGroup = new THREE.Group();
+            setupPostProcessing() {
+                // Create composer for post-processing effects
+                this.composer = new THREE.EffectComposer(this.renderer);
                 
-                // Main octahedron
-                const vaultGeometry = new THREE.OctahedronGeometry(5, 2);
+                // Render pass
+                const renderPass = new THREE.RenderPass(this.scene, this.camera);
+                this.composer.addPass(renderPass);
                 
-                // Custom shader material
-                const vaultMaterial = new THREE.ShaderMaterial({
+                // Bloom pass for glow effects
+                const bloomPass = new THREE.UnrealBloomPass(
+                    new THREE.Vector2(window.innerWidth, window.innerHeight),
+                    0.8,  // strength
+                    0.4,  // radius
+                    0.85  // threshold
+                );
+                this.composer.addPass(bloomPass);
+                
+                // FXAA for antialiasing
+                const fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+                fxaaPass.uniforms['resolution'].value.x = 1 / (window.innerWidth * this.renderer.getPixelRatio());
+                fxaaPass.uniforms['resolution'].value.y = 1 / (window.innerHeight * this.renderer.getPixelRatio());
+                this.composer.addPass(fxaaPass);
+                
+                // Custom vignette and color correction pass
+                const vignetteShader = {
                     uniforms: {
-                        uTime: { value: 0 },
-                        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-                        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-                        uColor1: { value: new THREE.Color(0xf9bf23) },
-                        uColor2: { value: new THREE.Color(0x3b82f6) },
-                        uColor3: { value: new THREE.Color(0x8b5cf6) },
-                        uGlowIntensity: { value: 0.5 }
+                        tDiffuse: { value: null },
+                        vignette: { value: 0.6 },
+                        darkness: { value: 0.8 }
                     },
                     vertexShader: `
-                        varying vec3 vNormal;
-                        varying vec3 vPosition;
                         varying vec2 vUv;
-                        uniform float uTime;
+                        void main() {
+                            vUv = uv;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform sampler2D tDiffuse;
+                        uniform float vignette;
+                        uniform float darkness;
+                        varying vec2 vUv;
                         
                         void main() {
-                            vNormal = normalize(normalMatrix * normal);
+                            vec4 color = texture2D(tDiffuse, vUv);
+                            
+                            // Vignette effect
+                            vec2 center = vUv - 0.5;
+                            float dist = length(center);
+                            float vignetteFactor = smoothstep(vignette, vignette - 0.3, dist);
+                            
+                            // Color grading
+                            color.rgb = pow(color.rgb, vec3(0.95));
+                            color.rgb = mix(color.rgb * darkness, color.rgb, vignetteFactor);
+                            
+                            // Slight blue tint in shadows
+                            vec3 shadowTint = vec3(0.05, 0.1, 0.2);
+                            float luminance = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+                            color.rgb = mix(color.rgb + shadowTint * (1.0 - luminance), color.rgb, luminance);
+                            
+                            gl_FragColor = color;
+                        }
+                    `
+                };
+                
+                const vignettePass = new THREE.ShaderPass(vignetteShader);
+                vignettePass.renderToScreen = true;
+                this.composer.addPass(vignettePass);
+            }
+            
+            async createSecurityEnvironment() {
+                // Create a more complex, layered environment
+                
+                // Deep space backdrop with nebula
+                const spaceGeometry = new THREE.SphereGeometry(500, 32, 32);
+                const spaceMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uColor1: { value: new THREE.Color(0x000511) },
+                        uColor2: { value: new THREE.Color(0x0a1929) },
+                        uColor3: { value: new THREE.Color(0x1a0f3a) }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        void main() {
                             vPosition = position;
-                            vUv = uv;
-                            
-                            vec3 pos = position;
-                            pos *= 1.0 + sin(position.y * 2.0 + uTime) * 0.1;
-                            
-                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
                         }
                     `,
                     fragmentShader: `
                         uniform float uTime;
-                        uniform vec2 uResolution;
-                        uniform vec2 uMouse;
                         uniform vec3 uColor1;
                         uniform vec3 uColor2;
                         uniform vec3 uColor3;
-                        uniform float uGlowIntensity;
-                        
-                        varying vec3 vNormal;
                         varying vec3 vPosition;
+                        
+                        float noise(vec3 p) {
+                            vec3 i = floor(p);
+                            vec3 f = fract(p);
+                            f = f * f * (3.0 - 2.0 * f);
+                            
+                            float n = dot(i, vec3(1.0, 57.0, 113.0));
+                            return mix(mix(mix(sin(n), sin(n + 1.0), f.x),
+                                         mix(sin(n + 57.0), sin(n + 58.0), f.x), f.y),
+                                     mix(mix(sin(n + 113.0), sin(n + 114.0), f.x),
+                                         mix(sin(n + 170.0), sin(n + 171.0), f.x), f.y), f.z);
+                        }
+                        
+                        void main() {
+                            vec3 pos = normalize(vPosition);
+                            
+                            // Nebula effect
+                            float n1 = noise(pos * 3.0 + uTime * 0.05);
+                            float n2 = noise(pos * 6.0 - uTime * 0.03);
+                            float n3 = noise(pos * 12.0 + uTime * 0.07);
+                            
+                            float nebula = n1 * 0.5 + n2 * 0.3 + n3 * 0.2;
+                            nebula = pow(nebula, 2.0);
+                            
+                            vec3 color = mix(uColor1, uColor2, nebula);
+                            color = mix(color, uColor3, pow(nebula, 3.0));
+                            
+                            // Add stars
+                            float stars = pow(noise(pos * 100.0), 15.0);
+                            color += vec3(stars);
+                            
+                            gl_FragColor = vec4(color, 1.0);
+                        }
+                    `,
+                    side: THREE.BackSide
+                });
+                
+                const spaceSphere = new THREE.Mesh(spaceGeometry, spaceMaterial);
+                this.scene.add(spaceSphere);
+                this.spaceMaterial = spaceMaterial;
+                
+                // Add particle field for depth
+                const particleCount = 10000;
+                const particleGeometry = new THREE.BufferGeometry();
+                const particlePositions = new Float32Array(particleCount * 3);
+                const particleSizes = new Float32Array(particleCount);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const i3 = i * 3;
+                    const radius = 50 + Math.random() * 450;
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos((Math.random() * 2) - 1);
+                    
+                    particlePositions[i3] = radius * Math.sin(phi) * Math.cos(theta);
+                    particlePositions[i3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                    particlePositions[i3 + 2] = radius * Math.cos(phi);
+                    
+                    particleSizes[i] = Math.random() * 2;
+                }
+                
+                particleGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+                particleGeometry.setAttribute('size', new THREE.BufferAttribute(particleSizes, 1));
+                
+                const particleMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uPixelRatio: { value: this.renderer.getPixelRatio() }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        varying float vAlpha;
+                        uniform float uTime;
+                        uniform float uPixelRatio;
+                        
+                        void main() {
+                            vec3 pos = position;
+                            pos.y += sin(uTime * 0.1 + position.x * 0.01) * 5.0;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            gl_Position = projectionMatrix * mvPosition;
+                            
+                            gl_PointSize = size * 30.0 * uPixelRatio / -mvPosition.z;
+                            vAlpha = 1.0 / -mvPosition.z;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying float vAlpha;
+                        
+                        void main() {
+                            vec2 center = vec2(0.5);
+                            float dist = distance(gl_PointCoord, center);
+                            
+                            if (dist > 0.5) discard;
+                            
+                            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                            alpha *= min(vAlpha * 10.0, 0.6);
+                            
+                            gl_FragColor = vec4(0.5, 0.7, 1.0, alpha);
+                        }
+                    `,
+                    transparent: true,
+                    depthWrite: false,
+                    blending: THREE.AdditiveBlending
+                });
+                
+                const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+                this.scene.add(particleSystem);
+                this.particleMaterial = particleMaterial;
+            }
+            
+            async createVaultCore() {
+                const vaultGroup = new THREE.Group();
+                
+                // Create the main vault - a complex crystalline structure
+                const vaultGeometry = new THREE.IcosahedronGeometry(8, 2);
+                
+                // Ultra-advanced vault material
+                const vaultMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+                        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                        uBaseColor: { value: new THREE.Color(0xf9bf23) },
+                        uAccentColor: { value: new THREE.Color(0x3b82f6) },
+                        uHighlightColor: { value: new THREE.Color(0xffffff) },
+                        uFresnelPower: { value: 2.0 },
+                        uGlowIntensity: { value: 0.8 },
+                        uRefractPower: { value: 0.5 },
+                        uScanProgress: { value: 0.0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vViewPosition;
+                        varying vec3 vWorldPosition;
                         varying vec2 vUv;
                         
+                        uniform float uTime;
+                        
+                        void main() {
+                            vUv = uv;
+                            vNormal = normalize(normalMatrix * normal);
+                            
+                            vec3 pos = position;
+                            
+                            // Crystalline distortion
+                            float distortion = sin(position.x * 2.0 + uTime) * 
+                                             cos(position.y * 2.0 + uTime * 0.8) * 
+                                             sin(position.z * 2.0 + uTime * 1.2) * 0.1;
+                            
+                            pos += normal * distortion;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            vViewPosition = -mvPosition.xyz;
+                            vWorldPosition = (modelMatrix * vec4(pos, 1.0)).xyz;
+                            
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform vec2 uMouse;
+                        uniform vec2 uResolution;
+                        uniform vec3 uBaseColor;
+                        uniform vec3 uAccentColor;
+                        uniform vec3 uHighlightColor;
+                        uniform float uFresnelPower;
+                        uniform float uGlowIntensity;
+                        uniform float uRefractPower;
+                        uniform float uScanProgress;
+                        
+                        varying vec3 vNormal;
+                        varying vec3 vViewPosition;
+                        varying vec3 vWorldPosition;
+                        varying vec2 vUv;
+                        
+                        // Advanced noise function
                         vec3 hash3(vec3 p) {
                             p = vec3(dot(p, vec3(127.1, 311.7, 74.7)),
                                     dot(p, vec3(269.5, 183.3, 246.1)),
@@ -611,29 +1323,59 @@
                                              dot(hash3(i + vec3(1,1,1)), f - vec3(1,1,1)), f.x), f.y), f.z);
                         }
                         
+                        float fbm(vec3 p) {
+                            float value = 0.0;
+                            float amplitude = 0.5;
+                            
+                            for (int i = 0; i < 4; i++) {
+                                value += amplitude * noise(p);
+                                p *= 2.0;
+                                amplitude *= 0.5;
+                            }
+                            
+                            return value;
+                        }
+                        
                         void main() {
                             vec3 normal = normalize(vNormal);
-                            vec3 viewDir = normalize(cameraPosition - vPosition);
+                            vec3 viewDir = normalize(vViewPosition);
                             
-                            // Fresnel effect
-                            float fresnel = pow(1.0 - dot(normal, viewDir), 2.0);
+                            // Enhanced fresnel effect
+                            float fresnel = pow(1.0 - abs(dot(normal, viewDir)), uFresnelPower);
                             
-                            // Animated noise
-                            float n = noise(vPosition * 2.0 + uTime * 0.5) * 0.5 + 0.5;
+                            // Crystalline internal structure
+                            vec3 crystalCoord = vWorldPosition * 0.5 + uTime * 0.1;
+                            float crystal = fbm(crystalCoord);
+                            crystal = abs(crystal);
+                            crystal = pow(crystal, 1.5);
                             
-                            // Color gradient
-                            vec3 color = mix(uColor1, uColor2, n);
-                            color = mix(color, uColor3, fresnel);
+                            // Base color with internal glow
+                            vec3 color = mix(uBaseColor, uAccentColor, crystal);
+                            color = mix(color, uHighlightColor, fresnel * 0.5);
                             
-                            // Holographic effect
-                            float stripe = sin(vPosition.y * 10.0 + uTime * 2.0) * 0.5 + 0.5;
-                            color = mix(color, vec3(1.0), stripe * fresnel * 0.3);
+                            // Refraction effect
+                            vec3 refractColor = mix(uAccentColor, uHighlightColor, crystal);
+                            color = mix(color, refractColor, fresnel * uRefractPower);
                             
-                            // Glow
-                            color += fresnel * uGlowIntensity * uColor1;
+                            // Energy pulses
+                            float pulse = sin(uTime * 2.0 + vWorldPosition.y * 3.0) * 0.5 + 0.5;
+                            color += uAccentColor * pulse * fresnel * 0.3;
                             
-                            // Final color with reduced intensity
-                            gl_FragColor = vec4(color * 0.8, 0.9 + fresnel * 0.1);
+                            // Security scan effect
+                            if (uScanProgress > 0.0) {
+                                float scanLine = smoothstep(uScanProgress - 0.1, uScanProgress, vWorldPosition.y / 10.0);
+                                scanLine *= smoothstep(uScanProgress + 0.1, uScanProgress, vWorldPosition.y / 10.0);
+                                color += vec3(0.0, 1.0, 0.5) * scanLine * 2.0;
+                            }
+                            
+                            // Outer glow
+                            color += uBaseColor * fresnel * uGlowIntensity;
+                            
+                            // HDR tonemapping
+                            color = color / (color + vec3(1.0));
+                            color = pow(color, vec3(1.0 / 2.2));
+                            
+                            gl_FragColor = vec4(color, 0.9 + fresnel * 0.1);
                         }
                     `,
                     transparent: true,
@@ -642,464 +1384,658 @@
                 });
                 
                 this.vaultMaterial = vaultMaterial;
-                this.vaultMesh = new THREE.Mesh(vaultGeometry, vaultMaterial);
-                vaultGroup.add(this.vaultMesh);
+                this.vaultCore = new THREE.Mesh(vaultGeometry, vaultMaterial);
+                this.vaultCore.castShadow = true;
+                this.vaultCore.receiveShadow = true;
+                vaultGroup.add(this.vaultCore);
                 
-                // Add inner core
-                const coreGeometry = new THREE.IcosahedronGeometry(2, 1);
-                const coreMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0xf9bf23,
-                    emissive: 0xf9bf23,
-                    emissiveIntensity: 0.2,
-                    metalness: 0.8,
-                    roughness: 0.2,
-                    clearcoat: 1.0,
-                    clearcoatRoughness: 0.1
-                });
-                const coreMesh = new THREE.Mesh(coreGeometry, coreMaterial);
-                vaultGroup.add(coreMesh);
-                
-                // Add wireframe overlay
-                const wireframeGeometry = new THREE.OctahedronGeometry(5.1, 2);
-                const wireframeMaterial = new THREE.MeshBasicMaterial({
-                    color: 0xf9bf23,
-                    wireframe: true,
+                // Inner core with energy
+                const innerCoreGeometry = new THREE.SphereGeometry(3, 32, 32);
+                const innerCoreMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uPulse: { value: 0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            vNormal = normal;
+                            vPosition = position;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform float uPulse;
+                        
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            float intensity = pow(0.8 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 1.5);
+                            
+                            vec3 color = vec3(1.0, 0.8, 0.3);
+                            color += vec3(0.2, 0.5, 1.0) * sin(uTime * 3.0 + vPosition.y * 10.0) * 0.5;
+                            
+                            float pulse = sin(uTime * 4.0) * 0.5 + 0.5;
+                            color *= 1.0 + pulse * uPulse;
+                            
+                            gl_FragColor = vec4(color * intensity, 0.9);
+                        }
+                    `,
                     transparent: true,
-                    opacity: 0.1
+                    blending: THREE.AdditiveBlending,
+                    depthWrite: false
                 });
-                const wireframeMesh = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
-                vaultGroup.add(wireframeMesh);
                 
+                this.innerCore = new THREE.Mesh(innerCoreGeometry, innerCoreMaterial);
+                this.innerCoreMaterial = innerCoreMaterial;
+                vaultGroup.add(this.innerCore);
+                
+                // Protective shield layers
+                for (let i = 0; i < 3; i++) {
+                    const shieldGeometry = new THREE.IcosahedronGeometry(10 + i * 2, 1);
+                    const shieldMaterial = new THREE.MeshPhysicalMaterial({
+                        color: i === 0 ? 0x3b82f6 : i === 1 ? 0x8b5cf6 : 0x06b6d4,
+                        metalness: 0.3,
+                        roughness: 0.7,
+                        transparent: true,
+                        opacity: 0.1 - i * 0.03,
+                        wireframe: true,
+                        emissive: i === 0 ? 0x3b82f6 : i === 1 ? 0x8b5cf6 : 0x06b6d4,
+                        emissiveIntensity: 0.2
+                    });
+                    
+                    const shield = new THREE.Mesh(shieldGeometry, shieldMaterial);
+                    shield.userData = {
+                        rotationSpeed: (Math.random() - 0.5) * 0.001 * (i + 1),
+                        pulseSpeed: Math.random() * 0.5 + 0.5
+                    };
+                    
+                    vaultGroup.add(shield);
+                    
+                    if (i === 0) this.vaultShield = shield;
+                }
+                
+                // Position the vault
+                vaultGroup.position.y = 5;
                 this.scene.add(vaultGroup);
                 this.vaultGroup = vaultGroup;
             }
             
-            createMerkleForest() {
-                const merkleGroup = new THREE.Group();
+            async createMerkleForest() {
+                const forestGroup = new THREE.Group();
                 
-                // Create 8 merkle trees around the vault
-                for (let i = 0; i < 8; i++) {
-                    const angle = (i / 8) * Math.PI * 2;
-                    const radius = 15;
+                // Create 12 advanced merkle trees in a circle
+                for (let i = 0; i < 12; i++) {
+                    const angle = (i / 12) * Math.PI * 2;
+                    const radius = 25;
                     const x = Math.cos(angle) * radius;
                     const z = Math.sin(angle) * radius;
                     
-                    const tree = this.createMerkleTree(x, 0, z);
-                    merkleGroup.add(tree);
+                    const tree = this.createAdvancedMerkleTree(x, -5, z, i);
+                    forestGroup.add(tree);
                     this.merkleForest.push(tree);
                 }
                 
-                this.scene.add(merkleGroup);
+                this.scene.add(forestGroup);
             }
             
-            createMerkleTree(x, y, z) {
+            createAdvancedMerkleTree(x, y, z, index) {
                 const treeGroup = new THREE.Group();
                 treeGroup.position.set(x, y, z);
                 
-                // Create branches using cylinders
-                const branchMaterial = new THREE.MeshPhysicalMaterial({
-                    color: 0x2a4858,
-                    emissive: 0x3b82f6,
-                    emissiveIntensity: 0.1,
-                    metalness: 0.3,
-                    roughness: 0.7,
+                // Create a crystalline tree structure
+                const treeMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uTreeIndex: { value: index },
+                        uDataFlow: { value: 0 },
+                        uBaseColor: { value: new THREE.Color(0x1a4f7c) },
+                        uFlowColor: { value: new THREE.Color(0x00ff88) }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        varying vec3 vNormal;
+                        varying float vDepth;
+                        
+                        uniform float uTime;
+                        uniform float uTreeIndex;
+                        
+                        void main() {
+                            vPosition = position;
+                            vNormal = normal;
+                            
+                            vec3 pos = position;
+                            
+                            // Organic movement
+                            float sway = sin(uTime * 0.5 + uTreeIndex) * 0.1;
+                            pos.x += sway * position.y * 0.1;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            vDepth = -mvPosition.z;
+                            
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform float uTreeIndex;
+                        uniform float uDataFlow;
+                        uniform vec3 uBaseColor;
+                        uniform vec3 uFlowColor;
+                        
+                        varying vec3 vPosition;
+                        varying vec3 vNormal;
+                        varying float vDepth;
+                        
+                        void main() {
+                            vec3 normal = normalize(vNormal);
+                            
+                            // Base crystalline color
+                            vec3 color = uBaseColor;
+                            
+                            // Data flow effect
+                            float flow = fract(vPosition.y * 0.5 - uTime * 0.5 - uTreeIndex * 0.1);
+                            flow = smoothstep(0.0, 0.1, flow) * smoothstep(0.3, 0.1, flow);
+                            color = mix(color, uFlowColor, flow * uDataFlow);
+                            
+                            // Depth-based transparency
+                            float alpha = 0.8 - vDepth * 0.01;
+                            
+                            // Energy veins
+                            float veins = sin(vPosition.x * 20.0) * sin(vPosition.y * 20.0) * sin(vPosition.z * 20.0);
+                            veins = pow(abs(veins), 10.0);
+                            color += uFlowColor * veins * 0.5;
+                            
+                            gl_FragColor = vec4(color, alpha);
+                        }
+                    `,
                     transparent: true,
-                    opacity: 0.8
+                    side: THREE.DoubleSide
                 });
                 
-                const createBranch = (parent, level, position, scale) => {
-                    if (level > 4) return;
+                // Create tree structure with recursive branches
+                const createBranch = (parent, level, pos, dir, scale) => {
+                    if (level > 5) return;
                     
-                    const height = 2 * scale;
-                    const radius = 0.1 * scale;
+                    const length = 3 * scale;
+                    const radius = 0.2 * scale;
                     
-                    const geometry = new THREE.CylinderGeometry(radius * 0.8, radius, height, 8);
-                    const branch = new THREE.Mesh(geometry, branchMaterial);
-                    branch.position.copy(position);
+                    // Use cylinder for branches
+                    const geometry = new THREE.CylinderGeometry(
+                        radius * 0.7,
+                        radius,
+                        length,
+                        6,
+                        1
+                    );
+                    
+                    const branch = new THREE.Mesh(geometry, treeMaterial);
+                    branch.position.copy(pos);
+                    branch.position.add(dir.clone().multiplyScalar(length * 0.5));
+                    branch.lookAt(pos.clone().add(dir));
+                    branch.rotateX(Math.PI / 2);
                     
                     parent.add(branch);
                     
                     // Create child branches
-                    if (level < 4) {
+                    if (level < 5) {
                         const branches = level < 2 ? 3 : 2;
                         for (let i = 0; i < branches; i++) {
-                            const angle = (i / branches) * Math.PI * 2;
-                            const newPos = position.clone();
-                            newPos.y += height * 0.8;
-                            newPos.x += Math.cos(angle) * scale * 0.5;
-                            newPos.z += Math.sin(angle) * scale * 0.5;
+                            const angle = (i / branches) * Math.PI * 2 + level * 0.5;
+                            const newDir = new THREE.Vector3(
+                                Math.cos(angle) * 0.7,
+                                0.8,
+                                Math.sin(angle) * 0.7
+                            ).normalize();
                             
-                            createBranch(parent, level + 1, newPos, scale * 0.7);
+                            const newPos = pos.clone().add(dir.clone().multiplyScalar(length));
+                            createBranch(parent, level + 1, newPos, newDir, scale * 0.7);
                         }
                     }
                     
-                    // Add data nodes at branch tips
-                    if (level === 4) {
-                        const nodeGeometry = new THREE.SphereGeometry(0.3, 8, 6);
-                        const nodeMaterial = new THREE.MeshStandardMaterial({
-							color: 0xf9bf23,
-							emissive: 0xf9bf23,
-							emissiveIntensity: 0.5,
-							transparent: true,
-							opacity: 0.8
-						});
+                    // Add data nodes at endpoints
+                    if (level >= 4) {
+                        const nodeGeometry = new THREE.OctahedronGeometry(0.5, 0);
+                        const nodeMaterial = new THREE.MeshPhysicalMaterial({
+                            color: 0x00ff88,
+                            emissive: 0x00ff88,
+                            emissiveIntensity: 0.8,
+                            metalness: 0.8,
+                            roughness: 0.2,
+                            transparent: true,
+                            opacity: 0.9
+                        });
+                        
                         const node = new THREE.Mesh(nodeGeometry, nodeMaterial);
-                        node.position.copy(position);
-                        node.position.y += height * 0.5;
+                        node.position.copy(pos);
+                        node.position.add(dir.clone().multiplyScalar(length));
                         parent.add(node);
+                        
+                        // Store reference for animation
+                        treeGroup.userData.nodes = treeGroup.userData.nodes || [];
+                        treeGroup.userData.nodes.push(node);
                     }
                 };
                 
-                // Start tree generation
-                createBranch(treeGroup, 0, new THREE.Vector3(0, 0, 0), 1);
+                // Initialize tree
+                treeGroup.userData.nodes = [];
+                createBranch(treeGroup, 0, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), 1);
+                
+                // Add base platform
+                const platformGeometry = new THREE.CylinderGeometry(3, 4, 0.5, 8);
+                const platformMaterial = new THREE.MeshPhysicalMaterial({
+                    color: 0x1a1a2e,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    clearcoat: 1.0
+                });
+                const platform = new THREE.Mesh(platformGeometry, platformMaterial);
+                platform.position.y = -0.25;
+                treeGroup.add(platform);
+                
+                // Store material reference
+                treeGroup.userData.material = treeMaterial;
                 
                 return treeGroup;
             }
             
-            createSignatureFlow() {
-                // Particle system for signature flows
-                const particleCount = 2000;
-                const geometry = new THREE.BufferGeometry();
+            async createDataStreams() {
+                // Create flowing data streams between merkle trees and vault
+                const streamGroup = new THREE.Group();
                 
-                const positions = new Float32Array(particleCount * 3);
-                const colors = new Float32Array(particleCount * 3);
-                const sizes = new Float32Array(particleCount);
-                const alphas = new Float32Array(particleCount);
+                // Create curved paths for data flow
+                this.merkleForest.forEach((tree, index) => {
+                    const startPos = tree.position.clone();
+                    startPos.y += 10;
+                    
+                    const endPos = this.vaultGroup.position.clone();
+                    const midPos = startPos.clone().add(endPos).multiplyScalar(0.5);
+                    midPos.y += 5 + Math.sin(index) * 3;
+                    
+                    const curve = new THREE.QuadraticBezierCurve3(startPos, midPos, endPos);
+                    
+                    // Create tube geometry for the stream
+                    const tubeGeometry = new THREE.TubeGeometry(curve, 20, 0.2, 4, false);
+                    const tubeMaterial = new THREE.ShaderMaterial({
+                        uniforms: {
+                            uTime: { value: 0 },
+                            uSpeed: { value: 1 + Math.random() * 0.5 },
+                            uIndex: { value: index }
+                        },
+                        vertexShader: `
+                            varying vec2 vUv;
+                            void main() {
+                                vUv = uv;
+                                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                            }
+                        `,
+                        fragmentShader: `
+                            uniform float uTime;
+                            uniform float uSpeed;
+                            uniform float uIndex;
+                            varying vec2 vUv;
+                            
+                            void main() {
+                                float flow = fract(vUv.x - uTime * uSpeed * 0.5);
+                                float alpha = smoothstep(0.0, 0.1, flow) * smoothstep(1.0, 0.9, flow);
+                                alpha *= smoothstep(0.0, 0.1, vUv.x) * smoothstep(1.0, 0.9, vUv.x);
+                                
+                                vec3 color = mix(vec3(0.2, 0.5, 1.0), vec3(1.0, 0.8, 0.2), vUv.x);
+                                
+                                gl_FragColor = vec4(color, alpha * 0.6);
+                            }
+                        `,
+                        transparent: true,
+                        depthWrite: false,
+                        blending: THREE.AdditiveBlending
+                    });
+                    
+                    const stream = new THREE.Mesh(tubeGeometry, tubeMaterial);
+                    streamGroup.add(stream);
+                    
+                    this.dataStreams.push({
+                        mesh: stream,
+                        material: tubeMaterial,
+                        curve: curve
+                    });
+                });
                 
-                for (let i = 0; i < particleCount; i++) {
-                    const i3 = i * 3;
-                    
-                    // Create paths from merkle trees to vault
-                    const angle = Math.random() * Math.PI * 2;
-                    const radius = 15 + Math.random() * 5;
-                    const height = Math.random() * 10;
-                    
-                    positions[i3] = Math.cos(angle) * radius;
-                    positions[i3 + 1] = height;
-                    positions[i3 + 2] = Math.sin(angle) * radius;
-                    
-                    // Color gradient
-                    const t = i / particleCount;
-                    colors[i3] = 0.98 * (1 - t) + 0.23 * t;
-                    colors[i3 + 1] = 0.75 * (1 - t) + 0.51 * t;
-                    colors[i3 + 2] = 0.14 * (1 - t) + 0.96 * t;
-                    
-                    sizes[i] = Math.random() * 3 + 1;
-                    alphas[i] = Math.random();
-                }
+                this.scene.add(streamGroup);
                 
-                geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-                geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-                geometry.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1));
+                // Add particle systems for data packets
+                this.createDataPackets();
+            }
+            
+            createDataPackets() {
+                const packetGroup = new THREE.Group();
                 
-                const material = new THREE.ShaderMaterial({
+                this.dataStreams.forEach((stream, streamIndex) => {
+                    const packetCount = 20;
+                    const packets = [];
+                    
+                    for (let i = 0; i < packetCount; i++) {
+                        const packetGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+                        const packetMaterial = new THREE.MeshPhysicalMaterial({
+                            color: 0x00ff88,
+                            emissive: 0x00ff88,
+                            emissiveIntensity: 0.8,
+                            metalness: 0.8,
+                            roughness: 0.2,
+                            transparent: true,
+                            opacity: 0.9
+                        });
+                        
+                        const packet = new THREE.Mesh(packetGeometry, packetMaterial);
+                        packet.userData = {
+                            progress: i / packetCount,
+                            speed: 0.5 + Math.random() * 0.5,
+                            curve: stream.curve
+                        };
+                        
+                        packetGroup.add(packet);
+                        packets.push(packet);
+                    }
+                    
+                    stream.packets = packets;
+                });
+                
+                this.scene.add(packetGroup);
+            }
+            
+            async createQuantumField() {
+                // Create a quantum field effect around the vault
+                const fieldGeometry = new THREE.SphereGeometry(20, 32, 32);
+                const fieldMaterial = new THREE.ShaderMaterial({
                     uniforms: {
                         uTime: { value: 0 },
-                        uPixelRatio: { value: this.renderer.getPixelRatio() }
+                        uDistortion: { value: 0.5 }
                     },
                     vertexShader: `
-                        attribute float size;
-                        attribute float alpha;
-                        
-                        varying vec3 vColor;
-                        varying float vAlpha;
-                        
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
                         uniform float uTime;
-                        uniform float uPixelRatio;
+                        uniform float uDistortion;
+                        
+                        vec3 turbulence(vec3 p) {
+                            vec3 result = vec3(0.0);
+                            float amplitude = 1.0;
+                            float frequency = 1.0;
+                            
+                            for (int i = 0; i < 4; i++) {
+                                result += sin(p * frequency + uTime) * amplitude;
+                                amplitude *= 0.5;
+                                frequency *= 2.0;
+                            }
+                            
+                            return result;
+                        }
                         
                         void main() {
-                            vColor = color;
-                            vAlpha = alpha;
+                            vNormal = normal;
+                            vPosition = position;
                             
                             vec3 pos = position;
+                            vec3 turb = turbulence(pos * 0.1) * uDistortion;
+                            pos += normal * turb.x;
                             
-                            // Flow animation
-                            float flowSpeed = 0.5;
-                            float t = fract(uTime * flowSpeed + alpha);
-                            
-                            // Move towards center
-                            pos = mix(position, vec3(0.0, 0.0, 0.0), t);
-                            pos.y += sin(t * 3.14159) * 2.0;
-                            
-                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
-                            gl_Position = projectionMatrix * mvPosition;
-                            
-                            gl_PointSize = size * 50.0 * uPixelRatio / -mvPosition.z;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
                         }
                     `,
                     fragmentShader: `
-                        varying vec3 vColor;
-                        varying float vAlpha;
+                        varying vec3 vNormal;
+                        varying vec3 vPosition;
+                        uniform float uTime;
                         
                         void main() {
-                            vec2 center = vec2(0.5);
-                            float dist = distance(gl_PointCoord, center);
+                            float fresnel = pow(1.0 - abs(dot(normalize(vNormal), vec3(0.0, 0.0, 1.0))), 2.0);
                             
-                            if (dist > 0.5) discard;
+                            vec3 color = mix(vec3(0.1, 0.2, 0.5), vec3(0.5, 0.8, 1.0), fresnel);
+                            float pulse = sin(uTime * 2.0 + vPosition.y * 0.5) * 0.5 + 0.5;
+                            color *= 1.0 + pulse * 0.3;
                             
-                            float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
-                            alpha *= vAlpha * 0.8;
-                            
-                            gl_FragColor = vec4(vColor, alpha);
+                            gl_FragColor = vec4(color, fresnel * 0.3);
                         }
                     `,
                     transparent: true,
                     depthWrite: false,
-                    blending: THREE.AdditiveBlending,
-                    vertexColors: true
+                    side: THREE.DoubleSide,
+                    blending: THREE.AdditiveBlending
                 });
                 
-                this.signatureFlow = new THREE.Points(geometry, material);
-                this.scene.add(this.signatureFlow);
-                this.particleSystems.push(this.signatureFlow);
+                this.quantumField = new THREE.Mesh(fieldGeometry, fieldMaterial);
+                this.quantumField.position.copy(this.vaultGroup.position);
+                this.scene.add(this.quantumField);
+                this.quantumFieldMaterial = fieldMaterial;
             }
             
-            createAttestationRings() {
-                const ringGroup = new THREE.Group();
+            async createSecurityGrid() {
+                // Create a high-tech security grid
+                const gridSize = 200;
+                const gridDivisions = 40;
                 
-                // Create multiple rings at different heights
-                for (let i = 0; i < 5; i++) {
-                    const radius = 8 + i * 2;
-                    const height = (i - 2) * 3;
-                    
-                    const ringGeometry = new THREE.TorusGeometry(radius, 0.2, 8, 32);
-                    const ringMaterial = new THREE.MeshPhysicalMaterial({
-                        color: i % 2 === 0 ? 0xf9bf23 : 0x3b82f6,
-                        emissive: i % 2 === 0 ? 0xf9bf23 : 0x3b82f6,
-                        emissiveIntensity: 0.3,
+                const gridMaterial = new THREE.ShaderMaterial({
+                    uniforms: {
+                        uTime: { value: 0 },
+                        uScanActive: { value: 0.0 },
+                        uAlertLevel: { value: 0.0 }
+                    },
+                    vertexShader: `
+                        varying vec3 vPosition;
+                        void main() {
+                            vPosition = position;
+                            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                        }
+                    `,
+                    fragmentShader: `
+                        uniform float uTime;
+                        uniform float uScanActive;
+                        uniform float uAlertLevel;
+                        varying vec3 vPosition;
+                        
+                        void main() {
+                            vec2 grid = abs(fract(vPosition.xz * 0.1) - 0.5);
+                            float line = smoothstep(0.0, 0.02, min(grid.x, grid.y));
+                            
+                            vec3 color = mix(vec3(0.1, 0.2, 0.3), vec3(1.0, 0.3, 0.1), uAlertLevel);
+                            
+                            // Scan wave
+                            if (uScanActive > 0.0) {
+                                float scanWave = sin(length(vPosition.xz) * 0.1 - uTime * 5.0);
+                                scanWave = smoothstep(0.5, 1.0, scanWave);
+                                color = mix(color, vec3(0.0, 1.0, 0.5), scanWave * uScanActive);
+                            }
+                            
+                            // Distance fade
+                            float dist = length(vPosition.xz) / 100.0;
+                            float fade = 1.0 - smoothstep(0.3, 1.0, dist);
+                            
+                            gl_FragColor = vec4(color, (1.0 - line) * fade * 0.5);
+                        }
+                    `,
+                    transparent: true,
+                    depthWrite: false,
+                    side: THREE.DoubleSide
+                });
+                
+                const gridGeometry = new THREE.PlaneGeometry(gridSize, gridSize, gridDivisions, gridDivisions);
+                this.securityGrid = new THREE.Mesh(gridGeometry, gridMaterial);
+                this.securityGrid.rotation.x = -Math.PI / 2;
+                this.securityGrid.position.y = -10;
+                this.scene.add(this.securityGrid);
+                this.securityGridMaterial = gridMaterial;
+                
+                // Add holographic security pillars
+                const pillarPositions = [
+                    { x: 40, z: 40 },
+                    { x: -40, z: 40 },
+                    { x: -40, z: -40 },
+                    { x: 40, z: -40 }
+                ];
+                
+                pillarPositions.forEach((pos, index) => {
+                    const pillarGeometry = new THREE.CylinderGeometry(2, 2, 30, 6);
+                    const pillarMaterial = new THREE.MeshPhysicalMaterial({
+                        color: 0x3b82f6,
+                        emissive: 0x3b82f6,
+                        emissiveIntensity: 0.5,
                         metalness: 0.8,
                         roughness: 0.2,
                         transparent: true,
                         opacity: 0.6
                     });
                     
-                    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
-                    ring.position.y = height;
-                    ring.rotation.x = Math.PI / 2 + (Math.random() - 0.5) * 0.2;
+                    const pillar = new THREE.Mesh(pillarGeometry, pillarMaterial);
+                    pillar.position.set(pos.x, 5, pos.z);
+                    this.scene.add(pillar);
                     
-                    ring.userData = {
-                        rotationSpeed: (Math.random() - 0.5) * 0.01,
-                        orbitSpeed: (Math.random() - 0.5) * 0.005,
-                        originalY: height
-                    };
+                    // Add rotating beacon on top
+                    const beaconGeometry = new THREE.ConeGeometry(1, 3, 4);
+                    const beaconMaterial = new THREE.MeshBasicMaterial({
+                        color: 0x00ff88,
+                        transparent: true,
+                        opacity: 0.8
+                    });
                     
-                    ringGroup.add(ring);
-                    this.attestationRings.push(ring);
-                }
-                
-                this.scene.add(ringGroup);
-            }
-            
-            createBackgroundElements() {
-                // Add starfield
-                const starsGeometry = new THREE.BufferGeometry();
-                const starCount = 5000;
-                const starPositions = new Float32Array(starCount * 3);
-                
-                for (let i = 0; i < starCount * 3; i += 3) {
-                    const radius = 100 + Math.random() * 300;
-                    const theta = Math.random() * Math.PI * 2;
-                    const phi = Math.acos((Math.random() * 2) - 1);
-                    
-                    starPositions[i] = radius * Math.sin(phi) * Math.cos(theta);
-                    starPositions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-                    starPositions[i + 2] = radius * Math.cos(phi);
-                }
-                
-                starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
-                
-                const starsMaterial = new THREE.PointsMaterial({
-                    color: 0xffffff,
-                    size: 0.5,
-                    transparent: true,
-                    opacity: 0.6,
-                    sizeAttenuation: true
+                    const beacon = new THREE.Mesh(beaconGeometry, beaconMaterial);
+                    beacon.position.y = 15;
+                    beacon.userData = { rotationSpeed: 0.05 };
+                    pillar.add(beacon);
                 });
-                
-                const stars = new THREE.Points(starsGeometry, starsMaterial);
-                this.scene.add(stars);
-                
-                // Add grid floor
-                const gridHelper = new THREE.GridHelper(100, 50, 0x1a1a2e, 0x0f0f1e);
-                gridHelper.position.y = -10;
-                this.scene.add(gridHelper);
             }
             
             setupLighting() {
-                // Ambient light
-                const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.4);
+                // Minimal ambient light for atmosphere
+                const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.3);
                 this.scene.add(ambientLight);
                 
-                // Main directional light
-                const mainLight = new THREE.DirectionalLight(0xffffff, 0.6);
-                mainLight.position.set(20, 30, 20);
-                mainLight.castShadow = true;
-                mainLight.shadow.camera.left = -30;
-                mainLight.shadow.camera.right = 30;
-                mainLight.shadow.camera.top = 30;
-                mainLight.shadow.camera.bottom = -30;
-                mainLight.shadow.camera.near = 1;
-                mainLight.shadow.camera.far = 100;
-                mainLight.shadow.mapSize.width = 2048;
-                mainLight.shadow.mapSize.height = 2048;
-                this.scene.add(mainLight);
+                // Main key light
+                const keyLight = new THREE.DirectionalLight(0xffffff, 0.5);
+                keyLight.position.set(30, 50, 30);
+                keyLight.castShadow = true;
+                keyLight.shadow.camera.left = -50;
+                keyLight.shadow.camera.right = 50;
+                keyLight.shadow.camera.top = 50;
+                keyLight.shadow.camera.bottom = -50;
+                keyLight.shadow.camera.near = 1;
+                keyLight.shadow.camera.far = 150;
+                keyLight.shadow.mapSize.width = 2048;
+                keyLight.shadow.mapSize.height = 2048;
+                keyLight.shadow.bias = -0.001;
+                this.scene.add(keyLight);
                 
                 // Colored rim lights
                 const rimLight1 = new THREE.DirectionalLight(0x3b82f6, 0.3);
-                rimLight1.position.set(-30, 20, -30);
+                rimLight1.position.set(-40, 30, -40);
                 this.scene.add(rimLight1);
                 
                 const rimLight2 = new THREE.DirectionalLight(0xf9bf23, 0.3);
-                rimLight2.position.set(30, 20, -30);
+                rimLight2.position.set(40, 30, -40);
                 this.scene.add(rimLight2);
                 
-                // Point light in vault
-                const vaultLight = new THREE.PointLight(0xf9bf23, 0.5, 20);
-                vaultLight.position.set(0, 0, 0);
-                this.scene.add(vaultLight);
-            }
-            
-            async setupAudio() {
-                try {
-                    // Initialize on first user interaction
-                    const initAudio = async () => {
-                        await Tone.start();
-                        
-                        // Ambient drone
-                        const drone = new Tone.Synth({
-                            oscillator: { type: 'sine' },
-                            envelope: { attack: 2, decay: 1, sustain: 0.8, release: 4 }
-                        }).toDestination();
-                        
-                        drone.volume.value = -25;
-                        
-                        // Store synths
-                        this.sounds.drone = drone;
-                        
-                        // Attestation sound
-                        this.sounds.attestation = new Tone.PolySynth(Tone.Synth, {
-                            oscillator: { type: 'sawtooth' },
-                            envelope: { attack: 0.05, decay: 0.2, sustain: 0.3, release: 1 }
-                        }).toDestination();
-                        
-                        // Remove listener after init
-                        document.removeEventListener('click', initAudio);
-                        document.removeEventListener('touchstart', initAudio);
-                    };
-                    
-                    // Wait for user interaction
-                    document.addEventListener('click', initAudio, { once: true });
-                    document.addEventListener('touchstart', initAudio, { once: true });
-                    
-                } catch (error) {
-                    console.warn('Audio initialization failed:', error);
-                }
+                // Vault spot light
+                const vaultSpot = new THREE.SpotLight(0xf9bf23, 1, 40, Math.PI / 4, 0.5);
+                vaultSpot.position.set(0, 30, 0);
+                vaultSpot.target = this.vaultCore;
+                vaultSpot.castShadow = true;
+                this.scene.add(vaultSpot);
+                
+                // Dynamic point lights for merkle trees
+                this.merkleForest.forEach((tree, index) => {
+                    const treeLight = new THREE.PointLight(0x00ff88, 0.5, 15);
+                    treeLight.position.copy(tree.position);
+                    treeLight.position.y += 10;
+                    this.scene.add(treeLight);
+                });
             }
             
             setupControls() {
-                // Basic mouse controls
-                this.mouseX = 0;
-                this.mouseY = 0;
-                this.autoRotate = true;
-                
-                // Mouse move handler
+                // Mouse tracking
                 window.addEventListener('mousemove', (e) => {
-                    this.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-                    this.mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-                });
-                
-                // Mouse wheel for zoom
-                window.addEventListener('wheel', (e) => {
-                    const zoomSpeed = 0.1;
-                    const direction = e.deltaY > 0 ? 1 : -1;
-                    const currentDistance = this.camera.position.length();
-                    const newDistance = Math.max(15, Math.min(80, currentDistance + direction * zoomSpeed * currentDistance));
-                    this.camera.position.normalize().multiplyScalar(newDistance);
-                });
-                
-                // Mouse drag for rotation
-                let mouseDown = false;
-                let mouseXOnMouseDown = 0;
-                let targetRotationOnMouseDown = 0;
-                let targetRotation = 0;
-                
-                this.canvas.addEventListener('mousedown', (e) => {
-                    mouseDown = true;
-                    mouseXOnMouseDown = e.clientX;
-                    targetRotationOnMouseDown = targetRotation;
-                    this.autoRotate = false;
-                });
-                
-                window.addEventListener('mouseup', () => {
-                    mouseDown = false;
-                });
-                
-                window.addEventListener('mousemove', (e) => {
-                    if (mouseDown) {
-                        const deltaX = e.clientX - mouseXOnMouseDown;
-                        targetRotation = targetRotationOnMouseDown + deltaX * 0.01;
+                    this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+                    
+                    // Update shader uniforms
+                    if (this.vaultMaterial) {
+                        this.vaultMaterial.uniforms.uMouse.value.x = this.mouse.x;
+                        this.vaultMaterial.uniforms.uMouse.value.y = this.mouse.y;
                     }
                 });
                 
-                this.targetRotation = targetRotation;
+                // Touch controls for mobile
+                let touchStart = null;
+                
+                window.addEventListener('touchstart', (e) => {
+                    touchStart = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                });
+                
+                window.addEventListener('touchmove', (e) => {
+                    if (!touchStart) return;
+                    
+                    const touchCurrent = {
+                        x: e.touches[0].clientX,
+                        y: e.touches[0].clientY
+                    };
+                    
+                    const deltaX = touchCurrent.x - touchStart.x;
+                    const deltaY = touchCurrent.y - touchStart.y;
+                    
+                    // Rotate camera based on touch movement
+                    const rotationSpeed = 0.005;
+                    this.controls.rotateSpeed = rotationSpeed * Math.abs(deltaX);
+                    
+                    touchStart = touchCurrent;
+                });
+                
+                window.addEventListener('touchend', () => {
+                    touchStart = null;
+                });
             }
             
             setupEventListeners() {
                 // Window resize
                 window.addEventListener('resize', () => this.handleResize());
                 
-                // Keyboard controls
+                // Keyboard shortcuts
                 window.addEventListener('keydown', (e) => this.handleKeyPress(e));
                 
                 // Button controls
                 document.getElementById('generate-attestation').addEventListener('click', () => {
-                    this.generateAttestation();
+                    this.showAttestationGenerator();
                 });
                 
-                document.getElementById('toggle-view').addEventListener('click', () => {
-                    this.toggleView();
+                document.getElementById('security-scan').addEventListener('click', () => {
+                    this.initiateSecurityScan();
+                });
+                
+                document.getElementById('vault-inspect').addEventListener('click', () => {
+                    this.inspectVault();
                 });
                 
                 document.getElementById('cinematic-mode').addEventListener('click', () => {
-                    this.startCinematicMode();
+                    this.toggleCinematicMode();
                 });
                 
                 document.getElementById('toggle-audio').addEventListener('click', () => {
                     this.toggleAudio();
                 });
                 
-                // Command palette
-                const commandPalette = document.getElementById('command-palette');
-                const commandSearch = document.getElementById('command-search');
+                // Generator modal
+                window.closeGenerator = () => {
+                    const generator = document.getElementById('attestation-generator');
+                    generator.classList.remove('active');
+                };
                 
-                // Open command palette
-                window.addEventListener('keydown', (e) => {
-                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                        e.preventDefault();
-                        commandPalette.classList.toggle('active');
-                        if (commandPalette.classList.contains('active')) {
-                            commandSearch.focus();
-                            commandSearch.value = '';
-                        }
-                    }
-                });
-                
-                // Close on escape
-                window.addEventListener('keydown', (e) => {
-                    if (e.key === 'Escape') {
-                        commandPalette.classList.remove('active');
-                    }
-                });
-                
-                // Command execution
-                document.querySelectorAll('.command-item').forEach(item => {
-                    item.addEventListener('click', () => {
-                        const command = item.dataset.command;
-                        this.executeCommand(command);
-                        commandPalette.classList.remove('active');
-                    });
-                });
+                window.submitAttestation = () => {
+                    this.generateAttestation();
+                    window.closeGenerator();
+                };
             }
             
             handleResize() {
@@ -1110,6 +2046,7 @@
                 this.camera.updateProjectionMatrix();
                 
                 this.renderer.setSize(width, height);
+                this.composer.setSize(width, height);
                 
                 // Update shader uniforms
                 if (this.vaultMaterial) {
@@ -1123,317 +2060,672 @@
                         event.preventDefault();
                         this.generateAttestation();
                         break;
-                    case 'v':
-                        this.toggleView();
+                    case 's':
+                        this.initiateSecurityScan();
                         break;
                     case 'c':
-                        this.startCinematicMode();
+                        this.toggleCinematicMode();
+                        break;
+                    case 'v':
+                        this.inspectVault();
                         break;
                     case 'p':
-                        this.togglePerformanceStats();
+                        this.togglePerformanceVisualizer();
                         break;
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                        this.setViewPreset(parseInt(event.key));
+                    case 'escape':
+                        if (this.cinematicMode) {
+                            this.toggleCinematicMode();
+                        }
                         break;
                 }
             }
             
-            executeCommand(command) {
-                switch (command) {
-                    case 'generate':
-                        this.generateAttestation();
-                        break;
-                    case 'verify':
-                        this.toggleView();
-                        break;
-                    case 'cinematic':
-                        this.startCinematicMode();
-                        break;
-                    case 'stats':
-                        this.togglePerformanceStats();
-                        break;
+            async setupAudio() {
+                try {
+                    this.audioInitialized = false;
+                    
+                    // Initialize Tone.js on user interaction
+                    const initAudio = async () => {
+                        if (this.audioInitialized) return;
+                        
+                        try {
+                            await Tone.start();
+                            
+                            // Ambient soundscape
+                            const reverb = new Tone.Reverb(4).toDestination();
+                            reverb.wet.value = 0.3;
+                            
+                            // Deep space drone
+                            const drone = new Tone.Synth({
+                                oscillator: { type: 'sine' },
+                                envelope: {
+                                    attack: 5,
+                                    decay: 2,
+                                    sustain: 0.8,
+                                    release: 8
+                                }
+                            }).connect(reverb);
+                            
+                            drone.volume.value = -20;
+                            
+                            // Crystalline synth for vault
+                            const crystalSynth = new Tone.PolySynth(Tone.Synth, {
+                                oscillator: { type: 'triangle' },
+                                envelope: {
+                                    attack: 0.02,
+                                    decay: 0.5,
+                                    sustain: 0.3,
+                                    release: 2
+                                }
+                            }).toDestination();
+                            
+                            crystalSynth.volume.value = -10;
+                            
+                            // Security scan sound
+                            const scanSynth = new Tone.MonoSynth({
+                                oscillator: { type: 'sawtooth' },
+                                envelope: {
+                                    attack: 0.1,
+                                    decay: 0.3,
+                                    sustain: 0.4,
+                                    release: 0.8
+                                },
+                                filter: {
+                                    Q: 10,
+                                    frequency: 800,
+                                    type: 'bandpass'
+                                }
+                            }).toDestination();
+                            
+                            scanSynth.volume.value = -15;
+                            
+                            this.sounds = {
+                                drone,
+                                crystalSynth,
+                                scanSynth,
+                                reverb
+                            };
+                            
+                            this.audioInitialized = true;
+                            
+                            // Start ambient drone if enabled
+                            if (this.audioEnabled) {
+                                this.sounds.drone.triggerAttack('C1');
+                            }
+                        } catch (error) {
+                            console.warn('Audio context initialization error:', error);
+                        }
+                    };
+                    
+                    // Store the init function for later use
+                    this.initAudio = initAudio;
+                    
+                    // Add listeners for first user interaction
+                    document.addEventListener('click', initAudio, { once: true });
+                    document.addEventListener('touchstart', initAudio, { once: true });
+                    document.addEventListener('keydown', initAudio, { once: true });
+                    
+                } catch (error) {
+                    console.warn('Audio setup failed:', error);
+                    this.audioEnabled = false;
                 }
             }
             
-            generateAttestation() {
-                // Visual effect
-                const burstCount = 100;
-                const burstGeometry = new THREE.BufferGeometry();
-                const burstPositions = new Float32Array(burstCount * 3);
-                const burstColors = new Float32Array(burstCount * 3);
-                const burstSizes = new Float32Array(burstCount);
+            showAttestationGenerator() {
+                const generator = document.getElementById('attestation-generator');
+                generator.classList.add('active');
                 
-                for (let i = 0; i < burstCount; i++) {
-                    const i3 = i * 3;
-                    
-                    burstPositions[i3] = 0;
-                    burstPositions[i3 + 1] = 0;
-                    burstPositions[i3 + 2] = 0;
-                    
-                    burstColors[i3] = 0.98;
-                    burstColors[i3 + 1] = 0.75;
-                    burstColors[i3 + 2] = 0.14;
-                    
-                    burstSizes[i] = Math.random() * 5 + 2;
+                // Focus first input
+                setTimeout(() => {
+                    document.getElementById('attestation-data').focus();
+                }, 100);
+                
+                // Play UI sound
+                if (this.audioInitialized && this.sounds && this.sounds.crystalSynth) {
+                    this.sounds.crystalSynth.triggerAttackRelease(['C5', 'E5'], '8n');
                 }
+            }
+            
+            async generateAttestation() {
+                // Spectacular attestation generation sequence
                 
-                burstGeometry.setAttribute('position', new THREE.BufferAttribute(burstPositions, 3));
-                burstGeometry.setAttribute('color', new THREE.BufferAttribute(burstColors, 3));
-                burstGeometry.setAttribute('size', new THREE.BufferAttribute(burstSizes, 1));
+                // Phase 1: Energy gathering
+                this.addTerminalMessage('Initiating attestation protocol...');
                 
-                const burstMaterial = new THREE.PointsMaterial({
-                    size: 3,
-                    vertexColors: true,
-                    transparent: true,
-                    opacity: 0.8,
-                    blending: THREE.AdditiveBlending,
-                    sizeAttenuation: true
+                // Activate all merkle trees
+                this.merkleForest.forEach((tree, index) => {
+                    if (tree.userData.material) {
+                        gsap.to(tree.userData.material.uniforms.uDataFlow, {
+                            value: 1,
+                            duration: 1,
+                            delay: index * 0.1,
+                            ease: "power2.inOut"
+                        });
+                    }
+                    
+                    // Pulse tree nodes
+                    if (tree.userData.nodes) {
+                        tree.userData.nodes.forEach(node => {
+                            gsap.to(node.scale, {
+                                x: 1.5,
+                                y: 1.5,
+                                z: 1.5,
+                                duration: 0.5,
+                                yoyo: true,
+                                repeat: 3,
+                                ease: "power2.inOut"
+                            });
+                        });
+                    }
                 });
                 
-                const burst = new THREE.Points(burstGeometry, burstMaterial);
-                this.scene.add(burst);
-                
-                // Animate burst
-                const startTime = Date.now();
-                const animateBurst = () => {
-                    const elapsed = (Date.now() - startTime) / 1000;
-                    const positions = burst.geometry.attributes.position.array;
+                // Phase 2: Data convergence
+                setTimeout(() => {
+                    this.addTerminalMessage('Merkle roots converging...');
                     
-                    for (let i = 0; i < burstCount; i++) {
-                        const i3 = i * 3;
-                        const speed = 20 + Math.random() * 20;
-                        const theta = Math.random() * Math.PI * 2;
-                        const phi = Math.acos(Math.random() * 2 - 1);
-                        
-                        positions[i3] = Math.sin(phi) * Math.cos(theta) * speed * elapsed;
-                        positions[i3 + 1] = Math.sin(phi) * Math.sin(theta) * speed * elapsed;
-                        positions[i3 + 2] = Math.cos(phi) * speed * elapsed;
-                    }
+                    // Create energy beams from trees to vault
+                    this.createConvergenceBeams();
                     
-                    burst.geometry.attributes.position.needsUpdate = true;
-                    burst.material.opacity = Math.max(0, 1 - elapsed);
-                    
-                    if (elapsed < 2) {
-                        requestAnimationFrame(animateBurst);
-                    } else {
-                        this.scene.remove(burst);
-                        burstGeometry.dispose();
-                        burstMaterial.dispose();
-                    }
-                };
-                animateBurst();
-                
-                // Play sound
-                if (this.sounds.attestation) {
-                    const notes = ['C4', 'E4', 'G4', 'C5'];
-                    notes.forEach((note, i) => {
-                        this.sounds.attestation.triggerAttackRelease(note, '8n', `+${i * 0.1}`);
+                    // Intensify vault glow
+                    gsap.to(this.vaultMaterial.uniforms.uGlowIntensity, {
+                        value: 2.0,
+                        duration: 2,
+                        ease: "power2.in"
                     });
+                    
+                    // Spin inner core faster
+                    gsap.to(this.innerCoreMaterial.uniforms.uPulse, {
+                        value: 1,
+                        duration: 2,
+                        ease: "power2.in"
+                    });
+                    
+                }, 1000);
+                
+                // Phase 3: Attestation creation
+                setTimeout(() => {
+                    this.addTerminalMessage('Generating cryptographic proof...');
+                    
+                    // Flash effect
+                    this.createAttestationFlash();
+                    
+                    // Play sound
+                    if (this.audioInitialized && this.sounds && this.sounds.crystalSynth) {
+                        const chord = ['C4', 'E4', 'G4', 'C5', 'E5'];
+                        chord.forEach((note, i) => {
+                            this.sounds.crystalSynth.triggerAttackRelease(note, '2n', `+${i * 0.05}`);
+                        });
+                    }
+                    
+                    // Update stats
+                    this.stats.totalStored += 1;
+                    this.stats.currentEpoch += 1;
+                    this.updateStats();
+                    
+                }, 3000);
+                
+                // Phase 4: Completion
+                setTimeout(() => {
+                    this.addTerminalMessage('Attestation successfully stored in vault');
+                    this.addTerminalMessage(`Hash: 0x${this.generateHash()}`);
+                    
+                    // Reset effects
+                    this.merkleForest.forEach(tree => {
+                        if (tree.userData.material) {
+                            gsap.to(tree.userData.material.uniforms.uDataFlow, {
+                                value: 0,
+                                duration: 2,
+                                ease: "power2.out"
+                            });
+                        }
+                    });
+                    
+                    gsap.to(this.vaultMaterial.uniforms.uGlowIntensity, {
+                        value: 0.8,
+                        duration: 2,
+                        ease: "power2.out"
+                    });
+                    
+                    gsap.to(this.innerCoreMaterial.uniforms.uPulse, {
+                        value: 0,
+                        duration: 2,
+                        ease: "power2.out"
+                    });
+                    
+                }, 5000);
+            }
+            
+            createConvergenceBeams() {
+                const beamGroup = new THREE.Group();
+                
+                this.merkleForest.forEach((tree, index) => {
+                    const startPos = tree.position.clone();
+                    startPos.y += 10;
+                    const endPos = this.vaultGroup.position.clone();
+                    
+                    const beamGeometry = new THREE.CylinderGeometry(0.5, 0.1, startPos.distanceTo(endPos), 8);
+                    const beamMaterial = new THREE.MeshBasicMaterial({
+                        color: 0x00ff88,
+                        transparent: true,
+                        opacity: 0.8,
+                        blending: THREE.AdditiveBlending
+                    });
+                    
+                    const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+                    beam.position.copy(startPos.clone().add(endPos).multiplyScalar(0.5));
+                    beam.lookAt(endPos);
+                    beam.rotateX(Math.PI / 2);
+                    
+                    beamGroup.add(beam);
+                    
+                    // Animate beam
+                    gsap.from(beam.scale, {
+                        y: 0,
+                        duration: 1,
+                        ease: "power2.out",
+                        onComplete: () => {
+                            gsap.to(beam.material, {
+                                opacity: 0,
+                                duration: 1,
+                                ease: "power2.in",
+                                onComplete: () => {
+                                    beamGroup.remove(beam);
+                                    beam.geometry.dispose();
+                                    beam.material.dispose();
+                                }
+                            });
+                        }
+                    });
+                });
+                
+                this.scene.add(beamGroup);
+            }
+            
+            createAttestationFlash() {
+                const flashGeometry = new THREE.SphereGeometry(30, 32, 32);
+                const flashMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xffffff,
+                    transparent: true,
+                    opacity: 0,
+                    blending: THREE.AdditiveBlending,
+                    side: THREE.BackSide
+                });
+                
+                const flash = new THREE.Mesh(flashGeometry, flashMaterial);
+                flash.position.copy(this.vaultGroup.position);
+                this.scene.add(flash);
+                
+                gsap.to(flash.material, {
+                    opacity: 0.8,
+                    duration: 0.2,
+                    ease: "power2.out",
+                    yoyo: true,
+                    repeat: 1,
+                    onComplete: () => {
+                        this.scene.remove(flash);
+                        flash.geometry.dispose();
+                        flash.material.dispose();
+                    }
+                });
+                
+                gsap.to(flash.scale, {
+                    x: 2,
+                    y: 2,
+                    z: 2,
+                    duration: 0.4,
+                    ease: "power2.out"
+                });
+            }
+            
+            initiateSecurityScan() {
+                if (this.securityScanActive) return;
+                
+                this.securityScanActive = true;
+                this.addTerminalMessage('SECURITY SCAN INITIATED');
+                
+                // Update UI
+                const scanButton = document.getElementById('security-scan');
+                scanButton.classList.add('active');
+                
+                // Activate grid scan
+                gsap.to(this.securityGridMaterial.uniforms.uScanActive, {
+                    value: 1,
+                    duration: 1,
+                    ease: "power2.inOut"
+                });
+                
+                // Scan vault
+                gsap.to(this.vaultMaterial.uniforms.uScanProgress, {
+                    value: 1,
+                    duration: 3,
+                    ease: "none",
+                    onComplete: () => {
+                        gsap.to(this.vaultMaterial.uniforms.uScanProgress, {
+                            value: 0,
+                            duration: 0.5
+                        });
+                    }
+                });
+                
+                // Play scan sound
+                if (this.audioInitialized && this.sounds && this.sounds.scanSynth) {
+                    const scanNotes = ['C3', 'E3', 'G3', 'C4'];
+                    let noteIndex = 0;
+                    const scanInterval = setInterval(() => {
+                        if (this.sounds && this.sounds.scanSynth) {
+                            this.sounds.scanSynth.triggerAttackRelease(scanNotes[noteIndex], '16n');
+                        }
+                        noteIndex = (noteIndex + 1) % scanNotes.length;
+                    }, 200);
+                    
+                    setTimeout(() => clearInterval(scanInterval), 3000);
                 }
                 
-                // Update stats
-                this.stats.totalStored += 1;
-                this.updateStats();
-                
-                // Flash vault
-                if (this.vaultMaterial) {
-                    gsap.to(this.vaultMaterial.uniforms.uGlowIntensity, {
-                        value: 1.0,
-                        duration: 0.2,
-                        yoyo: true,
-                        repeat: 1,
+                // Complete scan
+                setTimeout(() => {
+                    this.addTerminalMessage('Scan complete: No threats detected');
+                    this.addTerminalMessage('All systems nominal');
+                    
+                    this.securityScanActive = false;
+                    scanButton.classList.remove('active');
+                    
+                    gsap.to(this.securityGridMaterial.uniforms.uScanActive, {
+                        value: 0,
+                        duration: 1,
                         ease: "power2.inOut"
                     });
-                }
+                }, 4000);
             }
             
-            toggleView() {
-                this.currentView = this.currentView === 'default' ? 'technical' : 'default';
+            inspectVault() {
+                // Zoom camera to vault
+                const targetPosition = this.vaultGroup.position.clone();
+                targetPosition.add(new THREE.Vector3(15, 10, 15));
                 
-                if (this.currentView === 'technical') {
-                    // Show more technical details
-                    this.attestationRings.forEach(ring => {
-                        ring.material.wireframe = true;
-                    });
+                gsap.to(this.camera.position, {
+                    x: targetPosition.x,
+                    y: targetPosition.y,
+                    z: targetPosition.z,
+                    duration: 2,
+                    ease: "power2.inOut",
+                    onUpdate: () => {
+                        this.controls.target.copy(this.vaultGroup.position);
+                        this.controls.update();
+                    }
+                });
+                
+                // Show detailed stats
+                this.addTerminalMessage('VAULT INSPECTION MODE');
+                this.addTerminalMessage(`Core Temperature: ${(20 + Math.random() * 5).toFixed(1)}°K`);
+                this.addTerminalMessage(`Quantum Entanglement: ${(95 + Math.random() * 5).toFixed(1)}%`);
+                this.addTerminalMessage(`Data Integrity: VERIFIED`);
+            }
+            
+            toggleCinematicMode() {
+                this.cinematicMode = !this.cinematicMode;
+                
+                const cinematicButton = document.getElementById('cinematic-mode');
+                
+                if (this.cinematicMode) {
+                    cinematicButton.classList.add('active');
+                    this.controls.enabled = false;
+                    this.startCinematicSequence();
                 } else {
-                    // Normal view
-                    this.attestationRings.forEach(ring => {
-                        ring.material.wireframe = false;
-                    });
+                    cinematicButton.classList.remove('active');
+                    this.controls.enabled = true;
+                    if (this.cinematicTimeline) {
+                        this.cinematicTimeline.kill();
+                    }
                 }
-            }
-            
-            startCinematicMode() {
-                if (this.cinematicMode) return;
-                
-                this.cinematicMode = true;
-                this.autoRotate = false;
-                
-                // Define camera path
-                const points = [
-                    new THREE.Vector3(30, 20, 30),
-                    new THREE.Vector3(0, 40, 0),
-                    new THREE.Vector3(-30, 15, -30),
-                    new THREE.Vector3(0, 10, 40),
-                    new THREE.Vector3(30, 20, 30)
-                ];
-                
-                const curve = new THREE.CatmullRomCurve3(points, true);
-                
-                const cinematicDuration = 30; // 30 seconds
-                const startTime = Date.now();
-                
-                const animateCamera = () => {
-                    if (!this.cinematicMode) return;
-                    
-                    const elapsed = (Date.now() - startTime) / 1000;
-                    const t = (elapsed % cinematicDuration) / cinematicDuration;
-                    
-                    const position = curve.getPoint(t);
-                    this.camera.position.copy(position);
-                    this.camera.lookAt(0, 0, 0);
-                    
-                    requestAnimationFrame(animateCamera);
-                };
-                
-                animateCamera();
             }
             
             toggleAudio() {
                 this.audioEnabled = !this.audioEnabled;
                 const btn = document.getElementById('toggle-audio');
                 
-                if (this.audioEnabled && this.sounds.drone) {
+                // Initialize audio if not already done
+                if (this.audioEnabled && !this.audioInitialized && this.initAudio) {
+                    this.initAudio().then(() => {
+                        if (this.audioInitialized && this.sounds && this.sounds.drone) {
+                            this.sounds.drone.triggerAttack('C1');
+                        }
+                    });
+                    btn.innerHTML = '<span class="sr-only">Toggle audio</span>🔊 Audio';
+                } else if (this.audioEnabled && this.audioInitialized && this.sounds && this.sounds.drone) {
                     this.sounds.drone.triggerAttack('C1');
-                    btn.textContent = '🔊 Audio';
-                } else if (this.sounds.drone) {
+                    btn.innerHTML = '<span class="sr-only">Toggle audio</span>🔊 Audio';
+                } else if (this.audioInitialized && this.sounds && this.sounds.drone) {
                     this.sounds.drone.triggerRelease();
-                    btn.textContent = '🔇 Audio';
-                }
-            }
-            
-            togglePerformanceStats() {
-                const indicator = document.getElementById('performance-indicator');
-                if (this.showPerformanceStats) {
-                    indicator.style.display = 'none';
-                    this.showPerformanceStats = false;
+                    btn.innerHTML = '<span class="sr-only">Toggle audio</span>🔇 Audio';
                 } else {
-                    indicator.style.display = 'block';
-                    this.showPerformanceStats = true;
+                    btn.innerHTML = '<span class="sr-only">Toggle audio</span>🔇 Audio';
                 }
             }
             
-            setViewPreset(preset) {
-                const presets = {
-                    1: { position: [30, 20, 30], target: [0, 0, 0] },
-                    2: { position: [0, 50, 0], target: [0, 0, 0] },
-                    3: { position: [50, 10, 0], target: [0, 0, 0] },
-                    4: { position: [0, 20, -50], target: [0, 0, 0] },
-                    5: { position: [20, 30, 20], target: [0, 5, 0] }
-                };
+            startCinematicSequence() {
+                // Create cinematic camera path
+                const positions = [
+                    { pos: new THREE.Vector3(50, 20, 50), target: new THREE.Vector3(0, 5, 0) },
+                    { pos: new THREE.Vector3(0, 60, 0), target: new THREE.Vector3(0, 0, 0) },
+                    { pos: new THREE.Vector3(-40, 15, -40), target: new THREE.Vector3(0, 5, 0) },
+                    { pos: new THREE.Vector3(30, 5, -30), target: new THREE.Vector3(0, 10, 0) },
+                    { pos: new THREE.Vector3(0, 30, 60), target: new THREE.Vector3(0, 5, 0) },
+                    { pos: new THREE.Vector3(50, 20, 50), target: new THREE.Vector3(0, 5, 0) }
+                ];
                 
-                const config = presets[preset];
-                if (!config) return;
+                this.cinematicTimeline = gsap.timeline({ repeat: -1 });
                 
-                // Smooth transition
+                positions.forEach((pos, index) => {
+                    this.cinematicTimeline.to(this.camera.position, {
+                        x: pos.pos.x,
+                        y: pos.pos.y,
+                        z: pos.pos.z,
+                        duration: 5,
+                        ease: "power1.inOut",
+                        onUpdate: () => {
+                            this.camera.lookAt(pos.target);
+                        }
+                    }, index * 5);
+                });
+            }
+            
+            togglePerformanceVisualizer() {
+                const visualizer = document.getElementById('performance-visualizer');
+                visualizer.classList.toggle('active');
+                
+                if (visualizer.classList.contains('active')) {
+                    this.startPerformanceMonitoring();
+                } else {
+                    this.stopPerformanceMonitoring();
+                }
+            }
+            
+            startPerformanceMonitoring() {
+                const canvas = document.getElementById('perf-canvas');
+                const ctx = canvas.getContext('2d');
+                
+                const fpsHistory = new Array(60).fill(60);
+                let frameCount = 0;
+                let lastTime = performance.now();
+                
+                this.perfMonitor = setInterval(() => {
+                    const now = performance.now();
+                    const delta = now - lastTime;
+                    const fps = Math.round(1000 / delta);
+                    
+                    fpsHistory.shift();
+                    fpsHistory.push(fps);
+                    
+                    // Clear canvas
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Draw FPS graph
+                    ctx.strokeStyle = '#3b82f6';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    
+                    fpsHistory.forEach((fps, i) => {
+                        const x = (i / fpsHistory.length) * canvas.width;
+                        const y = canvas.height - (fps / 120) * canvas.height;
+                        
+                        if (i === 0) {
+                            ctx.moveTo(x, y);
+                        } else {
+                            ctx.lineTo(x, y);
+                        }
+                    });
+                    
+                    ctx.stroke();
+                    
+                    // Update text values
+                    document.getElementById('fps-value').textContent = fps;
+                    document.getElementById('ms-value').textContent = Math.round(delta);
+                    
+                    const memory = performance.memory;
+                    if (memory) {
+                        const mb = Math.round(memory.usedJSHeapSize / 1048576);
+                        document.getElementById('mb-value').textContent = mb;
+                    }
+                    
+                    lastTime = now;
+                }, 100);
+            }
+            
+            stopPerformanceMonitoring() {
+                if (this.perfMonitor) {
+                    clearInterval(this.perfMonitor);
+                    this.perfMonitor = null;
+                }
+            }
+            
+            initialCameraAnimation() {
+                // Cinematic entrance
+                const startPos = new THREE.Vector3(100, 50, 100);
+                const endPos = new THREE.Vector3(40, 30, 40);
+                
+                this.camera.position.copy(startPos);
+                
                 gsap.to(this.camera.position, {
-                    x: config.position[0],
-                    y: config.position[1],
-                    z: config.position[2],
-                    duration: 2,
-                    ease: 'power2.inOut',
+                    x: endPos.x,
+                    y: endPos.y,
+                    z: endPos.z,
+                    duration: 3,
+                    ease: "power2.out",
                     onUpdate: () => {
-                        this.camera.lookAt(...config.target);
+                        this.camera.lookAt(0, 5, 0);
+                    },
+                    onComplete: () => {
+                        this.controls.update();
+                        this.addTerminalMessage('Welcome to the Cryptographic Vault');
+                        this.addTerminalMessage('All security protocols active');
                     }
                 });
             }
             
-            setupPerformanceMonitoring() {
-                let lastTime = performance.now();
-                let frames = 0;
-                
-                const updatePerformance = () => {
-                    const now = performance.now();
-                    frames++;
+            startSecurityMonitoring() {
+                // Simulate real-time security monitoring
+                setInterval(() => {
+                    // Update epoch
+                    this.stats.currentEpoch += Math.floor(Math.random() * 3) + 1;
                     
-                    if (now >= lastTime + 1000) {
-                        const fps = Math.round((frames * 1000) / (now - lastTime));
-                        const ms = Math.round((now - lastTime) / frames);
-                        
-                        if (this.showPerformanceStats) {
-                            const info = this.renderer.info;
-                            
-                            document.getElementById('performance-indicator').innerHTML = `
-                                FPS: ${fps} (${ms}ms)<br>
-                                Calls: ${info.render.calls}<br>
-                                Triangles: ${info.render.triangles}<br>
-                                Points: ${info.render.points}
-                            `;
-                        }
-                        
-                        frames = 0;
-                        lastTime = now;
+                    // Occasionally update network nodes
+                    if (Math.random() > 0.9) {
+                        const change = Math.random() > 0.5 ? 1 : -1;
+                        this.stats.networkNodes = Math.max(40, Math.min(50, this.stats.networkNodes + change));
                     }
                     
-                    requestAnimationFrame(updatePerformance);
-                };
-                
-                updatePerformance();
-            }
-            
-            updateStats() {
-                document.getElementById('current-epoch').textContent = 
-                    this.stats.currentEpoch.toLocaleString();
-                document.getElementById('total-stored').textContent = 
-                    (this.stats.totalStored / 1000000).toFixed(1) + 'M';
-                document.getElementById('partners-online').textContent = 
-                    `${this.stats.partnersOnline}/50`;
-                document.getElementById('verification-rate').textContent = 
-                    this.stats.verificationRate.toFixed(2) + '%';
-            }
-            
-            startBackgroundUpdates() {
-                // Simulate real-time updates
-                setInterval(() => {
-                    this.stats.currentEpoch += Math.floor(Math.random() * 10) + 1;
-                    this.stats.totalStored += Math.floor(Math.random() * 100);
+                    // Update integrity rate with slight fluctuation
+                    this.stats.integrityRate = 99.9 + Math.random() * 0.1;
+                    
                     this.updateStats();
-                }, 5000);
+                }, 3000);
                 
-                // Partner status updates
+                // Terminal updates
                 setInterval(() => {
-                    const change = Math.random() > 0.5 ? 1 : -1;
-                    this.stats.partnersOnline = Math.max(40, Math.min(50, 
-                        this.stats.partnersOnline + change));
-                    this.updateStats();
+                    const messages = [
+                        'Quantum encryption cycle complete',
+                        'Merkle root verification: PASSED',
+                        'Network synchronization stable',
+                        'Security perimeter intact',
+                        'Data integrity check: OK',
+                        'Node consensus achieved'
+                    ];
+                    
+                    const message = messages[Math.floor(Math.random() * messages.length)];
+                    this.addTerminalMessage(message);
                 }, 10000);
             }
             
-            showError(message) {
+            updateStats() {
+                document.getElementById('current-epoch').textContent = this.stats.currentEpoch.toLocaleString();
+                document.getElementById('total-stored').textContent = (this.stats.totalStored / 1000000).toFixed(1) + 'M';
+                document.getElementById('network-nodes').textContent = `${this.stats.networkNodes}/50`;
+                document.getElementById('integrity-rate').textContent = this.stats.integrityRate.toFixed(2) + '%';
+                
+                // Update security level based on stats
+                const securityElement = document.getElementById('security-level');
+                if (this.stats.networkNodes >= 45 && this.stats.integrityRate > 99.9) {
+                    securityElement.textContent = 'MAXIMUM';
+                    securityElement.className = 'stat-value optimal';
+                } else if (this.stats.networkNodes >= 40) {
+                    securityElement.textContent = 'HIGH';
+                    securityElement.className = 'stat-value warning';
+                } else {
+                    securityElement.textContent = 'ELEVATED';
+                    securityElement.className = 'stat-value critical';
+                }
+            }
+            
+            addTerminalMessage(message) {
+                const terminal = document.getElementById('security-terminal');
+                const timestamp = new Date().toLocaleTimeString('en-US', { hour12: false });
+                
+                const line = document.createElement('div');
+                line.className = 'terminal-line';
+                line.innerHTML = `<span class="terminal-timestamp">[${timestamp}]</span> ${message}`;
+                
+                terminal.appendChild(line);
+                
+                // Keep only last 10 messages
+                while (terminal.children.length > 10) {
+                    terminal.removeChild(terminal.firstChild);
+                }
+                
+                // Auto scroll
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+            
+            generateHash() {
+                const chars = '0123456789abcdef';
+                let hash = '';
+                for (let i = 0; i < 64; i++) {
+                    hash += chars[Math.floor(Math.random() * chars.length)];
+                }
+                return hash;
+            }
+            
+            showCriticalError(message) {
                 const errorDiv = document.createElement('div');
                 errorDiv.style.cssText = `
                     position: fixed;
                     top: 50%;
                     left: 50%;
                     transform: translate(-50%, -50%);
-                    background: rgba(0, 0, 0, 0.9);
-                    border: 1px solid #ff6b6b;
+                    background: rgba(0, 0, 0, 0.95);
+                    border: 2px solid #ef4444;
                     color: #fff;
-                    padding: 30px;
-                    border-radius: 12px;
+                    padding: 40px;
+                    border-radius: 16px;
                     text-align: center;
-                    z-index: 2000;
+                    z-index: 9999;
+                    backdrop-filter: blur(20px);
+                    max-width: 500px;
                 `;
                 errorDiv.innerHTML = `
-                    <h2 style="color: #ff6b6b; margin-bottom: 15px;">Error</h2>
-                    <p>${message}</p>
-                    <p style="margin-top: 20px; color: #888;">
-                        Please check your browser console for more details.
-                    </p>
+                    <h2 style="color: #ef4444; margin-bottom: 20px; font-size: 24px;">CRITICAL ERROR</h2>
+                    <p style="font-size: 16px; margin-bottom: 20px;">${message}</p>
+                    <p style="color: #888; font-size: 14px;">Please refresh the page to reinitialize the vault.</p>
                 `;
                 document.body.appendChild(errorDiv);
             }
@@ -1445,50 +2737,118 @@
                 const elapsedTime = this.clock.getElapsedTime();
                 
                 // Update controls
-                if (this.controls && this.controls.enabled) {
+                if (this.controls.enabled) {
                     this.controls.update();
                 }
                 
-                // Update vault shader
-                if (this.vaultMaterial) {
-                    this.vaultMaterial.uniforms.uTime.value = elapsedTime;
-                    this.vaultMaterial.uniforms.uMouse.value.x = this.mouseX;
-                    this.vaultMaterial.uniforms.uMouse.value.y = this.mouseY;
-                }
+                // Update all shader materials
+                const shaderUpdates = [
+                    { material: this.vaultMaterial, uniform: 'uTime' },
+                    { material: this.innerCoreMaterial, uniform: 'uTime' },
+                    { material: this.spaceMaterial, uniform: 'uTime' },
+                    { material: this.particleMaterial, uniform: 'uTime' },
+                    { material: this.quantumFieldMaterial, uniform: 'uTime' },
+                    { material: this.securityGridMaterial, uniform: 'uTime' }
+                ];
                 
-                // Rotate vault group
-                if (this.vaultGroup) {
-                    this.vaultGroup.rotation.y += deltaTime * 0.1;
-                }
+                shaderUpdates.forEach(update => {
+                    if (update.material && update.material.uniforms[update.uniform]) {
+                        update.material.uniforms[update.uniform].value = elapsedTime;
+                    }
+                });
                 
                 // Update merkle trees
                 this.merkleForest.forEach((tree, index) => {
-                    // Gentle swaying motion
-                    tree.rotation.z = Math.sin(elapsedTime * 0.5 + index) * 0.05;
-                    tree.rotation.x = Math.cos(elapsedTime * 0.3 + index) * 0.03;
+                    if (tree.userData.material) {
+                        tree.userData.material.uniforms.uTime.value = elapsedTime;
+                    }
                 });
                 
-                // Update signature flow
-                if (this.signatureFlow) {
-                    this.signatureFlow.material.uniforms.uTime.value = elapsedTime;
+                // Update data streams
+                this.dataStreams.forEach(stream => {
+                    if (stream.material) {
+                        stream.material.uniforms.uTime.value = elapsedTime;
+                    }
+                    
+                    // Animate data packets
+                    if (stream.packets) {
+                        stream.packets.forEach(packet => {
+                            packet.userData.progress += deltaTime * packet.userData.speed * 0.2;
+                            if (packet.userData.progress > 1) {
+                                packet.userData.progress = 0;
+                            }
+                            
+                            const point = packet.userData.curve.getPoint(packet.userData.progress);
+                            packet.position.copy(point);
+                            packet.rotation.x += deltaTime * 2;
+                            packet.rotation.y += deltaTime * 3;
+                        });
+                    }
+                });
+                
+                // Rotate vault components
+                if (this.vaultCore) {
+                    this.vaultCore.rotation.y += deltaTime * 0.1;
+                    this.vaultCore.rotation.x = Math.sin(elapsedTime * 0.5) * 0.05;
                 }
                 
-                // Update attestation rings
-                this.attestationRings.forEach((ring) => {
-                    ring.rotation.z += ring.userData.rotationSpeed;
-                    ring.rotation.y += ring.userData.orbitSpeed;
-                    ring.position.y = ring.userData.originalY + Math.sin(elapsedTime + ring.userData.originalY) * 0.5;
+                if (this.innerCore) {
+                    this.innerCore.rotation.y -= deltaTime * 0.3;
+                    this.innerCore.rotation.z = Math.sin(elapsedTime * 0.7) * 0.1;
+                }
+                
+                if (this.vaultShield) {
+                    this.vaultGroup.children.forEach((child, index) => {
+                        if (child.userData.rotationSpeed) {
+                            child.rotation.y += child.userData.rotationSpeed;
+                            child.rotation.x += child.userData.rotationSpeed * 0.5;
+                        }
+                    });
+                }
+                
+                // Quantum field animation
+                if (this.quantumField) {
+                    this.quantumField.rotation.y += deltaTime * 0.05;
+                }
+                
+                // Security beacons
+                this.scene.traverse(child => {
+                    if (child.userData.rotationSpeed) {
+                        child.rotation.y += child.userData.rotationSpeed;
+                    }
                 });
                 
                 // Render
-                this.renderer.render(this.scene, this.camera);
+                this.composer.render();
             }
         }
         
-        // Initialize application
+        // Initialize the vault
         window.addEventListener('DOMContentLoaded', () => {
-            new AttestationVault();
+            new CryptographicVault();
         });
     </script>
+    
+    <!-- Oracle Documentation Button -->
+    <a href="/oracle.html" style="
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #F59E0B 0%, #8B5CF6 100%);
+        color: #F8FAFC;
+        padding: 1rem 2rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+        transition: all 0.3s ease;
+        z-index: 1000;
+        text-align: center;
+    " onmouseover="this.style.transform='translateX(-50%) translateY(-2px)'; this.style.boxShadow='0 6px 30px rgba(245, 158, 11, 0.4)';" 
+       onmouseout="this.style.transform='translateX(-50%) translateY(0)'; this.style.boxShadow='0 4px 20px rgba(245, 158, 11, 0.3)';">
+        📖 Access The Oracle Documentation
+    </a>
 </body>
 </html>

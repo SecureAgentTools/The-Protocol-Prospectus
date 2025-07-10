@@ -35,12 +35,222 @@
             box-sizing: border-box;
         }
 
+        /* CSS Variables */
+        :root {
+            --primary-glow: #3B82F6;
+            --secondary-glow: #8B5CF6;
+            --accent-glow: #10B981;
+            --danger-glow: #EF4444;
+            --warning-glow: #F59E0B;
+            --bg-void: #000000;
+            --bg-deep: #0a0a0a;
+            --bg-dark: #0F172A;
+            --bg-card: rgba(15, 23, 42, 0.6);
+            --text-bright: #FFFFFF;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
+            --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
+            --gradient-rainbow: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #000;
             color: #fff;
             overflow: hidden;
             cursor: none;
+        }
+
+        /* Universal Navigation Header */
+        .nav-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 10000;
+            pointer-events: auto;
+            transition: all 0.3s ease;
+        }
+
+        .nav-header.scrolled {
+            background: rgba(10, 10, 10, 0.95);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 80px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            list-style: none;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--text-bright);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link.nav-cta {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link.nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link.nav-cta::after {
+            display: none;
+        }
+
+        .nav-link.nav-dev-portal {
+            background: var(--gradient-accent);
+        }
+
+        /* Dropdown Styles */
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .nav-dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            min-width: 220px;
+            background: rgba(10, 10, 10, 0.98);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.5rem 0;
+            margin-top: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(-10px);
+            transition: all 0.3s ease;
+            list-style: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .nav-dropdown:hover .nav-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .nav-dropdown-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .nav-dropdown-link:hover {
+            color: var(--text-bright);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Oracle Documentation Button */
+        .oracle-access-btn {
+            position: fixed;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 2rem;
+            background: var(--gradient-accent);
+            color: var(--text-bright);
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .oracle-access-btn:hover {
+            transform: translateX(-50%) translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
         }
 
         /* Custom Cursor */
@@ -89,7 +299,7 @@
         /* Logo */
         .logo {
             position: fixed;
-            top: 40px;
+            top: 120px;
             left: 40px;
             font-size: 24px;
             font-weight: 900;
@@ -107,17 +317,17 @@
             transform: scale(1.05);
         }
 
-        /* Navigation */
-        .nav-menu {
+        /* Internal Navigation */
+        .internal-nav-menu {
             position: fixed;
-            top: 40px;
+            top: 120px;
             right: 40px;
             display: flex;
             gap: 30px;
             pointer-events: auto;
         }
 
-        .nav-link {
+        .internal-nav-link {
             color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             font-weight: 500;
@@ -126,15 +336,15 @@
             cursor: pointer;
         }
 
-        .nav-link:hover {
+        .internal-nav-link:hover {
             color: #fff;
         }
 
-        .nav-link.active {
+        .internal-nav-link.active {
             color: #3B82F6;
         }
 
-        .nav-link::after {
+        .internal-nav-link::after {
             content: '';
             position: absolute;
             bottom: -5px;
@@ -145,14 +355,14 @@
             transition: width 0.3s ease;
         }
 
-        .nav-link:hover::after, .nav-link.active::after {
+        .internal-nav-link:hover::after, .internal-nav-link.active::after {
             width: 100%;
         }
 
         /* Performance Toggle */
         .performance-toggle {
             position: fixed;
-            top: 40px;
+            top: 100px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -259,7 +469,7 @@
         /* Performance Stats */
         .stats {
             position: fixed;
-            top: 100px;
+            top: 180px;
             right: 40px;
             background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(10px);
@@ -357,7 +567,7 @@
         /* Section-specific UI elements */
         .section-info {
             position: fixed;
-            top: 120px;
+            top: 180px;
             left: 40px;
             max-width: 400px;
             opacity: 0;
@@ -517,6 +727,35 @@
     </style>
 </head>
 <body>
+    <!-- Universal Navigation Header -->
+    <header class="nav-header">
+        <div class="nav-container">
+            <a href="/" class="nav-logo">The Protocol</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-dropdown">
+                        <a href="#" class="nav-link nav-dropdown-toggle">
+                            Ecosystem
+                            <svg class="dropdown-arrow" width="12" height="8" viewBox="0 0 12 8" fill="currentColor">
+                                <path d="M1 1L6 6L11 1" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </a>
+                        <ul class="nav-dropdown-menu">
+                            <li><a href="/technical-page.html" class="nav-dropdown-link">Technical Architecture</a></li>
+                            <li><a href="/federation.html" class="nav-dropdown-link">Federation Model</a></li>
+                            <li><a href="/zkp-page.html" class="nav-dropdown-link">Zero-Knowledge Proofs</a></li>
+                            <li><a href="/attestation.html" class="nav-dropdown-link">Attestation Network</a></li>
+                            <li><a href="/governance.html" class="nav-dropdown-link">Governance</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal" style="background: var(--gradient-accent); padding: 0.75rem 1.5rem; border-radius: 0.5rem;">Developer Portal →</a></li>
+                    <li><a href="#application" class="nav-link nav-cta">Join Beta</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
     <!-- Custom Cursor -->
     <div class="cursor"></div>
     <div class="cursor-dot"></div>
@@ -534,16 +773,21 @@
 
     <!-- UI Overlay -->
     <div class="ui-overlay">
-        <!-- Logo -->
-        <div class="logo" id="logo">The Protocol</div>
+        <!-- Oracle Documentation Button -->
+        <a href="/oracle.html" class="oracle-access-btn">
+            <span style="margin-right: 0.5rem;">📖</span> Access The Oracle Documentation
+        </a>
 
-        <!-- Navigation -->
-        <nav class="nav-menu">
-            <a href="#" class="nav-link active" data-section="home">Home</a>
-            <a href="#" class="nav-link" data-section="overview">Overview</a>
-            <a href="#" class="nav-link" data-section="architecture">Architecture</a>
-            <a href="#" class="nav-link" data-section="developers">Developers</a>
-            <a href="#" class="nav-link" data-section="docs">Docs</a>
+        <!-- Logo -->
+        <div class="logo" id="logo">Technical Architecture</div>
+
+        <!-- Internal Navigation -->
+        <nav class="internal-nav-menu">
+            <a href="#" class="internal-nav-link active" data-section="home">Home</a>
+            <a href="#" class="internal-nav-link" data-section="overview">Overview</a>
+            <a href="#" class="internal-nav-link" data-section="architecture">Architecture</a>
+            <a href="#" class="internal-nav-link" data-section="developers">Developers</a>
+            <a href="#" class="internal-nav-link" data-section="docs">Docs</a>
         </nav>
         
         <!-- Performance Toggle -->
@@ -867,7 +1111,7 @@
             
             setupNavigation() {
                 // Navigation links
-                const navLinks = document.querySelectorAll('.nav-link');
+                const navLinks = document.querySelectorAll('.internal-nav-link');
                 navLinks.forEach(link => {
                     link.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -878,7 +1122,7 @@
                 
                 // Logo click to return to index page
                 document.getElementById('logo').addEventListener('click', () => {
-                    window.location.href = 'index.html';
+                    window.location.href = '/';
                 });
             }
             
@@ -886,7 +1130,7 @@
                 if (section === this.currentSection) return;
                 
                 // Update nav state
-                document.querySelectorAll('.nav-link').forEach(link => {
+                document.querySelectorAll('.internal-nav-link').forEach(link => {
                     link.classList.toggle('active', link.dataset.section === section);
                 });
                 
@@ -2425,34 +2669,33 @@
                         osc.type = 'triangle';
                         osc.frequency.value = 440;
                         
-                        gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-                        gain.gain.linearRampToValueAtTime(0.2, this.audioContext.currentTime + 0.01);
-                        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
+                        gain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
                         
                         osc.connect(gain);
                         gain.connect(this.masterGain);
                         
                         osc.start();
-                        osc.stop(this.audioContext.currentTime + 0.3);
+                        osc.stop(this.audioContext.currentTime + 0.2);
                     }
                 };
                 
-                // Add transition sound
+                // Create transition sound function
                 this.transitionSound = () => {
                     const osc = this.audioContext.createOscillator();
                     const gain = this.audioContext.createGain();
                     const filter = this.audioContext.createBiquadFilter();
                     
                     osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(200, this.audioContext.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(50, this.audioContext.currentTime + 0.5);
+                    osc.frequency.setValueAtTime(110, this.audioContext.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, this.audioContext.currentTime + 0.5);
                     
                     filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(5000, this.audioContext.currentTime);
-                    filter.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.5);
+                    filter.frequency.setValueAtTime(220, this.audioContext.currentTime);
+                    filter.frequency.exponentialRampToValueAtTime(4400, this.audioContext.currentTime + 0.5);
                     filter.Q.value = 5;
                     
-                    gain.gain.setValueAtTime(0.2, this.audioContext.currentTime);
+                    gain.gain.setValueAtTime(0.15, this.audioContext.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.5);
                     
                     osc.connect(filter);
@@ -2465,48 +2708,17 @@
             }
             
             toggleSound() {
-                if (!this.audioInitialized || !this.audioContext) return;
-                
-                if (this.soundEnabled) {
+                if (this.soundEnabled && this.audioInitialized) {
                     // Fade in
                     this.masterGain.gain.cancelScheduledValues(this.audioContext.currentTime);
                     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioContext.currentTime);
                     this.masterGain.gain.linearRampToValueAtTime(0.3, this.audioContext.currentTime + 1);
-                } else {
+                } else if (this.audioInitialized) {
                     // Fade out
                     this.masterGain.gain.cancelScheduledValues(this.audioContext.currentTime);
                     this.masterGain.gain.setValueAtTime(this.masterGain.gain.value, this.audioContext.currentTime);
                     this.masterGain.gain.linearRampToValueAtTime(0, this.audioContext.currentTime + 1);
                 }
-            }
-            
-            modulateAudioWithVisualization(time) {
-                if (!this.audioInitialized || !this.soundEnabled) return;
-                
-                // Modulate oscillators based on crystal positions
-                this.oscillators.forEach((osc, index) => {
-                    if (index < this.crystals.length) {
-                        const crystal = this.crystals[index];
-                        const yPos = crystal.mesh.position.y;
-                        
-                        // Modulate frequency based on crystal height
-                        const freqMod = 1 + (yPos / 10) * 0.1;
-                        osc.oscillator.frequency.setTargetAtTime(
-                            osc.baseFreq * freqMod,
-                            this.audioContext.currentTime,
-                            0.1
-                        );
-                        
-                        // Modulate filter based on rotation
-                        const rotation = crystal.mesh.rotation.y % (Math.PI * 2);
-                        const filterFreq = 800 + Math.sin(rotation) * 400;
-                        osc.filter.frequency.setTargetAtTime(
-                            filterFreq,
-                            this.audioContext.currentTime,
-                            0.1
-                        );
-                    }
-                });
             }
 
             animate() {
@@ -2515,245 +2727,120 @@
                 const deltaTime = this.clock.getDelta();
                 const elapsedTime = this.clock.getElapsedTime();
                 
-                // Update camera position
-                if (this.autoRotate && this.currentSection === 'home') {
-                    this.targetCameraAngle += deltaTime * 0.1;
+                // Update camera
+                this.updateCamera();
+                
+                // Update crystals
+                this.updateCrystals(elapsedTime);
+                
+                // Update particle system
+                if (this.particleSystem) {
+                    this.particleSystem.rotation.y += 0.0001;
                 }
                 
+                // Update holographic elements
+                this.updateHolographicElements(elapsedTime);
+                
+                // Update energy flows
+                this.updateEnergyFlows(elapsedTime);
+                
+                // Update performance stats
+                this.updateStats();
+                
+                // Render
+                this.renderer.render(this.scene, this.camera);
+            }
+
+            updateCamera() {
+                // Smooth camera movement
                 this.cameraAngle += (this.targetCameraAngle - this.cameraAngle) * 0.05;
                 this.cameraRadius += (this.targetCameraRadius - this.cameraRadius) * 0.05;
                 this.cameraHeight += (this.targetCameraHeight - this.cameraHeight) * 0.05;
                 
+                // Auto-rotate
+                if (this.autoRotate && !this.isDragging) {
+                    this.targetCameraAngle += 0.002;
+                }
+                
+                // Update camera position
                 this.camera.position.x = Math.cos(this.cameraAngle) * this.cameraRadius;
-                this.camera.position.z = Math.sin(this.cameraAngle) * this.cameraRadius;
                 this.camera.position.y = this.cameraHeight;
+                this.camera.position.z = Math.sin(this.cameraAngle) * this.cameraRadius;
                 this.camera.lookAt(0, 0, 0);
-                
-                // Check for hover effects
-                this.checkHoverEffects();
-                
-                // Animate crystals
+            }
+
+            updateCrystals(time) {
                 this.crystals.forEach((crystal, index) => {
-                    const userData = crystal.mesh.userData;
-                    
-                    // Floating animation only for home section
-                    if (this.currentSection === 'home') {
-                        crystal.mesh.position.y = crystal.originalPosition.y + Math.sin(elapsedTime + crystal.phase) * 0.5;
-                    }
+                    // Floating animation
+                    crystal.mesh.position.y = crystal.originalPosition.y + Math.sin(time * 0.001 + crystal.phase) * 0.5;
                     
                     // Rotation
-                    userData.crystal.rotation.x += deltaTime * 0.2;
-                    userData.crystal.rotation.y += deltaTime * 0.3;
-                    userData.wireframe.rotation.x -= deltaTime * 0.1;
-                    userData.wireframe.rotation.y -= deltaTime * 0.15;
+                    crystal.mesh.rotation.y += 0.005;
+                    crystal.mesh.rotation.x = Math.sin(time * 0.0005 + index) * 0.1;
                     
-                    // Pulsing core
-                    const coreScale = 0.3 + Math.sin(elapsedTime * 2 + index) * 0.1;
-                    userData.core.scale.setScalar(coreScale);
+                    // Pulsing wireframe
+                    if (crystal.mesh.userData.wireframe) {
+                        crystal.mesh.userData.wireframe.material.opacity = 0.3 + Math.sin(time * 0.002 + index) * 0.2;
+                    }
                     
-                    // Energy field pulse
-                    const fieldScale = 2 + Math.sin(elapsedTime + index) * 0.2;
-                    userData.field.scale.setScalar(fieldScale);
-                    userData.field.material.opacity = 0.1 + Math.sin(elapsedTime * 2 + index) * 0.05;
+                    // Energy field pulsing
+                    if (crystal.mesh.userData.field) {
+                        const scale = 1 + Math.sin(time * 0.001 + crystal.phase) * 0.1;
+                        crystal.mesh.userData.field.scale.setScalar(scale);
+                    }
                 });
-                
-                // Animate energy flows
-                this.energyFlows.forEach((flow, index) => {
-                    flow.userData.progress += deltaTime * 0.5;
-                    const offset = Math.sin(flow.userData.progress + index) * 0.3;
-                    flow.material.opacity = 0.2 + offset;
-                });
-                
-                // Animate holographic panels
+            }
+
+            updateHolographicElements(time) {
                 this.holoElements.forEach((element, index) => {
-                    element.rotation.y += deltaTime * 0.2;
-                    element.position.y = 5 + Math.sin(elapsedTime + index * 0.5) * 0.5;
+                    // Gentle floating
+                    element.position.y = 5 + Math.sin(time * 0.0005 + index * 0.5) * 0.5;
                     
-                    // Data bar animations
+                    // Look at camera for billboard effect
+                    element.lookAt(this.camera.position);
+                    
+                    // Update data bars
                     element.children.forEach((child, i) => {
                         if (child.geometry.type === 'BoxGeometry' && i > 0) {
                             const targetScale = 0.3 + Math.random() * 0.7;
-                            child.scale.y += (targetScale - child.scale.y) * 0.1;
+                            child.scale.y += (targetScale - child.scale.y) * 0.05;
                         }
                     });
                 });
-                
-                // Particle system animation
-                if (this.particleSystem && this.showParticles) {
-                    this.particleSystem.rotation.y += deltaTime * 0.02;
+            }
+
+            updateEnergyFlows(time) {
+                this.energyFlows.forEach((flow, index) => {
+                    // Animate flow progress
+                    flow.userData.progress += 0.01;
+                    if (flow.userData.progress > 1) flow.userData.progress = 0;
                     
-                    // Vertex animation for particles
-                    const positions = this.particleSystem.geometry.attributes.position.array;
-                    for (let i = 0; i < positions.length; i += 3) {
-                        positions[i + 1] += Math.sin(elapsedTime + i) * 0.01;
-                    }
-                    this.particleSystem.geometry.attributes.position.needsUpdate = true;
-                }
-                
-                // Section-specific animations
-                if (this.currentSection === 'overview' && this.dataFlowParticles) {
-                    // Animate data flow particles
-                    const positions = this.dataFlowParticles.geometry.attributes.position.array;
-                    for (let i = 0; i < positions.length; i += 3) {
-                        positions[i] += (Math.random() - 0.5) * 0.2;
-                        positions[i + 1] += 0.1;
-                        positions[i + 2] += (Math.random() - 0.5) * 0.2;
-                        
-                        // Reset if too far
-                        if (positions[i + 1] > 20) {
-                            positions[i + 1] = -20;
-                        }
-                    }
-                    this.dataFlowParticles.geometry.attributes.position.needsUpdate = true;
-                }
-                
-                if (this.currentSection === 'architecture' && this.constellationLines) {
-                    // Animate constellation connections
-                    this.constellationLines.children.forEach((line, index) => {
-                        line.material.opacity = 0.2 + Math.sin(elapsedTime * 2 + index) * 0.1;
-                    });
-                }
-                
-                if (this.currentSection === 'developers' && this.workshopElements) {
-                    // Animate workshop elements
-                    this.workshopElements.children.forEach((element, index) => {
-                        if (element.type === 'Group') {
-                            element.children.forEach((sprite, i) => {
-                                sprite.position.y += Math.sin(elapsedTime + i) * 0.01;
-                            });
-                        }
-                    });
-                }
-                
-                // Platform rotation
-                this.platform.rotation.y += deltaTime * 0.05;
-                
-                // Animate point lights
-                this.pointLights.forEach((light, index) => {
-                    const angle = (index / this.pointLights.length) * Math.PI * 2 + elapsedTime * 0.5;
-                    light.position.x = Math.cos(angle) * 15;
-                    light.position.z = Math.sin(angle) * 15;
-                    light.position.y = 5 + Math.sin(elapsedTime + index) * 3;
-                    
-                    // Dynamic light intensity
-                    light.intensity = 3 + Math.sin(elapsedTime * 2 + index) * 1;
+                    // Update material opacity for pulse effect
+                    flow.material.opacity = 0.2 + Math.sin(time * 0.002 + index) * 0.2;
                 });
+            }
+
+            updateStats() {
+                // Update FPS
+                const fps = Math.round(1 / this.clock.getDelta());
+                document.getElementById('fps').textContent = fps;
                 
-                // Modulate audio based on visualization
-                if (this.soundEnabled) {
-                    this.modulateAudioWithVisualization(elapsedTime);
-                }
-                
-                // Update stats
-                if (Math.floor(elapsedTime) % 2 === 0) {
-                    document.getElementById('fps').textContent = Math.round(1 / deltaTime);
-                    if (this.particleSystem) {
-                        const particleCount = this.particleSystem.geometry.attributes.position.count;
-                        document.getElementById('particles').textContent = 
-                            particleCount > 10000 ? Math.round(particleCount / 1000) + 'K' : particleCount;
-                    }
+                // Update other stats periodically
+                if (Math.random() > 0.95) {
+                    document.getElementById('particles').textContent = 
+                        this.particleSystem ? `${(this.particleSystem.geometry.attributes.position.count / 1000).toFixed(0)}K` : '0';
+                    
                     document.getElementById('vertices').textContent = 
-                        (this.renderer.info.render.vertices / 1000).toFixed(1) + 'K';
+                        `${(this.renderer.info.render.triangles / 1000000).toFixed(1)}M`;
+                    
                     document.getElementById('drawCalls').textContent = 
                         this.renderer.info.render.calls;
-                }
-                
-                // Render scene
-                this.renderer.render(this.scene, this.camera);
-            }
-            
-            checkHoverEffects() {
-                // Raycast for hover detection
-                this.raycaster.setFromCamera(this.mouse, this.camera);
-                const intersects = this.raycaster.intersectObjects(this.crystalGroup.children, true);
-                
-                // Reset all crystals
-                this.crystals.forEach(crystal => {
-                    crystal.mesh.userData.field.material.opacity = 0.1;
-                });
-                
-                if (intersects.length > 0) {
-                    const hoveredCrystal = this.crystals.find(c => 
-                        c.mesh.children.includes(intersects[0].object) || 
-                        c.mesh === intersects[0].object.parent
-                    );
-                    
-                    if (hoveredCrystal) {
-                        // Enhance hover effect
-                        hoveredCrystal.mesh.userData.field.material.opacity = 0.3;
-                        
-                        // Play hover sound once
-                        if (!this.lastHoveredCrystal || this.lastHoveredCrystal !== hoveredCrystal) {
-                            if (this.soundEnabled && this.interactionSounds) {
-                                this.interactionSounds.hover();
-                            }
-                            
-                            // Show crystal info
-                            this.showCrystalInfo(hoveredCrystal.mesh.userData.name);
-                        }
-                        this.lastHoveredCrystal = hoveredCrystal;
-                        
-                        // Change cursor style
-                        document.querySelector('.cursor').style.transform = 'scale(1.5)';
-                        document.querySelector('.cursor').style.borderColor = '#3B82F6';
-                    }
-                } else {
-                    this.lastHoveredCrystal = null;
-                    document.querySelector('.cursor').style.transform = 'scale(1)';
-                    document.querySelector('.cursor').style.borderColor = '#fff';
-                    this.hideCrystalInfo();
-                }
-            }
-            
-            showCrystalInfo(name) {
-                if (!this.infoPanel) {
-                    this.infoPanel = document.createElement('div');
-                    this.infoPanel.style.cssText = `
-                        position: fixed;
-                        bottom: 180px;
-                        left: 40px;
-                        background: rgba(0, 0, 0, 0.8);
-                        backdrop-filter: blur(10px);
-                        padding: 20px;
-                        border-radius: 10px;
-                        border: 1px solid rgba(59, 130, 246, 0.3);
-                        color: white;
-                        font-size: 16px;
-                        pointer-events: none;
-                        opacity: 0;
-                        transition: opacity 0.3s ease;
-                        max-width: 300px;
-                    `;
-                    document.body.appendChild(this.infoPanel);
-                }
-                
-                const descriptions = {
-                    'Identity Core': 'SPIFFE/SPIRE cryptographic identity system providing zero-trust security',
-                    'Federation Node': 'P2P mesh network enabling sovereign registry communication',
-                    'ZKP Engine': 'Groth16-based zero-knowledge proof system for privacy-preserving attestations',
-                    'TEG Processor': 'Token Economic Graph engine for instant value transfers',
-                    'Apex Controller': 'Risk-aware command execution with multi-step approval workflows',
-                    'Protocol Core': 'A2A communication protocol for autonomous agent interaction'
-                };
-                
-                this.infoPanel.innerHTML = `
-                    <h3 style="margin: 0 0 10px 0; color: #3B82F6;">${name}</h3>
-                    <p style="margin: 0; line-height: 1.6; color: rgba(255,255,255,0.8);">
-                        ${descriptions[name] || 'Core system component'}
-                    </p>
-                `;
-                this.infoPanel.style.opacity = '1';
-            }
-            
-            hideCrystalInfo() {
-                if (this.infoPanel) {
-                    this.infoPanel.style.opacity = '0';
                 }
             }
         }
 
-        // Initialize the visualization
-        const viz = new QuantumVisualization();
+        // Initialize visualization
+        new QuantumVisualization();
     </script>
 </body>
 </html>

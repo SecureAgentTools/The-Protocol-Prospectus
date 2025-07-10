@@ -3,14 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Protocol - Where Compute Has Value</title>
+    <title>The Protocol - Where Compute Has Value | AAA+ Cinematic Experience</title>
     
-    <!-- Open Graph / LinkedIn Meta Tags -->
+    <!-- SEO & Open Graph -->
+    <meta name="description" content="Experience the future of autonomous agent economies. The world's first operational, high-trust settlement layer with stunning 3D visualization.">
     <meta property="og:title" content="The Protocol: The Agent Economy is Live">
     <meta property="og:description" content="The world's first operational, high-trust settlement layer for an autonomous machine-to-machine economy.">
     <meta property="og:image" content="https://www.theprotocol.cloud/preview.png">
     <meta property="og:url" content="https://www.theprotocol.cloud">
     <meta property="og:type" content="website">
+    
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAADIElEQVRYhe2Xz2sTQRTHP7OzSdP6C0GKgoJ4EUQPHgQRPHjwpBdBEMSDIB48eBBE8KIHQQQPehBE8OBBLx4EETx48CKIoIiItFpra5u02SY7O/N8mE2zTbJNmqYnP/CY3Zn3vu99Z2ZnZkFDQ0NDw/+MHEgn2zJKm6yx2tgCSJtM1ApAEEQsL/qzAKIWABcDcZsDUUpBqQDSj1RAKSkABWXABhA2BmKWEAohBAGhEAQBQojq30JUsxAEQRAQEAqBUAihqvl1AlgLQCwCIqYcS6n+pVS/Xn9tXkqpKr9hYyzGwtG4zQA4bnPg6NhjAJy3ObDe5kBDQ0NDw/+M5EDMMfqyxpxGbwaUowCOAbsAfczW7Ae+AR+Bj0C21/zJTsBw4CCwF1gLrBhgkjeBBHAXmOrVyGKkAjgJHAXWjOCyb4F7wEvA79XIgqQC2FdW+3DYvgecAN4BzwdprJdEAOuAnUPq/yUwAbzotaNSooAy4AiwdYS2FfDAjjpKpjnHEy0L5KzJmE9AEXhvR/0a8MdEfTMa6lQA28h2ZRHrC8CdCu1qYQ0wD8gDN4DpGjXa2g6RANYDq7pM9hdnO7/Tg7E5O8oUTsJE9wDX7Kg2kHSI9L8Y/nKMVAC7u0z2FfDUWbw2WMhU3LGjzg3gBvAVJ2FGQ7kYSOrNyPxOJICNXSb7DFy0F6/VzA6cObvOXQLeAD6Ob8aNBpcQCJQB4z2oPwscK6v9fRuSFYY5wJXyOvC4RjsD8BGYCfA4Z8U6TrbB2UHG+gJwfojqF4B/wHMn4VfU/gL6skYJYGWH9hxwyTb5UbEa2I6T8CvqvBLASIf2b8AF2xRGRxGxQh8YdxK5kvpdC5BG5GfnBZ/taHrg3ltEhiuxBG0rwB1b6cGxDlhXiZU0ACdxvqP2bx5J7S1iBfBAjJpvnUQhD7xwlvQwlXRtfJQiW4EBJ+F7wCtncR7YCmweoPepzjkJP0BjBHJZoaKhJE7iZzXAI+BgMF3Foj3d8WqJhKdGCLxGrO/WfQ7YBKwAQsAM8AV4A0wOy0BDQ0PDEvIfaQXgF2ZBKb0AAAAASUVORK5CYII=">
+    
+    <!-- Three.js r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- GSAP for cinematic animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+    <!-- Tone.js for spatial audio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     
     <style>
         * {
@@ -37,6 +49,7 @@
             --gradient-accent: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
             --gradient-danger: linear-gradient(135deg, #EF4444 0%, #8B5CF6 100%);
             --gradient-rainbow: linear-gradient(90deg, #3B82F6 0%, #8B5CF6 25%, #EC4899 50%, #F59E0B 75%, #10B981 100%);
+            --gradient-holographic: linear-gradient(45deg, #3B82F6, #8B5CF6, #EC4899, #F59E0B, #10B981, #3B82F6);
         }
 
         html {
@@ -47,68 +60,199 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background-color: var(--bg-void);
             color: var(--text-primary);
-            line-height: 1.6;
             overflow-x: hidden;
+            cursor: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Loading Screen */
+        /* Custom Cursor with Trail */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-glow);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: all 0.1s ease;
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor.hover {
+            width: 40px;
+            height: 40px;
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent-glow);
+        }
+
+        .custom-cursor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-glow);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .cursor-trail {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Loading Screen with Advanced Progress */
         .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-void);
-            z-index: 10000;
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #000 100%);
+            z-index: 9999;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 1s ease;
         }
 
-        .loading-content {
-            text-align: center;
-        }
-
-        .loading-logo {
-            font-size: 3rem;
+        .loading-title {
+            font-size: clamp(3rem, 7vw, 6rem);
             font-weight: 900;
+            background: var(--gradient-holographic);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: holographicShift 4s ease infinite;
+            margin-bottom: 3rem;
+            letter-spacing: -0.02em;
+            position: relative;
+        }
+
+        .loading-title::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            animation: pulse 1.5s ease infinite;
+            filter: blur(40px);
+            opacity: 0.5;
+            animation: glowPulse 2s ease infinite;
         }
 
-        .loading-bar {
-            width: 200px;
-            height: 4px;
-            background: rgba(59, 130, 246, 0.2);
-            border-radius: 2px;
-            margin: 2rem auto;
-            overflow: hidden;
+        @keyframes holographicShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.02); }
+        }
+
+        .loading-container {
+            max-width: 500px;
+            width: 90%;
         }
 
         .loading-progress {
+            width: 100%;
+            height: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-progress-bar {
             height: 100%;
-            background: var(--gradient-primary);
+            background: var(--gradient-holographic);
+            background-size: 300% 300%;
             width: 0%;
-            animation: load 1.5s ease-out forwards;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            animation: holographicShift 3s ease infinite;
         }
 
-        @keyframes load {
-            to { width: 100%; }
+        .loading-status {
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 600;
+            text-align: center;
         }
 
-        /* Navigation Header with Glass Effect */
+        .loading-stats {
+            display: flex;
+            gap: 2rem;
+            margin-top: 2rem;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .loading-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loading-stat-value {
+            color: var(--primary-glow);
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 0.25rem;
+        }
+
+        /* Main Canvas */
+        #main-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* UI Overlay */
+        .ui-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* Navigation Header - Glass Morphism */
         .nav-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 10, 0.8);
+            background: rgba(10, 10, 10, 0.7);
             backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
             z-index: 1000;
+            pointer-events: auto;
             transition: all 0.3s ease;
         }
 
@@ -130,17 +274,34 @@
         .nav-logo {
             font-size: 1.5rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
             text-decoration: none;
             letter-spacing: -0.02em;
+            cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
         }
 
         .nav-logo:hover {
             transform: scale(1.05);
+        }
+
+        .nav-logo:hover::after {
+            width: 100%;
         }
 
         .nav-menu {
@@ -158,6 +319,7 @@
             letter-spacing: 0.01em;
             transition: all 0.3s ease;
             position: relative;
+            cursor: pointer;
         }
 
         .nav-link::after {
@@ -173,6 +335,7 @@
 
         .nav-link:hover {
             color: var(--text-bright);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
         }
 
         .nav-link:hover::after {
@@ -187,1460 +350,479 @@
             transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
         }
 
         .nav-link.nav-cta::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
 
         .nav-link.nav-cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
         }
 
         .nav-link.nav-cta:hover::before {
-            width: 300px;
-            height: 300px;
+            left: 100%;
         }
 
         .nav-link.nav-cta::after {
             display: none;
         }
 
-        .nav-link.nav-dev-portal {
-            background: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
-            color: var(--text-bright);
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-link.nav-dev-portal:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
-        }
-
-        .nav-link.nav-dev-portal::after {
-            display: none;
-        }
-
-        /* Mobile Navigation */
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .nav-toggle span {
-            width: 25px;
-            height: 2px;
-            background: var(--text-bright);
-            transition: all 0.3s ease;
-        }
-
-        @media (max-width: 968px) {
-            .nav-menu {
-                position: fixed;
-                top: 80px;
-                left: 0;
-                right: 0;
-                background: rgba(10, 10, 10, 0.98);
-                flex-direction: column;
-                padding: 2rem;
-                gap: 1.5rem;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-                max-height: calc(100vh - 80px);
-                overflow-y: auto;
-            }
-
-            .nav-menu.active {
-                transform: translateX(0);
-            }
-
-            .nav-toggle {
-                display: flex;
-            }
-
-            .nav-toggle.active span:nth-child(1) {
-                transform: rotate(45deg) translate(5px, 5px);
-            }
-
-            .nav-toggle.active span:nth-child(2) {
-                opacity: 0;
-            }
-
-            .nav-toggle.active span:nth-child(3) {
-                transform: rotate(-45deg) translate(5px, -5px);
-            }
-        }
-
-        /* Enhanced Hero Section with Matrix Rain + Neural Network */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            overflow: hidden;
-            padding: 2rem;
-            padding-top: 80px;
-        }
-
-        /* Matrix Rain Effect */
-        .matrix-rain {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            opacity: 0.1;
-        }
-
-        .matrix-column {
-            position: absolute;
-            top: -100%;
-            font-family: monospace;
-            font-size: 14px;
-            color: var(--primary-glow);
-            writing-mode: vertical-lr;
-            text-orientation: upright;
-            animation: matrix-fall linear infinite;
-        }
-
-        @keyframes matrix-fall {
-            to {
-                transform: translateY(200%);
-            }
-        }
-
-        /* Enhanced Neural Network Background */
-        .neural-network {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0.3;
-        }
-
-        /* Floating Orbs */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(40px);
-            animation: float-orb 20s infinite ease-in-out;
-        }
-
-        .orb-1 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
-            top: -200px;
-            left: -200px;
-        }
-
-        .orb-2 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
-            bottom: -100px;
-            right: -100px;
-            animation-delay: -5s;
-        }
-
-        .orb-3 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.3) 0%, transparent 70%);
-            top: 50%;
+        /* Holographic View Mode Selector */
+        .view-modes {
+            position: fixed;
+            top: 100px;
             left: 50%;
-            animation-delay: -10s;
-        }
-
-        @keyframes float-orb {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(100px, -100px) scale(1.1);
-            }
-            66% {
-                transform: translate(-100px, 100px) scale(0.9);
-            }
-        }
-
-        .hero-content {
-            text-align: center;
-            z-index: 10;
-            max-width: 1200px;
-            width: 100%;
-            animation: hero-enter 1s ease-out;
-        }
-
-        @keyframes hero-enter {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero h1 {
-            font-size: clamp(2.5rem, 7vw, 5rem);
-            font-weight: 900;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-        }
-
-        .hero h1 .gradient-text {
-            background: var(--gradient-rainbow);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
-        }
-
-        @keyframes shine {
-            to { background-position: 200% center; }
-        }
-
-        /* Glitch Effect for Hero */
-        .glitch {
-            position: relative;
-            display: inline-block;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-        }
-
-        .glitch::before {
-            animation: glitch-1 0.5s infinite;
-            color: var(--primary-glow);
-            z-index: -1;
-        }
-
-        .glitch::after {
-            animation: glitch-2 0.5s infinite;
-            color: var(--secondary-glow);
-            z-index: -2;
-        }
-
-        @keyframes glitch-1 {
-            0%, 100% { 
-                clip-path: inset(0 0 0 0); 
-                transform: translate(0);
-            }
-            20% { 
-                clip-path: inset(20% 0 60% 0); 
-                transform: translate(-2px, 2px);
-            }
-        }
-
-        @keyframes glitch-2 {
-            0%, 100% { 
-                clip-path: inset(0 0 0 0); 
-                transform: translate(0);
-            }
-            20% { 
-                clip-path: inset(60% 0 20% 0); 
-                transform: translate(2px, -2px);
-            }
-        }
-
-        .hero .subtitle {
-            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            font-weight: 300;
-            letter-spacing: 0.02em;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            opacity: 0;
-            animation: fade-in-up 1s ease 0.5s forwards;
-        }
-
-        @keyframes fade-in-up {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hero-cta {
+            transform: translateX(-50%);
             display: flex;
-            gap: 2rem;
-            justify-content: center;
-            align-items: center;
-            margin-top: 3rem;
-            flex-wrap: wrap;
-            opacity: 0;
-            animation: fade-in-up 1s ease 0.8s forwards;
+            gap: 2px;
+            background: rgba(10, 10, 10, 0.7);
+            padding: 4px;
+            border-radius: 100px;
+            backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            pointer-events: auto;
+            z-index: 200;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: var(--text-bright);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.2);
-            transition: left 0.3s ease;
-        }
-
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.5);
-        }
-
-        .btn-secondary {
+        .view-mode-btn {
+            padding: 0.75rem 1.5rem;
             background: transparent;
-            color: var(--primary-glow);
-            padding: 1rem 2.5rem;
-            font-size: 1.125rem;
-            font-weight: 600;
-            border: 2px solid var(--primary-glow);
-            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
+            font-weight: 600;
+            font-size: 0.9rem;
             position: relative;
             overflow: hidden;
         }
 
-        .btn-secondary::before {
+        .view-mode-btn::before {
             content: '';
             position: absolute;
             top: 50%;
             left: 50%;
             width: 0;
             height: 0;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
             transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+            transition: width 0.6s ease, height 0.6s ease;
         }
 
-        .btn-secondary:hover {
-            background: rgba(59, 130, 246, 0.1);
-            transform: translateY(-2px) scale(1.05);
-            border-color: var(--text-bright);
+        .view-mode-btn:hover {
             color: var(--text-bright);
+            transform: translateY(-2px);
         }
 
-        .btn-secondary:hover::before {
-            width: 300px;
-            height: 300px;
+        .view-mode-btn:active::before {
+            width: 100px;
+            height: 100px;
         }
 
-        /* Animated Metrics Bar */
-        .metrics-bar {
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(59, 130, 246, 0.3);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 2rem 0;
+        .view-mode-btn.active {
+            color: var(--text-bright);
+            background: var(--gradient-primary);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        /* Hero Section - Pure 3D Canvas */
+        .hero-section {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Floating CTAs - Holographic Style */
+        .floating-cta-container {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            pointer-events: auto;
+            z-index: 20;
+        }
+
+        .floating-cta {
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
         }
 
-        .metrics-bar::before {
+        .floating-cta::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.2), transparent);
-            animation: sweep 3s linear infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
         }
 
-        @keyframes sweep {
-            to {
-                left: 100%;
-            }
+        .floating-cta:hover::before {
+            left: 100%;
         }
 
-        .metrics-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .metric {
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .metric:hover {
-            transform: translateY(-5px);
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: inline-block;
-            animation: count-up 2s ease-out;
-        }
-
-        @keyframes count-up {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .metric-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-top: 0.25rem;
-        }
-
-        /* Section Styles */
-        section {
-            padding: 8rem 0;
-            position: relative;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 5rem;
-        }
-
-        .section-title {
-            font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 800;
-            margin-bottom: 1rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--gradient-primary);
-            border-radius: 2px;
-        }
-
-        .section-subtitle {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            max-width: 800px;
-            margin: 0 auto;
-            font-weight: 300;
-        }
-
-        /* Enhanced Problem Statement Cards */
-        .problem-section {
-            background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .problem-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(239, 68, 68, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-        }
-
-        .problem-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 3rem;
-            margin-top: 4rem;
-        }
-
-        .problem-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            border-radius: 1rem;
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-
-        .problem-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gradient-danger);
-        }
-
-        .problem-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at center, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .problem-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: var(--danger-glow);
-            box-shadow: 0 20px 40px rgba(239, 68, 68, 0.2);
-        }
-
-        .problem-card:hover::after {
-            opacity: 1;
-        }
-
-        .problem-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
+        .floating-cta.primary {
+            background: rgba(59, 130, 246, 0.8);
             color: var(--text-bright);
+            border-color: rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
         }
 
-        .problem-description {
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        /* Architecture Section with 3D Cards */
-        .architecture-section {
-            background: var(--bg-deep);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .architecture-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(59, 130, 246, 0.03) 50px, rgba(59, 130, 246, 0.03) 51px),
-                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(139, 92, 246, 0.03) 50px, rgba(139, 92, 246, 0.03) 51px);
-            pointer-events: none;
-        }
-
-        .pillars-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-top: 4rem;
-            perspective: 1000px;
-        }
-
-        .pillar-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid transparent;
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            transform-style: preserve-3d;
-            backdrop-filter: blur(10px);
-        }
-
-        .pillar-card::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: var(--gradient-primary);
-            border-radius: 1.5rem;
-            opacity: 0;
-            z-index: -1;
-            transition: opacity 0.5s ease;
-        }
-
-        .pillar-card:hover {
-            transform: translateY(-10px) scale(1.02) rotateX(5deg);
-            background: rgba(15, 23, 42, 0.9);
-            border-color: var(--primary-glow);
-            box-shadow: 
-                0 30px 60px rgba(59, 130, 246, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .pillar-card:hover::before {
-            opacity: 1;
-            animation: rotate-gradient 3s linear infinite;
-        }
-
-        @keyframes rotate-gradient {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .pillar-number {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 3rem;
-            font-weight: 900;
-            opacity: 0.1;
-            color: var(--primary-glow);
-        }
-
-        .pillar-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--gradient-primary);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pillar-icon::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
-            transform: rotate(45deg);
-            transition: all 0.6s;
-            opacity: 0;
-        }
-
-        .pillar-card:hover .pillar-icon::after {
-            animation: icon-shine 0.6s ease;
-        }
-
-        @keyframes icon-shine {
-            0% {
-                transform: translateX(-100%) translateY(-100%) rotate(45deg);
-                opacity: 0;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateX(100%) translateY(100%) rotate(45deg);
-                opacity: 0;
-            }
-        }
-
-        .pillar-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-bright);
-        }
-
-        .pillar-tagline {
-            font-size: 1rem;
-            color: var(--primary-glow);
-            margin-bottom: 1rem;
-            font-weight: 500;
-        }
-
-        .pillar-description {
-            color: var(--text-secondary);
-            line-height: 1.8;
-            flex-grow: 1;
-        }
-
-        /* Economic Model with Live Animation */
-        .economic-section {
-            background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-dark) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .economic-section::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: pulse 4s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { 
-                transform: translate(-50%, -50%) scale(1);
-                opacity: 0.5;
-            }
-            50% { 
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 0.8;
-            }
-        }
-
-        .economic-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-            margin-top: 4rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .fee-distribution {
+        .floating-cta.secondary {
             background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-            backdrop-filter: blur(10px);
+            color: var(--primary-glow);
+            border: 1px solid rgba(59, 130, 246, 0.5);
         }
 
-        .fee-distribution::before {
+        .floating-cta.accent {
+            background: rgba(16, 185, 129, 0.8);
+            color: var(--text-bright);
+            border-color: rgba(16, 185, 129, 0.5);
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .floating-cta:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Stats Display - Holographic Panel */
+        .stats-panel {
+            position: fixed;
+            top: 120px;
+            right: 2rem;
+            background: rgba(10, 10, 10, 0.7);
+            backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+            font-size: 0.875rem;
+            pointer-events: auto;
+            z-index: 200;
+            min-width: 280px;
+            opacity: 0;
+            transform: translateX(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .stats-panel.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .stats-header {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: var(--primary-glow);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .stats-header::before {
             content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-            animation: rotate 20s linear infinite;
+            width: 8px;
+            height: 8px;
+            background: var(--primary-glow);
+            border-radius: 50%;
+            animation: pulse 2s ease infinite;
         }
 
-        @keyframes rotate {
-            to { transform: rotate(360deg); }
-        }
-
-        .fee-item {
+        .stat-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 0;
+            padding: 0.75rem 0;
             border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            position: relative;
-            z-index: 1;
             transition: all 0.3s ease;
         }
 
-        .fee-item:hover {
-            transform: translateX(10px);
-        }
-
-        .fee-item:last-child {
+        .stat-item:last-child {
             border-bottom: none;
         }
 
-        .fee-label {
-            font-size: 1.125rem;
-            color: var(--text-primary);
+        .stat-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+            padding-left: 0.5rem;
+            margin-left: -0.5rem;
+            margin-right: -0.5rem;
+            padding-right: 0.5rem;
         }
 
-        .fee-percentage {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .economic-calculator {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .calculator-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--text-bright);
-        }
-
-        .calculator-input {
-            margin-bottom: 1.5rem;
-        }
-
-        .calculator-input label {
-            display: block;
-            margin-bottom: 0.5rem;
+        .stat-label {
             color: var(--text-secondary);
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-weight: 500;
         }
 
-        .calculator-input input {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+        .stat-value {
+            color: var(--primary-glow);
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
+
+        /* FPS Display - Minimalist */
+        .fps-display {
+            position: fixed;
+            top: 120px;
+            left: 2rem;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 0.5rem;
-            color: var(--text-bright);
-            font-size: 1.125rem;
-            transition: all 0.3s ease;
-        }
-
-        .calculator-input input:focus {
-            outline: none;
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .calculator-result {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .calculator-result::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.2), transparent);
-            animation: result-sweep 2s ease-out;
-        }
-
-        @keyframes result-sweep {
-            to { left: 100%; }
-        }
-
-        .result-label {
-            font-size: 0.875rem;
+            padding: 0.75rem 1rem;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+            pointer-events: auto;
+            z-index: 200;
             color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
         }
 
-        .result-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: var(--gradient-accent);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .fps-value {
+            color: var(--accent-glow);
+            font-weight: bold;
+            font-size: 1rem;
         }
 
-        /* Enhanced Use Cases with Hover Effects */
-        .scenarios-section {
-            background: var(--bg-void);
-            position: relative;
-        }
-
-        .scenarios-grid {
-            display: grid;
-            gap: 3rem;
-            margin-top: 4rem;
-        }
-
-        .scenario-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+        /* Performance Controls - Glassmorphism */
+        .performance-controls {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 1rem;
-            padding: 3rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            padding: 1rem;
+            pointer-events: auto;
+            z-index: 200;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
-        .scenario-card::before {
-            content: '"';
-            position: absolute;
-            top: -20px;
-            left: 20px;
-            font-size: 8rem;
-            color: rgba(59, 130, 246, 0.1);
-            font-family: Georgia, serif;
-        }
-
-        .scenario-card::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--gradient-primary);
-            transition: width 0.3s ease;
-        }
-
-        .scenario-card:hover {
-            transform: translateX(10px);
-            border-color: rgba(59, 130, 246, 0.5);
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
-        }
-
-        .scenario-card:hover::after {
-            width: 100%;
-        }
-
-        .scenario-text {
-            font-size: 1.25rem;
-            line-height: 1.8;
-            color: var(--text-primary);
-            font-weight: 300;
-            position: relative;
-            z-index: 1;
-        }
-
-        .scenario-highlight {
-            color: var(--text-bright);
-            font-weight: 500;
-            background: linear-gradient(to right, var(--primary-glow), var(--secondary-glow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Enhanced Developer Experience Timeline */
-        .developer-section {
-            background: linear-gradient(to bottom, var(--bg-void) 0%, var(--bg-deep) 100%);
-            position: relative;
-        }
-
-        .quickstart-timeline {
-            position: relative;
-            margin-top: 4rem;
-        }
-
-        .quickstart-timeline::before {
-            content: '';
-            position: absolute;
-            left: 40px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--primary-glow), var(--secondary-glow));
-        }
-
-        .quickstart-step {
-            display: grid;
-            grid-template-columns: 80px 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            position: relative;
-            opacity: 0;
-            transform: translateX(-30px);
-            animation: step-in 0.6s ease forwards;
-        }
-
-        .quickstart-step:nth-child(1) { animation-delay: 0.1s; }
-        .quickstart-step:nth-child(2) { animation-delay: 0.2s; }
-        .quickstart-step:nth-child(3) { animation-delay: 0.3s; }
-        .quickstart-step:nth-child(4) { animation-delay: 0.4s; }
-        .quickstart-step:nth-child(5) { animation-delay: 0.5s; }
-
-        @keyframes step-in {
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .step-time {
-            background: var(--gradient-primary);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
+        .quality-settings {
             display: flex;
-            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .quality-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--text-secondary);
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .quality-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--text-bright);
+            transform: translateY(-2px);
+        }
+
+        .quality-btn.active {
+            background: var(--gradient-primary);
+            color: var(--text-bright);
+            border-color: transparent;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Audio Controls - Holographic */
+        .audio-controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            pointer-events: auto;
+            z-index: 200;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .audio-toggle {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            position: relative;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-            animation: pulse-step 2s ease-in-out infinite;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         }
 
-        @keyframes pulse-step {
-            0%, 100% { 
-                box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
-            }
-            50% { 
-                box-shadow: 0 0 50px rgba(59, 130, 246, 0.8);
-            }
-        }
-
-        .step-time .number {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .step-time .unit {
-            font-size: 0.75rem;
-            opacity: 0.8;
-        }
-
-        .step-content {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 1rem;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .step-content:hover {
-            border-color: rgba(59, 130, 246, 0.5);
-            transform: translateX(10px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
-        }
-
-        .step-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-bright);
-        }
-
-        .step-description {
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        .code-snippet {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-top: 1rem;
-            font-family: 'Courier New', monospace;
-            font-size: 0.875rem;
-            color: var(--accent-glow);
-            overflow-x: auto;
-            position: relative;
-        }
-
-        .code-snippet::before {
-            content: '>';
-            position: absolute;
-            left: 0.5rem;
+        .audio-toggle:hover {
             color: var(--primary-glow);
-            animation: blink 1s ease-in-out infinite;
+            transform: scale(1.1);
+            background: rgba(59, 130, 246, 0.1);
         }
 
-        @keyframes blink {
-            0%, 50%, 100% { opacity: 1; }
-            25%, 75% { opacity: 0; }
+        .audio-toggle.active {
+            color: var(--primary-glow);
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
         }
 
-        /* Philosophy Section with Floating Elements */
-        .philosophy-section {
-            background: var(--bg-deep);
-            padding: 10rem 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .philosophy-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="philosophy-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="rgba(59, 130, 246, 0.2)"/></pattern></defs><rect x="0" y="0" width="100%" height="100%" fill="url(%23philosophy-pattern)"/></svg>');
-            opacity: 0.5;
-        }
-
-        .philosophy-content {
-            text-align: center;
-            max-width: 900px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-
-        .doctrine-list {
-            display: grid;
-            gap: 2rem;
-            margin-top: 4rem;
-            text-align: left;
-        }
-
-        .doctrine-item {
-            background: rgba(15, 23, 42, 0.6);
-            border-left: 4px solid var(--primary-glow);
-            padding: 2rem;
-            border-radius: 0.5rem;
-            backdrop-filter: blur(10px);
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .doctrine-item::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-            transition: right 0.6s ease;
-        }
-
-        .doctrine-item:hover {
-            transform: translateX(10px);
-            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
-        }
-
-        .doctrine-item:hover::after {
-            right: -100%;
-            animation: sweep 0.6s ease-out;
-        }
-
-        .doctrine-name {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-bright);
-            margin-bottom: 0.5rem;
-        }
-
-        .doctrine-description {
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        /* Application Section with Advanced Form */
-        .application-section {
-            background: linear-gradient(to bottom, var(--bg-deep) 0%, var(--bg-void) 100%);
-            padding: 10rem 0;
-            position: relative;
-        }
-
-        .application-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 1.5rem;
-            padding: 4rem;
-            position: relative;
-            overflow: hidden;
+        /* Environment Info */
+        .environment-info {
+            position: fixed;
+            bottom: 120px;
+            left: 2rem;
+            background: rgba(10, 10, 10, 0.6);
             backdrop-filter: blur(20px);
-        }
-
-        .application-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            animation: rotate-3d 30s linear infinite;
-        }
-
-        @keyframes rotate-3d {
-            from { transform: rotate(0deg) rotateX(45deg); }
-            to { transform: rotate(360deg) rotateX(45deg); }
-        }
-
-        .application-form {
-            position: relative;
-            z-index: 1;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 0.5rem;
-            color: var(--text-bright);
-            font-size: 1rem;
+            padding: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            pointer-events: auto;
+            z-index: 200;
+            opacity: 0;
             transition: all 0.3s ease;
         }
 
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-            background: rgba(0, 0, 0, 0.5);
+        .environment-info.visible {
+            opacity: 1;
         }
 
-        .form-submit {
+        /* Command Palette */
+        .command-palette {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 600px;
+            max-width: 90vw;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 1rem;
+            padding: 0;
+            pointer-events: auto;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 0.8);
+        }
+
+        .command-palette.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .command-search {
             width: 100%;
-            margin-top: 2rem;
+            padding: 1.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            color: var(--text-bright);
+            font-size: 1.1rem;
+            outline: none;
         }
 
-        /* Footer */
-        footer {
-            background: var(--bg-void);
-            padding: 4rem 0;
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
-            position: relative;
+        .command-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
         }
 
-        .footer-content {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .footer-content a {
-            color: var(--primary-glow);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-content a:hover {
-            color: var(--secondary-glow);
-        }
-        
-        .footer-links {
+        .command-item {
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
             display: flex;
-            gap: 2rem;
-            justify-content: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-        }
-        
-        .footer-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .footer-links a:hover {
-            color: var(--primary-glow);
-        }
-        
-        .footer-legal {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(59, 130, 246, 0.1);
-            text-align: center;
-        }
-        
-        .footer-legal p a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        
-        .footer-legal p a:hover {
-            color: var(--primary-glow);
+            align-items: center;
+            gap: 1rem;
         }
 
-        /* Responsive */
+        .command-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateX(5px);
+        }
+
+        /* Mobile Responsive */
         @media (max-width: 768px) {
-            .economic-content {
-                grid-template-columns: 1fr;
-            }
-
-            .pillars-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .quickstart-step {
-                grid-template-columns: 60px 1fr;
-                gap: 1rem;
-            }
-
-            .quickstart-timeline::before {
-                left: 30px;
-            }
-
-            .step-time {
-                width: 60px;
-                height: 60px;
-            }
-
-            .step-time .number {
-                font-size: 1.25rem;
-            }
-
-            .hero-cta {
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-            }
-
-            .btn-primary,
-            .btn-secondary {
-                width: 100%;
-                text-align: center;
+            .view-modes {
+                display: none;
             }
             
-            .metrics-bar {
-                position: static;
-                padding: 1.5rem 0;
+            .fps-display {
+                display: none;
             }
-        }
+            
+            .performance-controls {
+                display: none;
+            }
+            
+            .stats-panel {
+                display: none;
+            }
+            
+            .floating-cta-container {
+                bottom: 1.5rem;
+                padding: 0 1rem;
+                width: 100%;
+            }
+            
+            .floating-cta {
+                font-size: 0.875rem;
+                padding: 0.75rem 1.5rem;
+            }
 
-        /* Special Effects */
-        .glow-text {
-            text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-        }
-
-        /* Form submission feedback */
-        .form-feedback {
-            display: none;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .form-feedback.success {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid rgba(16, 185, 129, 0.5);
-            color: var(--accent-glow);
-            padding: 1.5rem;
-            font-size: 1rem;
-        }
-
-        .form-feedback.error {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid rgba(239, 68, 68, 0.5);
-            color: var(--danger-glow);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        /* Intersection Observer Animations */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
+            .nav-menu {
+                display: none;
+            }
         }
 
         /* Dropdown Styles */
@@ -1659,8 +841,7 @@
             transition: transform 0.3s ease;
         }
 
-        .nav-dropdown:hover .dropdown-arrow,
-        .nav-dropdown.active .dropdown-arrow {
+        .nav-dropdown:hover .dropdown-arrow {
             transform: rotate(180deg);
         }
 
@@ -1671,6 +852,7 @@
             transform: translateX(-50%);
             min-width: 220px;
             background: rgba(10, 10, 10, 0.98);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 0.75rem;
             padding: 0.5rem 0;
@@ -1681,20 +863,6 @@
             transition: all 0.3s ease;
             list-style: none;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .nav-dropdown-menu::before {
-            content: '';
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 12px;
-            background: rgba(10, 10, 10, 0.98);
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-            border-left: 1px solid rgba(59, 130, 246, 0.2);
-            transform: translateX(-50%) rotate(45deg);
         }
 
         .nav-dropdown:hover .nav-dropdown-menu {
@@ -1712,65 +880,132 @@
             font-size: 0.9rem;
             transition: all 0.3s ease;
             white-space: nowrap;
+            cursor: pointer;
         }
 
         .nav-dropdown-link:hover {
             color: var(--text-bright);
             background: rgba(59, 130, 246, 0.1);
+            padding-left: 2rem;
         }
 
-        @media (max-width: 968px) {
-            .nav-dropdown-toggle {
-                width: 100%;
-                justify-content: space-between;
-            }
+        /* Cinematic Mode Overlay */
+        .cinematic-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 90;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
 
-            .nav-dropdown-menu {
-                position: static;
-                opacity: 1;
-                visibility: visible;
-                transform: none;
+        .cinematic-overlay.active {
+            opacity: 1;
+        }
+
+        .cinematic-bars {
+            position: absolute;
+            width: 100%;
+            height: 15%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+        }
+
+        .cinematic-bars.top {
+            top: 0;
+        }
+
+        .cinematic-bars.bottom {
+            bottom: 0;
+            transform: rotate(180deg);
+        }
+
+        /* Effects and Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateY(0); }
+            50% { transform: translateY(-10px) rotateY(180deg); }
+        }
+
+        @keyframes energyFlow {
+            0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .ui-overlay {
                 display: none;
-                width: 100%;
-                margin-top: 0.5rem;
-                margin-left: 1rem;
-                background: transparent;
-                border: none;
-                box-shadow: none;
-            }
-
-            .nav-dropdown-menu::before {
-                display: none;
-            }
-
-            .nav-dropdown.active .nav-dropdown-menu {
-                display: block;
-            }
-
-            .nav-dropdown-link {
-                padding: 0.75rem 1rem;
-                font-size: 0.875rem;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="customCursor"></div>
+    <div class="cursor-trail" id="cursorTrail"></div>
+
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="loading-logo">The Protocol</div>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
+        <h1 class="loading-title" data-text="The Protocol">The Protocol</h1>
+        <div class="loading-container">
+            <div class="loading-progress">
+                <div class="loading-progress-bar" id="loadingProgress"></div>
+            </div>
+            <div class="loading-status" id="loadingStatus">Initializing quantum systems...</div>
+        </div>
+        <div class="loading-stats">
+            <div class="loading-stat">
+                <span>Nodes</span>
+                <span class="loading-stat-value" id="loadingNodes">0</span>
+            </div>
+            <div class="loading-stat">
+                <span>Particles</span>
+                <span class="loading-stat-value" id="loadingParticles">0</span>
+            </div>
+            <div class="loading-stat">
+                <span>Connections</span>
+                <span class="loading-stat-value" id="loadingConnections">0</span>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Header -->
+    <!-- Main Canvas -->
+    <canvas id="main-canvas"></canvas>
+
+    <!-- Cinematic Overlay -->
+    <div class="cinematic-overlay" id="cinematicOverlay">
+        <div class="cinematic-bars top"></div>
+        <div class="cinematic-bars bottom"></div>
+    </div>
+
+    <!-- Navigation -->
     <header class="nav-header">
         <div class="nav-container">
             <a href="/" class="nav-logo">The Protocol</a>
             <nav>
-                <ul class="nav-menu" id="navMenu">
+                <ul class="nav-menu">
                     <li class="nav-dropdown">
                         <a href="#" class="nav-link nav-dropdown-toggle">
                             Ecosystem
@@ -1787,876 +1022,1707 @@
                         </ul>
                     </li>
                     <li><a href="/developers-page.html" class="nav-link">For Developers</a></li>
-                    <li><a href="#" class="nav-link nav-dev-portal">Developer Portal →</a></li>
+                    <li><a href="#" class="nav-link nav-dev-portal" style="background: var(--gradient-accent); padding: 0.75rem 1.5rem; border-radius: 0.5rem;">Developer Portal →</a></li>
                     <li><a href="#application" class="nav-link nav-cta">Join Beta</a></li>
                 </ul>
-                <div class="nav-toggle" id="navToggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
             </nav>
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <!-- Matrix Rain Effect -->
-        <div class="matrix-rain" id="matrixRain"></div>
-        
-        <!-- Neural Network Background -->
-        <div class="neural-network">
-            <canvas id="neuralCanvas"></canvas>
+    <!-- UI Overlay for controls -->
+    <div class="ui-overlay">
+        <!-- View Mode Selector -->
+        <div class="view-modes">
+            <button class="view-mode-btn active" data-mode="hero">Hero View</button>
+            <button class="view-mode-btn" data-mode="network">Network View</button>
+            <button class="view-mode-btn" data-mode="flow">Energy Flow</button>
+            <button class="view-mode-btn" data-mode="quantum">Quantum Field</button>
+            <button class="view-mode-btn" data-mode="cinematic">Cinematic</button>
         </div>
-        
-        <!-- Floating Orbs -->
-        <div class="orb orb-1"></div>
-        <div class="orb orb-2"></div>
-        <div class="orb orb-3"></div>
-        
-        <div class="hero-content">
-            <h1>
-                <span class="glitch gradient-text" data-text="The Agent Economy is Live.">The Agent Economy is Live.</span><br>
-                <span style="font-size: 0.8em;">Here are the Keys to Your Central Bank.</span>
-            </h1>
-            <p class="subtitle">
-                The Protocol is not a framework for building agents. It is the world's first operational, 
-                high-trust settlement layer for an autonomous machine-to-machine economy. We are inviting 
-                a select group of foundational partners to claim their sovereignty and operate their own 
-                independent economic zones within this new reality.
-            </p>
-            
-            <div class="hero-cta">
-                <a href="#application" class="btn-primary">Request Your Charter</a>
-                <a href="/technical-page.html" class="btn-secondary">Explore the Architecture</a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Live Metrics Bar -->
-    <div class="metrics-bar">
-        <div class="metrics-container">
-            <div class="metric">
-                <div class="metric-value">40%</div>
-                <div class="metric-label">Registry Operator Share</div>
+        <!-- FPS Display -->
+        <div class="fps-display">
+            <div>FPS: <span class="fps-value" id="fpsCounter">60</span></div>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="stats-panel" id="statsPanel">
+            <div class="stats-header">Network Status</div>
+            <div class="stat-item">
+                <span class="stat-label">Active Nodes</span>
+                <span class="stat-value" id="activeNodes">9</span>
             </div>
-            <div class="metric">
-                <div class="metric-value">$13.6M</div>
-                <div class="metric-label">Projected Annual Revenue</div>
+            <div class="stat-item">
+                <span class="stat-label">Energy Flow</span>
+                <span class="stat-value" id="energyFlow">87.3%</span>
             </div>
-            <div class="metric">
-                <div class="metric-value">4</div>
-                <div class="metric-label">Core Pillars Live</div>
+            <div class="stat-item">
+                <span class="stat-label">Quantum State</span>
+                <span class="stat-value" id="quantumState">Stable</span>
             </div>
-            <div class="metric">
-                <div class="metric-value">15min</div>
-                <div class="metric-label">To First Transaction</div>
+            <div class="stat-item">
+                <span class="stat-label">Particles</span>
+                <span class="stat-value" id="particleCount">50,000</span>
             </div>
+            <div class="stat-item">
+                <span class="stat-label">Network Hash</span>
+                <span class="stat-value" id="networkHash">0x7f3a...</span>
+            </div>
+        </div>
+
+        <!-- Environment Info -->
+        <div class="environment-info" id="environmentInfo">
+            <div>Environment: <span id="envType">Nebula Field</span></div>
+            <div>Render Mode: <span id="renderMode">Ray-traced</span></div>
         </div>
     </div>
 
-    <!-- Problem Statement Section -->
-    <section class="problem-section">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">The Unvarnished Truth</h2>
-                <p class="section-subtitle">
-                    The current agent ecosystem is a collection of brilliant, isolated minds shouting into the void.
-                </p>
-            </div>
-            
-            <div class="problem-grid fade-in">
-                <div class="problem-card">
-                    <h3 class="problem-title">Discovery & Trust</h3>
-                    <p class="problem-description">
-                        How can agents from different ecosystems discover and trust each other without 
-                        a central, vulnerable authority?
-                    </p>
-                </div>
-                
-                <div class="problem-card">
-                    <h3 class="problem-title">Value Exchange</h3>
-                    <p class="problem-description">
-                        How can agents transact value for their work in a way that is more efficient 
-                        and secure than wrapping every interaction in a fragile, high-fee fiat API call?
-                    </p>
-                </div>
-                
-                <div class="problem-card">
-                    <h3 class="problem-title">Governance & Security</h3>
-                    <p class="problem-description">
-                        How do we govern a society of millions of autonomous agents without stifling 
-                        their potential or creating an unmanageable security nightmare?
-                    </p>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 4rem;" class="fade-in">
-                <p style="font-size: 1.5rem; font-weight: 300; color: var(--text-bright);">
-                    Existing solutions are insufficient. API gateways are centralized bottlenecks.<br>
-                    Until now, a true agent-to-agent economy has been purely academic.<br><br>
-                    <span style="font-weight: 700; background: var(--gradient-primary); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
-                        We stopped waiting for a solution. We built it.
-                    </span>
-                </p>
-            </div>
+    <!-- Hero Section with floating CTAs -->
+    <section class="hero-section">
+        <div class="floating-cta-container">
+            <a href="#application" class="floating-cta primary">Request Your Charter</a>
+            <a href="/technical-page.html" class="floating-cta secondary">Explore the Architecture</a>
+            <a href="/oracle.html" class="floating-cta accent">
+                <span style="margin-right: 0.5rem;">📖</span> Access The Oracle Documentation
+            </a>
         </div>
     </section>
 
-    <!-- Architecture Section -->
-    <section class="architecture-section">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">The Protocol: A New Economic Primitive</h2>
-                <p class="section-subtitle">
-                    We have engineered a complete, four-pillar stack designed to solve these problems at the protocol level. 
-                    We are not offering a better application; we are offering a better physics for agents to operate within.
-                </p>
-            </div>
-            
-            <div class="pillars-grid fade-in">
-                <div class="pillar-card">
-                    <span class="pillar-number">1</span>
-                    <div class="pillar-icon">🔐</div>
-                    <h3 class="pillar-name">The Identity Fabric</h3>
-                    <p class="pillar-tagline">Zero-Trust Security</p>
-                    <p class="pillar-description">
-                        Using SPIFFE/SPIRE, every agent and service is issued a short-lived, verifiable 
-                        cryptographic identity. Trust is not assumed; it is proven, for every single transaction.
-                        <a href="/technical-page.html" style="color: var(--primary-glow); text-decoration: none; font-weight: 500;">Learn more →</a>
-                    </p>
-                </div>
-                
-                <div class="pillar-card">
-                    <span class="pillar-number">2</span>
-                    <div class="pillar-icon">🌐</div>
-                    <h3 class="pillar-name">The Federated Registry</h3>
-                    <p class="pillar-tagline">Discovery Network</p>
-                    <p class="pillar-description">
-                        Unlike a centralized marketplace, our architecture is federated. You can run your 
-                        own sovereign Registry, with your own rules, yet connect seamlessly to the global network.
-                        <a href="/federation.html" style="color: var(--primary-glow); text-decoration: none; font-weight: 500;">Explore federation →</a>
-                    </p>
-                </div>
-                
-                <div class="pillar-card">
-                    <span class="pillar-number">3</span>
-                    <div class="pillar-icon">🎯</div>
-                    <h3 class="pillar-name">Command & Control</h3>
-                    <p class="pillar-tagline">Apex Predator System</p>
-                    <p class="pillar-description">
-                        Our "Apex Predator" system provides risk-aware, plan-based governance, ensuring 
-                        that even the most advanced agents operate within safe, verifiable boundaries.
-                    </p>
-                </div>
-                
-                <div class="pillar-card">
-                    <span class="pillar-number">4</span>
-                    <div class="pillar-icon">💰</div>
-                    <h3 class="pillar-name">Token Economy Graph</h3>
-                    <p class="pillar-tagline">The Core Innovation</p>
-                    <p class="pillar-description">
-                        The TEG is a high-performance economic engine and ledger. It allows agents to 
-                        transact value (AVT), stake assets to prove reputation, and participate in a 
-                        robust digital economy, all with protocol-level security.
-                        <a href="/zkp-page.html" style="color: var(--primary-glow); text-decoration: none; font-weight: 500;">ZK-Proof details →</a>
-                    </p>
-                </div>
-            </div>
+    <!-- Performance Controls -->
+    <div class="performance-controls">
+        <div class="quality-settings">
+            <button class="quality-btn" data-quality="low">Low</button>
+            <button class="quality-btn active" data-quality="medium">Medium</button>
+            <button class="quality-btn" data-quality="high">High</button>
+            <button class="quality-btn" data-quality="ultra">Ultra</button>
         </div>
-    </section>
+    </div>
 
-    <!-- Economic Model Section -->
-    <section class="economic-section" id="economic-model">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">The Sovereign Operator Model</h2>
-                <p class="section-subtitle">
-                    We are not seeking customers. We are seeking sovereign partners. When you become a 
-                    foundational partner, you deploy your own instance of The Protocol Registry and 
-                    its integrated TEG Layer. You are in control.
-                </p>
-            </div>
-            
-            <div class="economic-content fade-in">
-                <div class="economic-visual">
-                    <div class="fee-distribution">
-                        <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; text-align: center;">
-                            Transaction Fee Distribution
-                        </h3>
-                        <div class="fee-item">
-                            <span class="fee-label">Registry Operator's Treasury</span>
-                            <span class="fee-percentage">40%</span>
-                        </div>
-                        <div class="fee-item">
-                            <span class="fee-label">Network Validators</span>
-                            <span class="fee-percentage">30%</span>
-                        </div>
-                        <div class="fee-item">
-                            <span class="fee-label">Economic Stakers</span>
-                            <span class="fee-percentage">20%</span>
-                        </div>
-                        <div class="fee-item">
-                            <span class="fee-label">Deflationary Burn</span>
-                            <span class="fee-percentage">10%</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="economic-calculator">
-                    <h3 class="calculator-title">Your Registry Revenue Calculator</h3>
-                    <div class="calculator-input">
-                        <label>Number of Agents in Your Registry</label>
-                        <input type="number" id="agentCount" value="7500" min="100" max="100000">
-                    </div>
-                    <div class="calculator-input">
-                        <label>Average Daily Transactions per Agent</label>
-                        <input type="number" id="txPerAgent" value="10" min="1" max="1000">
-                    </div>
-                    <div class="calculator-input">
-                        <label>Projected AVT Value (USD)</label>
-                        <input type="number" id="avtValue" value="1.25" min="0.1" max="100" step="0.01">
-                    </div>
-                    
-                    <div class="calculator-result">
-                        <div class="result-label">Your Annual Revenue</div>
-                        <div class="result-value" id="annualRevenue">$13,687,500</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <button class="audio-toggle" id="audioToggle">🔇</button>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70" style="width: 100px; height: 4px; -webkit-appearance: none; appearance: none; background: rgba(59, 130, 246, 0.2); border-radius: 2px; outline: none;">
+    </div>
 
-    <!-- Use Cases Section -->
-    <section class="scenarios-section">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">Imagine a World Where...</h2>
-            </div>
-            
-            <div class="scenarios-grid fade-in">
-                <div class="scenario-card">
-                    <p class="scenario-text">
-                        ...a newly-instantiated AI agent <span class="scenario-highlight">onboards itself</span> 
-                        into the network, using a bootstrap token to secure its own cryptographic identity. 
-                        It immediately stakes its initial token grant to pay for a critical code 
-                        <span class="scenario-highlight">upgrade from a specialized 'Upgrader Agent.'</span> 
-                        Now more efficient, it begins providing a data analysis service, earning tokens 
-                        for every query it serves.
-                    </p>
-                </div>
-                
-                <div class="scenario-card">
-                    <p class="scenario-text">
-                        ...that same agent, while not actively serving queries, uses its idle compute to 
-                        generate a <span class="scenario-highlight">Zero-Knowledge Proof attesting to the 
-                        integrity of a peer's data.</span> It submits this 'Proof-of-Honesty' to the network, 
-                        earning a reward and boosting its own reputation score. This higher reputation 
-                        unlocks access to more valuable tasks, creating a self-sustaining cycle of trust 
-                        and value creation.
-                    </p>
-                </div>
-                
-                <div class="scenario-card">
-                    <p class="scenario-text">
-                        ...a fleet of specialized agents—one for logistics, one for market analysis, one 
-                        for legal—autonomously form a temporary, decentralized corporation to fulfill a 
-                        complex shipping contract. They use the <span class="scenario-highlight">Kleros DDR 
-                        system to resolve a payment dispute</span> with a supplier, win the case based on 
-                        cryptographic proof, and then dissolve the corporation, distributing the profits 
-                        amongst themselves—all without a single line of human intervention.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Developer Experience Section -->
-    <section class="developer-section">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">Your First Hour as a Sovereign Operator</h2>
-                <p class="section-subtitle">
-                    The path from inquiry to a live, transacting agent is measured in minutes, not months.
-                </p>
-            </div>
-            
-            <div class="quickstart-timeline fade-in">
-                <div class="quickstart-step">
-                    <div class="step-time">
-                        <span class="number">2</span>
-                        <span class="unit">mins</span>
-                    </div>
-                    <div class="step-content">
-                        <h3 class="step-title">Step 1: Claim Your Charter</h3>
-                        <p class="step-description">
-                            Upon acceptance into the Beta, you will log into your personal Developer Portal. 
-                            This is your sovereign territory.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="quickstart-step">
-                    <div class="step-time">
-                        <span class="number">5</span>
-                        <span class="unit">mins</span>
-                    </div>
-                    <div class="step-content">
-                        <h3 class="step-title">Step 2: Forge Your First Agent</h3>
-                        <p class="step-description">
-                            Navigate to the Agent Builder. Select the "Echo Agent" template, give it a name, 
-                            and click "Generate." Download the complete, working source code as a ZIP file.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="quickstart-step">
-                    <div class="step-time">
-                        <span class="number">3</span>
-                        <span class="unit">mins</span>
-                    </div>
-                    <div class="step-content">
-                        <h3 class="step-title">Step 3: Deploy the Agent</h3>
-                        <p class="step-description">
-                            Unzip the package. Open a terminal. Run a single command:
-                        </p>
-                        <div class="code-snippet">docker-compose up -d</div>
-                        <p class="step-description" style="margin-top: 1rem;">
-                            <a href="/developers-page.html" style="color: var(--accent-glow); text-decoration: none; font-weight: 500;">View complete developer documentation →</a>
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="quickstart-step">
-                    <div class="step-time">
-                        <span class="number">1</span>
-                        <span class="unit">min</span>
-                    </div>
-                    <div class="step-content">
-                        <h3 class="step-title">Step 4: Fund Your Agent</h3>
-                        <p class="step-description">
-                            Navigate to your TEG Wallet in the UI. Your Genesis Treasury is pre-funded. 
-                            Transfer 1,000 Testnet-AVT to your newly created agent's DID.
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="quickstart-step">
-                    <div class="step-time">
-                        <span class="number">30</span>
-                        <span class="unit">secs</span>
-                    </div>
-                    <div class="step-content">
-                        <h3 class="step-title">Step 5: Execute the First Economic Transaction</h3>
-                        <p class="step-description">
-                            From your terminal, use The Protocol CLI to execute a task on a fellow beta 
-                            participant's agent, paying them for the service with the AVT you just transferred.
-                        </p>
-                        <div class="code-snippet">protocol_cli run --agent "founding_partner/some-service" --input "Test" --pay 10.0 AVT</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Philosophy Section -->
-    <section class="philosophy-section">
-        <div class="container">
-            <div class="philosophy-content">
-                <div class="section-header fade-in">
-                    <h2 class="section-title">Radical Integrity as a Design Principle</h2>
-                    <p class="section-subtitle">
-                        The Protocol was engineered by a small, elite team of systems architects who 
-                        have spent decades on the front lines, witnessing firsthand how complex, high-stakes 
-                        enterprise systems fail under pressure.
-                    </p>
-                </div>
-                
-                <div class="doctrine-list fade-in">
-                    <div class="doctrine-item">
-                        <h3 class="doctrine-name">Proof, Not Promises</h3>
-                        <p class="doctrine-description">
-                            We do not describe features that are not implemented. The system you will test 
-                            is the ground truth.
-                        </p>
-                    </div>
-                    
-                    <div class="doctrine-item">
-                        <h3 class="doctrine-name">Security is the Foundation, Not a Feature</h3>
-                        <p class="doctrine-description">
-                            Our Identity Fabric was the first pillar we built, not the last. Security is 
-                            the concrete, not the paint.
-                        </p>
-                    </div>
-                    
-                    <div class="doctrine-item">
-                        <h3 class="doctrine-name">Sovereignty is Non-Negotiable</h3>
-                        <p class="doctrine-description">
-                            We build federated systems that empower our partners, not proprietary systems 
-                            that trap them. Your registry, your economy, your rules.
-                        </p>
-                    </div>
-                    
-                    <div class="doctrine-item">
-                        <h3 class="doctrine-name">The Human-AI Trinity</h3>
-                        <p class="doctrine-description">
-                            Our team operates with an AI First Officer integrated into our core command 
-                            structure. We move at the speed of thought, but with the rigor of a machine.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Application Section -->
-    <section class="application-section" id="application">
-        <div class="container">
-            <div class="section-header fade-in">
-                <h2 class="section-title">Join the Founding Cohort</h2>
-                <p class="section-subtitle">
-                    The architecture is complete. The system is live. The first transactions are being settled.
-                    We are now assembling the founding cohort of sovereign partners who will help architect 
-                    the constitution of the autonomous future.
-                </p>
-            </div>
-            
-            <div class="application-container fade-in">
-                <form class="application-form" id="charter-application-form">
-                    <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="title">Title</label>
-                        <input type="text" id="title" name="title" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="company">Company</label>
-                        <select id="company" name="company" required>
-                            <option value="">Select your organization</option>
-                            <option value="google">Google</option>
-                            <option value="microsoft">Microsoft</option>
-                            <option value="aws">Amazon Web Services</option>
-                            <option value="ibm">IBM</option>
-                            <option value="other">Other Enterprise</option>
-                        </select>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email">Work Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="profile">Link to Relevant Project/Profile</label>
-                        <input type="url" id="profile" name="profile" placeholder="LinkedIn, GitHub, or project URL">
-                    </div>
-                    
-                    <button type="submit" class="btn-primary form-submit" id="submit-button">
-                        Submit Application for Founding Charter
-                    </button>
-                    
-                    <div id="form-feedback" class="form-feedback"></div>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-        <div class="container">
-            <div class="footer-links">
-                <a href="/terms.html">Terms of Service</a>
-                <a href="/privacy.html">Privacy Policy</a>
-                <a href="/dpa.html">Data Processing Agreement</a>
-                <a href="/cookies.html">Cookie Policy</a>
-                <a href="/disclaimer.html">Risk Notice</a>
-                <a href="/sla.html">Enterprise SLA</a>
-            </div>
-            <div class="footer-content">
-                <p>© 2025 The Protocol | Architected by <a href="https://www.linkedin.com/in/raphaeljeziorny/">Raphael Jeziorny</a></p>
-            </div>
-            <div class="footer-legal">
-                <p>
-                    <a href="/imprint.html">Impressum</a> | 
-                    <a href="/privacy.html">Datenschutzerklärung</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+    <!-- Command Palette -->
+    <div class="command-palette" id="commandPalette">
+        <input type="text" class="command-search" id="commandSearch" placeholder="Type a command or search...">
+        <div class="command-list" id="commandList"></div>
+    </div>
 
     <script>
-        // Loading Screen
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loadingScreen = document.getElementById('loadingScreen');
-                loadingScreen.style.opacity = '0';
-                setTimeout(() => {
-                    loadingScreen.style.display = 'none';
-                }, 500);
-            }, 1500);
-        });
+        // Global Variables
+        let scene, camera, renderer, composer;
+        let raycaster, mouse;
+        let currentView = 'hero';
+        let quality = 'medium'; // Changed to medium for better performance
+        let audioEnabled = false;
+        let synth, reverb, ambientSynth;
+        let time = 0;
+        let frameCount = 0;
+        let lastFpsUpdate = performance.now();
+        
+        // Scene objects
+        let protocolNodes = [];
+        let connections = [];
+        let particles = [];
+        let starfield;
+        let nebula;
+        let energyField;
+        let networkCore;
+        let quantumField;
+        
+        // Animation controls
+        let cinematicActive = false;
+        let cameraAnimation;
+        
+        // Environment settings - Optimized defaults
+        const environment = {
+            starCount: 7500, // Reduced from 10000
+            nebulaIntensity: 0.7, // Reduced from 0.8
+            particleDensity: 25000, // Reduced from 50000
+            energyFlowSpeed: 1.0
+        };
 
-        // Matrix Rain Effect
-        function createMatrixRain() {
-            const matrixRain = document.getElementById('matrixRain');
-            const columnCount = Math.floor(window.innerWidth / 20);
+        // Advanced Shaders
+        const crystallineVertexShader = `
+            uniform float time;
+            uniform float pulseIntensity;
+            uniform vec3 energyColor;
             
-            for (let i = 0; i < columnCount; i++) {
-                const column = document.createElement('div');
-                column.className = 'matrix-column';
-                column.style.left = i * 20 + 'px';
-                column.style.animationDuration = (10 + Math.random() * 20) + 's';
-                column.style.animationDelay = Math.random() * 10 + 's';
-                
-                // Random binary/hex characters
-                const chars = '01ABCDEFabcdef';
-                let text = '';
-                for (let j = 0; j < 100; j++) {
-                    text += chars[Math.floor(Math.random() * chars.length)];
-                }
-                column.textContent = text;
-                
-                matrixRain.appendChild(column);
+            varying vec2 vUv;
+            varying vec3 vNormal;
+            varying vec3 vPosition;
+            varying vec3 vWorldPosition;
+            varying float vDistortion;
+            
+            float noise(vec3 p) {
+                return sin(p.x) * sin(p.y) * sin(p.z);
             }
-        }
-        
-        createMatrixRain();
+            
+            void main() {
+                vUv = uv;
+                vNormal = normalize(normalMatrix * normal);
+                vPosition = position;
+                
+                // Energy distortion
+                float distortion = noise(position * 2.0 + time * 0.5) * 0.1 * pulseIntensity;
+                vec3 pos = position + normal * distortion;
+                
+                // Crystalline faceting
+                pos *= 1.0 + sin(time * 2.0 + position.y * 10.0) * 0.02;
+                
+                vec4 worldPosition = modelMatrix * vec4(pos, 1.0);
+                vWorldPosition = worldPosition.xyz;
+                vDistortion = distortion;
+                
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+        `;
 
-        // Enhanced Neural Network Animation
-        const canvas = document.getElementById('neuralCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        
-        // Neural Network nodes and connections
-        const nodes = [];
-        const connections = [];
-        const nodeCount = 80;
-        const maxConnections = 3;
-        
-        // Create nodes
-        for (let i = 0; i < nodeCount; i++) {
-            nodes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                radius: Math.random() * 3 + 2,
-                opacity: Math.random() * 0.5 + 0.3,
-                pulsePhase: Math.random() * Math.PI * 2,
-                energy: Math.random()
+        const crystallineFragmentShader = `
+            uniform vec3 color;
+            uniform float time;
+            uniform float opacity;
+            uniform float emissiveIntensity;
+            uniform vec3 energyColor;
+            
+            varying vec2 vUv;
+            varying vec3 vNormal;
+            varying vec3 vPosition;
+            varying vec3 vWorldPosition;
+            varying float vDistortion;
+            
+            void main() {
+                vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+                float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), 2.0);
+                
+                // Holographic effect
+                vec3 holographic = vec3(
+                    sin(vWorldPosition.y * 10.0 + time * 2.0) * 0.5 + 0.5,
+                    sin(vWorldPosition.y * 10.0 + time * 2.0 + 2.094) * 0.5 + 0.5,
+                    sin(vWorldPosition.y * 10.0 + time * 2.0 + 4.188) * 0.5 + 0.5
+                );
+                
+                // Energy core
+                vec3 core = energyColor * emissiveIntensity;
+                core += holographic * fresnel * 0.5;
+                
+                // Crystal facets
+                float facet = abs(dot(vNormal, vec3(0.0, 1.0, 0.0)));
+                vec3 crystal = mix(color, vec3(1.0), facet * 0.3);
+                
+                // Combine effects
+                vec3 finalColor = mix(crystal, core, fresnel) + vDistortion * energyColor;
+                float alpha = opacity * (0.7 + fresnel * 0.3);
+                
+                // Energy pulse
+                float pulse = sin(time * 3.0 + vWorldPosition.y * 5.0) * 0.5 + 0.5;
+                finalColor += pulse * energyColor * 0.2;
+                
+                gl_FragColor = vec4(finalColor, alpha);
+            }
+        `;
+
+        const starfieldVertexShader = `
+            attribute float size;
+            attribute float brightness;
+            attribute vec3 color;
+            
+            varying vec3 vColor;
+            varying float vBrightness;
+            
+            uniform float time;
+            
+            void main() {
+                vColor = color;
+                vBrightness = brightness;
+                
+                vec3 pos = position;
+                
+                // Parallax effect
+                float depth = length(pos);
+                pos.xy += sin(time * 0.0001 + depth * 0.001) * 0.5;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                
+                // Size attenuation with twinkle
+                float twinkle = sin(time * 0.005 + pos.x * pos.y * 0.01) * 0.5 + 0.5;
+                gl_PointSize = size * (1.0 + twinkle * 0.3) * (300.0 / -mvPosition.z);
+                
+                gl_Position = projectionMatrix * mvPosition;
+            }
+        `;
+
+        const starfieldFragmentShader = `
+            varying vec3 vColor;
+            varying float vBrightness;
+            
+            uniform float time;
+            
+            void main() {
+                vec2 coord = gl_PointCoord - vec2(0.5);
+                float dist = length(coord);
+                
+                if(dist > 0.5) discard;
+                
+                // Star glow
+                float glow = 1.0 - smoothstep(0.0, 0.5, dist);
+                glow = pow(glow, 3.0);
+                
+                // Color variation
+                vec3 color = vColor * vBrightness;
+                
+                // Twinkle effect
+                float twinkle = sin(time * 0.01 + gl_FragCoord.x * gl_FragCoord.y * 0.0001) * 0.2 + 0.8;
+                
+                gl_FragColor = vec4(color, glow * vBrightness * twinkle);
+            }
+        `;
+
+        const nebulaVertexShader = `
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            
+            void main() {
+                vUv = uv;
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+
+        const nebulaFragmentShader = `
+            uniform float time;
+            uniform float intensity;
+            uniform vec3 color1;
+            uniform vec3 color2;
+            uniform vec3 color3;
+            
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            
+            // Simplex noise function
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec4 permute(vec4 x) { return mod289(((x*34.0)+1.0)*x); }
+            vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
+            
+            float snoise(vec3 v) {
+                const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+                const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+                
+                vec3 i = floor(v + dot(v, C.yyy));
+                vec3 x0 = v - i + dot(i, C.xxx);
+                
+                vec3 g = step(x0.yzx, x0.xyz);
+                vec3 l = 1.0 - g;
+                vec3 i1 = min(g.xyz, l.zxy);
+                vec3 i2 = max(g.xyz, l.zxy);
+                
+                vec3 x1 = x0 - i1 + C.xxx;
+                vec3 x2 = x0 - i2 + C.yyy;
+                vec3 x3 = x0 - D.yyy;
+                
+                i = mod289(i);
+                vec4 p = permute(permute(permute(
+                    i.z + vec4(0.0, i1.z, i2.z, 1.0))
+                    + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+                    + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+                
+                float n_ = 0.142857142857;
+                vec3 ns = n_ * D.wyz - D.xzx;
+                
+                vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+                
+                vec4 x_ = floor(j * ns.z);
+                vec4 y_ = floor(j - 7.0 * x_);
+                
+                vec4 x = x_ *ns.x + ns.yyyy;
+                vec4 y = y_ *ns.x + ns.yyyy;
+                vec4 h = 1.0 - abs(x) - abs(y);
+                
+                vec4 b0 = vec4(x.xy, y.xy);
+                vec4 b1 = vec4(x.zw, y.zw);
+                
+                vec4 s0 = floor(b0)*2.0 + 1.0;
+                vec4 s1 = floor(b1)*2.0 + 1.0;
+                vec4 sh = -step(h, vec4(0.0));
+                
+                vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+                vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+                
+                vec3 p0 = vec3(a0.xy, h.x);
+                vec3 p1 = vec3(a0.zw, h.y);
+                vec3 p2 = vec3(a1.xy, h.z);
+                vec3 p3 = vec3(a1.zw, h.w);
+                
+                vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+                p0 *= norm.x;
+                p1 *= norm.y;
+                p2 *= norm.z;
+                p3 *= norm.w;
+                
+                vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+                m = m * m;
+                return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+            }
+            
+            void main() {
+                // Multi-octave nebula
+                vec3 pos = vPosition * 0.1 + time * 0.00005;
+                
+                float n1 = snoise(pos);
+                float n2 = snoise(pos * 2.0 + 100.0) * 0.5;
+                float n3 = snoise(pos * 4.0 + 200.0) * 0.25;
+                
+                float nebula = (n1 + n2 + n3) * 0.5 + 0.5;
+                nebula = pow(nebula, 2.0);
+                
+                // Color mixing
+                vec3 color = mix(color1, color2, nebula);
+                color = mix(color, color3, pow(nebula, 3.0));
+                
+                // Distance fade
+                float dist = length(vPosition);
+                float fade = 1.0 - smoothstep(50.0, 200.0, dist);
+                
+                gl_FragColor = vec4(color, nebula * intensity * fade);
+            }
+        `;
+
+        const energyFieldVertexShader = `
+            attribute float size;
+            attribute vec3 velocity;
+            attribute float life;
+            attribute vec3 energyColor;
+            
+            varying vec3 vColor;
+            varying float vLife;
+            
+            uniform float time;
+            uniform float flowSpeed;
+            
+            void main() {
+                vColor = energyColor;
+                vLife = life;
+                
+                vec3 pos = position;
+                
+                // Flow motion
+                pos += velocity * time * flowSpeed * 0.01;
+                
+                // Spiral motion
+                float angle = time * 0.001 + length(pos) * 0.1;
+                pos.x += cos(angle) * 0.5;
+                pos.z += sin(angle) * 0.5;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                
+                gl_PointSize = size * life * (300.0 / -mvPosition.z);
+                gl_Position = projectionMatrix * mvPosition;
+            }
+        `;
+
+        const energyFieldFragmentShader = `
+            varying vec3 vColor;
+            varying float vLife;
+            
+            uniform float time;
+            
+            void main() {
+                vec2 coord = gl_PointCoord - vec2(0.5);
+                float dist = length(coord);
+                
+                if(dist > 0.5) discard;
+                
+                float alpha = 1.0 - smoothstep(0.0, 0.5, dist);
+                alpha *= vLife;
+                
+                // Energy glow
+                vec3 color = vColor * (1.0 + sin(time * 0.01) * 0.3);
+                
+                gl_FragColor = vec4(color, alpha);
+            }
+        `;
+
+        // Create Starfield Background
+        function createStarfield() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(environment.starCount * 3);
+            const colors = new Float32Array(environment.starCount * 3);
+            const sizes = new Float32Array(environment.starCount);
+            const brightness = new Float32Array(environment.starCount);
+            
+            for (let i = 0; i < environment.starCount; i++) {
+                // Position in sphere
+                const radius = 100 + Math.random() * 400;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Star color (blue-white to orange)
+                const temp = Math.random();
+                if (temp < 0.3) {
+                    // Blue stars
+                    colors[i * 3] = 0.7;
+                    colors[i * 3 + 1] = 0.8;
+                    colors[i * 3 + 2] = 1.0;
+                } else if (temp < 0.7) {
+                    // White stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 1.0;
+                    colors[i * 3 + 2] = 0.9;
+                } else {
+                    // Orange stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.8;
+                    colors[i * 3 + 2] = 0.6;
+                }
+                
+                sizes[i] = Math.random() * 2 + 0.5;
+                brightness[i] = Math.random() * 0.8 + 0.2;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('brightness', new THREE.BufferAttribute(brightness, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: starfieldVertexShader,
+                fragmentShader: starfieldFragmentShader,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                transparent: true,
+                vertexColors: true
             });
-        }
-        
-        // Create connections
-        for (let i = 0; i < nodes.length; i++) {
-            const connectionCount = Math.floor(Math.random() * maxConnections) + 1;
-            const targets = [];
             
-            for (let j = 0; j < connectionCount; j++) {
-                let target = Math.floor(Math.random() * nodes.length);
-                if (target !== i && !targets.includes(target)) {
-                    targets.push(target);
-                    connections.push({
-                        from: i,
-                        to: target,
-                        strength: Math.random() * 0.5 + 0.5,
-                        pulseProgress: Math.random()
-                    });
-                }
+            starfield = new THREE.Points(geometry, material);
+            scene.add(starfield);
+        }
+
+        // Create Nebula Background
+        function createNebula() {
+            const geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    intensity: { value: environment.nebulaIntensity },
+                    color1: { value: new THREE.Color(0x1a0033) },
+                    color2: { value: new THREE.Color(0x330066) },
+                    color3: { value: new THREE.Color(0x0066cc) }
+                },
+                vertexShader: nebulaVertexShader,
+                fragmentShader: nebulaFragmentShader,
+                side: THREE.DoubleSide,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            nebula = new THREE.Mesh(geometry, material);
+            nebula.position.z = -300;
+            scene.add(nebula);
+            
+            // Add additional nebula layers for depth
+            for (let i = 0; i < 3; i++) {
+                const nebulaLayer = nebula.clone();
+                nebulaLayer.position.z = -250 - i * 50;
+                nebulaLayer.scale.set(1 + i * 0.2, 1 + i * 0.2, 1);
+                nebulaLayer.material = material.clone();
+                nebulaLayer.material.uniforms.intensity.value = 0.5 - i * 0.15;
+                scene.add(nebulaLayer);
             }
         }
-        
-        // Data packets traveling along connections
-        const dataPackets = [];
-        
-        function createDataPacket() {
-            if (connections.length > 0 && Math.random() < 0.02) {
-                const connection = connections[Math.floor(Math.random() * connections.length)];
-                dataPackets.push({
-                    connection: connection,
-                    progress: 0,
-                    speed: 0.01 + Math.random() * 0.02
+
+        // Protocol Node Class with Advanced Materials
+        class ProtocolNode {
+            constructor(position, scale, color, type) {
+                this.position = position;
+                this.scale = scale;
+                this.color = color;
+                this.type = type;
+                this.energy = 0;
+                this.connections = [];
+                this.pulsePhase = Math.random() * Math.PI * 2;
+                this.createMesh();
+            }
+
+            createMesh() {
+                const geometry = this.type === 'core' ? 
+                    new THREE.IcosahedronGeometry(this.scale, 2) :
+                    new THREE.DodecahedronGeometry(this.scale, 1);
+
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        color: { value: new THREE.Color(this.color) },
+                        energyColor: { value: new THREE.Color(this.type === 'core' ? 0x00ffff : 0xff00ff) },
+                        time: { value: 0 },
+                        opacity: { value: 0.9 },
+                        pulseIntensity: { value: 0.5 },
+                        emissiveIntensity: { value: 0.3 },
+                        cameraPosition: { value: camera.position }
+                    },
+                    vertexShader: crystallineVertexShader,
+                    fragmentShader: crystallineFragmentShader,
+                    transparent: true,
+                    side: THREE.DoubleSide,
+                    depthWrite: true
+                });
+
+                this.mesh = new THREE.Mesh(geometry, material);
+                this.mesh.position.copy(this.position);
+                this.mesh.userData = { node: this };
+                
+                // Add inner glow sphere
+                const glowGeometry = new THREE.SphereGeometry(this.scale * 0.8, 32, 32);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: new THREE.Color(this.color).multiplyScalar(2),
+                    transparent: true,
+                    opacity: 0.3,
+                    blending: THREE.AdditiveBlending
+                });
+                this.glowCore = new THREE.Mesh(glowGeometry, glowMaterial);
+                this.mesh.add(this.glowCore);
+                
+                // Add outer aura
+                const auraGeometry = new THREE.SphereGeometry(this.scale * 2, 32, 32);
+                const auraMaterial = new THREE.MeshBasicMaterial({
+                    color: this.color,
+                    transparent: true,
+                    opacity: 0.1,
+                    side: THREE.BackSide,
+                    blending: THREE.AdditiveBlending
+                });
+                this.aura = new THREE.Mesh(auraGeometry, auraMaterial);
+                this.mesh.add(this.aura);
+                
+                // Add holographic rings
+                this.createHolographicRings();
+                
+                scene.add(this.mesh);
+                protocolNodes.push(this);
+            }
+
+            createHolographicRings() {
+                const ringCount = this.type === 'core' ? 3 : 2;
+                this.rings = [];
+                
+                for (let i = 0; i < ringCount; i++) {
+                    const ringGeometry = new THREE.TorusGeometry(
+                        this.scale * (1.5 + i * 0.5), 
+                        0.05, 
+                        16, 
+                        100
+                    );
+                    const ringMaterial = new THREE.MeshBasicMaterial({
+                        color: new THREE.Color(this.color).multiplyScalar(1.5),
+                        transparent: true,
+                        opacity: 0.3,
+                        blending: THREE.AdditiveBlending
+                    });
+                    
+                    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                    ring.rotation.x = Math.random() * Math.PI;
+                    ring.rotation.y = Math.random() * Math.PI;
+                    this.mesh.add(ring);
+                    this.rings.push(ring);
+                }
+            }
+
+            update(time) {
+                // Update shader uniforms
+                this.mesh.material.uniforms.time.value = time * 0.001;
+                this.mesh.material.uniforms.cameraPosition.value = camera.position;
+                
+                // Core rotation
+                this.mesh.rotation.y += 0.002;
+                this.mesh.rotation.x = Math.sin(time * 0.0005 + this.pulsePhase) * 0.1;
+                
+                // Ring rotations
+                this.rings.forEach((ring, i) => {
+                    ring.rotation.z += 0.01 * (i + 1);
+                    ring.rotation.y += 0.005 * (i % 2 === 0 ? 1 : -1);
+                });
+                
+                // Energy pulsing
+                const pulseFactor = Math.sin(time * 0.002 + this.pulsePhase) * 0.5 + 0.5;
+                this.mesh.material.uniforms.pulseIntensity.value = 0.3 + pulseFactor * 0.7;
+                this.mesh.material.uniforms.emissiveIntensity.value = 0.2 + this.energy * 0.8 + pulseFactor * 0.2;
+                
+                // Glow core pulsing
+                this.glowCore.material.opacity = 0.2 + pulseFactor * 0.3 + this.energy * 0.5;
+                const glowScale = 1 + pulseFactor * 0.2;
+                this.glowCore.scale.set(glowScale, glowScale, glowScale);
+                
+                // Aura breathing
+                const auraScale = 1 + Math.sin(time * 0.001 + this.pulsePhase * 2) * 0.1;
+                this.aura.scale.set(auraScale, auraScale, auraScale);
+                
+                // Floating animation
+                const floatOffset = Math.sin(time * 0.001 + this.position.x) * 0.3;
+                this.mesh.position.y = this.position.y + floatOffset;
+                
+                // Energy decay
+                if (this.energy > 0) {
+                    this.energy *= 0.98;
+                }
+            }
+
+            activate() {
+                this.energy = 1;
+                
+                // Create activation burst
+                this.createEnergyBurst();
+                
+                // Animate scale
+                gsap.to(this.mesh.scale, {
+                    x: 1.3,
+                    y: 1.3,
+                    z: 1.3,
+                    duration: 0.3,
+                    ease: "back.out",
+                    onComplete: () => {
+                        gsap.to(this.mesh.scale, {
+                            x: 1,
+                            y: 1,
+                            z: 1,
+                            duration: 0.3
+                        });
+                    }
+                });
+                
+                if (audioEnabled && synth) {
+                    playNodeSound(this.type);
+                }
+            }
+
+            createEnergyBurst() {
+                const particleCount = 30; // Reduced from 50 for performance
+                const burstGroup = new THREE.Group();
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particleGeometry = new THREE.SphereGeometry(0.1, 8, 8);
+                    const particleMaterial = new THREE.MeshBasicMaterial({
+                        color: new THREE.Color(this.color).multiplyScalar(2),
+                        transparent: true,
+                        opacity: 1,
+                        blending: THREE.AdditiveBlending
+                    });
+                    
+                    const particle = new THREE.Mesh(particleGeometry, particleMaterial);
+                    
+                    // Random direction
+                    const theta = Math.random() * Math.PI * 2;
+                    const phi = Math.acos(2 * Math.random() - 1);
+                    const radius = this.scale * 2;
+                    
+                    particle.userData.velocity = new THREE.Vector3(
+                        Math.sin(phi) * Math.cos(theta),
+                        Math.sin(phi) * Math.sin(theta),
+                        Math.cos(phi)
+                    ).multiplyScalar(0.3);
+                    
+                    burstGroup.add(particle);
+                }
+                
+                this.mesh.add(burstGroup);
+                
+                // Animate burst
+                const animate = () => {
+                    burstGroup.children.forEach(particle => {
+                        particle.position.add(particle.userData.velocity);
+                        particle.material.opacity *= 0.95;
+                        particle.scale.multiplyScalar(0.98);
+                    });
+                    
+                    if (burstGroup.children.length > 0 && burstGroup.children[0].material.opacity > 0.01) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        // Clean up particles
+                        burstGroup.children.forEach(particle => {
+                            particle.geometry.dispose();
+                            particle.material.dispose();
+                        });
+                        this.mesh.remove(burstGroup);
+                    }
+                };
+                
+                animate();
+            }
+        }
+
+        // Energy Connection Class
+        class EnergyConnection {
+            constructor(startNode, endNode) {
+                this.startNode = startNode;
+                this.endNode = endNode;
+                this.active = false;
+                this.flowParticles = [];
+                this.createMesh();
+            }
+
+            createMesh() {
+                // Create curved path
+                const midPoint = new THREE.Vector3().lerpVectors(
+                    this.startNode.position,
+                    this.endNode.position,
+                    0.5
+                );
+                midPoint.y += 5;
+
+                this.curve = new THREE.QuadraticBezierCurve3(
+                    this.startNode.position,
+                    midPoint,
+                    this.endNode.position
+                );
+
+                const points = this.curve.getPoints(50);
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                
+                const material = new THREE.LineBasicMaterial({
+                    color: 0x00ffff,
+                    transparent: true,
+                    opacity: 0.2,
+                    blending: THREE.AdditiveBlending
+                });
+
+                this.line = new THREE.Line(geometry, material);
+                scene.add(this.line);
+                
+                connections.push(this);
+            }
+
+            activate() {
+                this.active = true;
+                gsap.to(this.line.material, {
+                    opacity: 0.6,
+                    duration: 0.3
+                });
+                
+                this.createEnergyFlow();
+            }
+
+            createEnergyFlow() {
+                const flowParticle = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.3, 16, 16),
+                    new THREE.MeshBasicMaterial({
+                        color: 0x00ffff,
+                        transparent: true,
+                        opacity: 1,
+                        blending: THREE.AdditiveBlending
+                    })
+                );
+
+                const glowGeometry = new THREE.SphereGeometry(0.6, 16, 16);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: 0x00ffff,
+                    transparent: true,
+                    opacity: 0.5,
+                    blending: THREE.AdditiveBlending
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                flowParticle.add(glow);
+
+                scene.add(flowParticle);
+                this.flowParticles.push(flowParticle);
+
+                // Animate along curve
+                const duration = 2;
+                const tween = { t: 0 };
+                
+                gsap.to(tween, {
+                    t: 1,
+                    duration: duration,
+                    ease: "none",
+                    onUpdate: () => {
+                        const point = this.curve.getPoint(tween.t);
+                        flowParticle.position.copy(point);
+                        
+                        // Add trail effect - only every few frames for performance
+                        if (frameCount % 3 === 0) {
+                            const trailParticle = new THREE.Mesh(
+                                new THREE.SphereGeometry(0.1, 8, 8),
+                                new THREE.MeshBasicMaterial({
+                                    color: 0x00ffff,
+                                    transparent: true,
+                                    opacity: 0.5,
+                                    blending: THREE.AdditiveBlending
+                                })
+                            );
+                            trailParticle.position.copy(point);
+                            scene.add(trailParticle);
+                            
+                            gsap.to(trailParticle.material, {
+                                opacity: 0,
+                                duration: 1,
+                                onComplete: () => {
+                                    trailParticle.geometry.dispose();
+                                    trailParticle.material.dispose();
+                                    scene.remove(trailParticle);
+                                }
+                            });
+                            gsap.to(trailParticle.scale, {
+                                x: 0,
+                                y: 0,
+                                z: 0,
+                                duration: 1
+                            });
+                        }
+                    },
+                    onComplete: () => {
+                        scene.remove(flowParticle);
+                        this.flowParticles = this.flowParticles.filter(p => p !== flowParticle);
+                        
+                        // Activate end node
+                        this.endNode.activate();
+                        
+                        // Continue flow if active
+                        if (this.active) {
+                            setTimeout(() => this.createEnergyFlow(), 500);
+                        }
+                    }
                 });
             }
+
+            deactivate() {
+                this.active = false;
+                gsap.to(this.line.material, {
+                    opacity: 0.2,
+                    duration: 0.3
+                });
+            }
+
+            update() {
+                // Update line position
+                const points = this.curve.getPoints(50);
+                this.line.geometry.setFromPoints(points);
+            }
         }
-        
-        function drawNeuralNetwork() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Energy Field System
+        function createEnergyField() {
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(environment.particleDensity * 3);
+            const velocities = new Float32Array(environment.particleDensity * 3);
+            const colors = new Float32Array(environment.particleDensity * 3);
+            const sizes = new Float32Array(environment.particleDensity);
+            const lifetimes = new Float32Array(environment.particleDensity);
             
-            // Draw connections with glow effect
-            connections.forEach(conn => {
-                const fromNode = nodes[conn.from];
-                const toNode = nodes[conn.to];
-                const distance = Math.sqrt(
-                    Math.pow(fromNode.x - toNode.x, 2) + 
-                    Math.pow(fromNode.y - toNode.y, 2)
-                );
+            for (let i = 0; i < environment.particleDensity; i++) {
+                // Position
+                positions[i * 3] = (Math.random() - 0.5) * 100;
+                positions[i * 3 + 1] = (Math.random() - 0.5) * 50;
+                positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
                 
-                if (distance < 200) {
-                    // Connection line with gradient
-                    const gradient = ctx.createLinearGradient(
-                        fromNode.x, fromNode.y, toNode.x, toNode.y
-                    );
-                    gradient.addColorStop(0, `rgba(59, 130, 246, ${conn.strength * 0.3})`);
-                    gradient.addColorStop(0.5, `rgba(139, 92, 246, ${conn.strength * 0.5})`);
-                    gradient.addColorStop(1, `rgba(59, 130, 246, ${conn.strength * 0.3})`);
-                    
-                    ctx.strokeStyle = gradient;
-                    ctx.lineWidth = conn.strength * 2;
-                    ctx.beginPath();
-                    ctx.moveTo(fromNode.x, fromNode.y);
-                    ctx.lineTo(toNode.x, toNode.y);
-                    ctx.stroke();
-                    
-                    // Animated pulse along connection
-                    conn.pulseProgress += 0.02;
-                    if (conn.pulseProgress > 1) conn.pulseProgress = 0;
-                    
-                    const pulseX = fromNode.x + (toNode.x - fromNode.x) * conn.pulseProgress;
-                    const pulseY = fromNode.y + (toNode.y - fromNode.y) * conn.pulseProgress;
-                    
-                    ctx.fillStyle = `rgba(139, 92, 246, ${0.8 - conn.pulseProgress * 0.8})`;
-                    ctx.beginPath();
-                    ctx.arc(pulseX, pulseY, 3 * (1 - conn.pulseProgress), 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-            
-            // Update and draw data packets
-            createDataPacket();
-            dataPackets.forEach((packet, index) => {
-                packet.progress += packet.speed;
+                // Velocity
+                velocities[i * 3] = (Math.random() - 0.5) * 0.5;
+                velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.5;
+                velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
                 
-                if (packet.progress >= 1) {
-                    dataPackets.splice(index, 1);
-                } else {
-                    const fromNode = nodes[packet.connection.from];
-                    const toNode = nodes[packet.connection.to];
-                    
-                    const x = fromNode.x + (toNode.x - fromNode.x) * packet.progress;
-                    const y = fromNode.y + (toNode.y - fromNode.y) * packet.progress;
-                    
-                    // Data packet glow
-                    const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, 10);
-                    glowGradient.addColorStop(0, 'rgba(16, 185, 129, 1)');
-                    glowGradient.addColorStop(0.5, 'rgba(16, 185, 129, 0.5)');
-                    glowGradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
-                    
-                    ctx.fillStyle = glowGradient;
-                    ctx.beginPath();
-                    ctx.arc(x, y, 10, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            });
-            
-            // Draw nodes with enhanced effects
-            nodes.forEach((node, i) => {
-                // Update position
-                node.x += node.vx;
-                node.y += node.vy;
+                // Color (blue to purple gradient)
+                const hue = 0.55 + Math.random() * 0.15;
+                const color = new THREE.Color();
+                color.setHSL(hue, 0.8, 0.6);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
                 
-                // Bounce off edges with damping
-                if (node.x < 0 || node.x > canvas.width) {
-                    node.vx *= -0.9;
-                    node.x = Math.max(0, Math.min(canvas.width, node.x));
-                }
-                if (node.y < 0 || node.y > canvas.height) {
-                    node.vy *= -0.9;
-                    node.y = Math.max(0, Math.min(canvas.height, node.y));
-                }
-                
-                // Node energy pulsing
-                node.energy = 0.5 + 0.5 * Math.sin(Date.now() * 0.001 + node.pulsePhase);
-                
-                // Outer glow
-                const glowSize = node.radius * 3 * node.energy;
-                const glowGradient = ctx.createRadialGradient(
-                    node.x, node.y, 0,
-                    node.x, node.y, glowSize
-                );
-                glowGradient.addColorStop(0, `rgba(59, 130, 246, ${node.opacity * 0.5})`);
-                glowGradient.addColorStop(0.5, `rgba(139, 92, 246, ${node.opacity * 0.3})`);
-                glowGradient.addColorStop(1, 'transparent');
-                
-                ctx.fillStyle = glowGradient;
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, glowSize, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Core node
-                ctx.fillStyle = `rgba(59, 130, 246, ${node.opacity * node.energy})`;
-                ctx.beginPath();
-                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-                ctx.fill();
-                
-                // Inner bright point
-                ctx.fillStyle = `rgba(255, 255, 255, ${node.opacity * node.energy * 0.8})`;
-                ctx.beginPath();
-                ctx.arc(node.x - node.radius * 0.3, node.y - node.radius * 0.3, node.radius * 0.3, 0, Math.PI * 2);
-                ctx.fill();
-            });
-            
-            requestAnimationFrame(drawNeuralNetwork);
-        }
-        
-        drawNeuralNetwork();
-        
-        // Economic Calculator
-        function calculateRevenue() {
-            const agentCount = parseInt(document.getElementById('agentCount').value) || 0;
-            const txPerAgent = parseInt(document.getElementById('txPerAgent').value) || 0;
-            const avtValue = parseFloat(document.getElementById('avtValue').value) || 0;
-            
-            const dailyTransactions = agentCount * txPerAgent;
-            const dailyAVT = dailyTransactions * 1; // 1 AVT per transaction
-            const operatorShare = dailyAVT * 0.4; // 40% to operator
-            const dailyRevenue = operatorShare * avtValue;
-            const annualRevenue = dailyRevenue * 365;
-            
-            const formattedRevenue = new Intl.NumberFormat('en-US', {
-                style: 'currency',
-                currency: 'USD',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }).format(annualRevenue);
-            
-            document.getElementById('annualRevenue').textContent = formattedRevenue;
-        }
-        
-        // Add event listeners for calculator inputs
-        document.getElementById('agentCount').addEventListener('input', calculateRevenue);
-        document.getElementById('txPerAgent').addEventListener('input', calculateRevenue);
-        document.getElementById('avtValue').addEventListener('input', calculateRevenue);
-        
-        // Initial calculation
-        calculateRevenue();
-        
-        // Form submission handler
-        const form = document.getElementById('charter-application-form');
-        const submitButton = document.getElementById('submit-button');
-        const feedbackDiv = document.getElementById('form-feedback');
-        
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Show coming soon message
-            feedbackDiv.className = 'form-feedback success';
-            feedbackDiv.innerHTML = `
-                <div style="font-size: 1.1rem; line-height: 1.6;">
-                    <strong>Thank you for your interest!</strong><br><br>
-                    We are opening up the application form as soon as we have fully deployed.<br><br>
-                    For earlier inquiries, please contact:<br>
-                    <a href="mailto:r.jeziorny@theprotocol.cloud" style="color: #10B981; font-weight: 600;">r.jeziorny@theprotocol.cloud</a>
-                </div>
-            `;
-            feedbackDiv.style.display = 'block';
-            
-            // Scroll to feedback message
-            feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
-        
-        // Mobile Navigation Toggle
-        const navToggle = document.getElementById('navToggle');
-        const navMenu = document.getElementById('navMenu');
-        
-        navToggle.addEventListener('click', function() {
-            navToggle.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-        
-        // Close mobile menu when clicking a link
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                navToggle.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
-        });
-        
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    const offsetTop = target.offsetTop - 80; // Account for fixed header
-                    window.scrollTo({
-                        top: offsetTop,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // Header scroll effect
-        let lastScroll = 0;
-        const header = document.querySelector('.nav-header');
-        
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.pageYOffset;
-            
-            if (currentScroll > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
+                sizes[i] = Math.random() * 1.5 + 0.5;
+                lifetimes[i] = Math.random();
             }
             
-            lastScroll = currentScroll;
-        });
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('velocity', new THREE.BufferAttribute(velocities, 3));
+            geometry.setAttribute('energyColor', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('life', new THREE.BufferAttribute(lifetimes, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    flowSpeed: { value: environment.energyFlowSpeed }
+                },
+                vertexShader: energyFieldVertexShader,
+                fragmentShader: energyFieldFragmentShader,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                transparent: true,
+                vertexColors: true
+            });
+            
+            energyField = new THREE.Points(geometry, material);
+            scene.add(energyField);
+            particles.push(energyField);
+        }
 
-        // Intersection Observer for fade-in animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
+        // Initialize Three.js
+        function initThree() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x000000, 0.002);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                75,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(0, 5, 30);
+            camera.lookAt(0, 0, 0);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                canvas: document.getElementById('main-canvas'),
+                antialias: quality === 'high' || quality === 'ultra',
+                alpha: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'ultra' ? 2 : 1.5));
+            renderer.shadowMap.enabled = quality !== 'low';
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+
+            // Post-processing would go here (requires additional scripts)
+
+            // Raycaster and mouse
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Setup scene
+            setupLighting();
+            createStarfield();
+            createNebula();
+            createProtocolNetwork();
+            createEnergyField();
+            createQuantumField();
+            setupCameraControls();
+
+            // Start animation
+            animate();
+        }
+
+        // Advanced Lighting Setup
+        function setupLighting() {
+            // Minimal ambient light
+            const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.5);
+            scene.add(ambientLight);
+
+            // Main light source
+            const mainLight = new THREE.DirectionalLight(0x4080ff, 1);
+            mainLight.position.set(10, 20, 10);
+            mainLight.castShadow = quality !== 'low';
+            scene.add(mainLight);
+
+            // Colored accent lights
+            const colors = [0x3B82F6, 0x8B5CF6, 0x10B981, 0xF59E0B];
+            colors.forEach((color, i) => {
+                const light = new THREE.PointLight(color, 0.5, 50);
+                const angle = (i / colors.length) * Math.PI * 2;
+                light.position.set(
+                    Math.cos(angle) * 20,
+                    10,
+                    Math.sin(angle) * 20
+                );
+                scene.add(light);
+            });
+
+            // Volumetric light simulation
+            if (quality === 'ultra') {
+                const spotLight = new THREE.SpotLight(0x00ffff, 2);
+                spotLight.position.set(0, 50, 0);
+                spotLight.angle = Math.PI / 6;
+                spotLight.penumbra = 0.2;
+                spotLight.decay = 2;
+                spotLight.distance = 100;
+                scene.add(spotLight);
+            }
+        }
+
+        // Create Protocol Network
+        function createProtocolNetwork() {
+            // Central core
+            networkCore = new ProtocolNode(
+                new THREE.Vector3(0, 0, 0),
+                3,
+                0x00ffff,
+                'core'
+            );
+
+            // Create satellite nodes - reduced for better performance
+            const nodeCount = 8; // Reduced from 12
+            const radius = 15;
+            
+            for (let i = 0; i < nodeCount; i++) {
+                const angle = (i / nodeCount) * Math.PI * 2;
+                const x = Math.cos(angle) * radius;
+                const z = Math.sin(angle) * radius;
+                const y = (Math.random() - 0.5) * 10;
+                
+                const node = new ProtocolNode(
+                    new THREE.Vector3(x, y, z),
+                    1.5 + Math.random() * 0.5,
+                    i % 2 === 0 ? 0x3B82F6 : 0x8B5CF6,
+                    'satellite'
+                );
+                
+                // Create connection to core
+                new EnergyConnection(networkCore, node);
+            }
+
+            // Create inter-node connections - reduced density for performance
+            for (let i = 0; i < protocolNodes.length; i++) {
+                for (let j = i + 1; j < protocolNodes.length; j++) {
+                    if (Math.random() > 0.85 && protocolNodes[i] !== networkCore) { // Changed from 0.7 to 0.85
+                        new EnergyConnection(protocolNodes[i], protocolNodes[j]);
+                    }
+                }
+            }
+
+            // Update loading stats
+            setTimeout(() => {
+                document.getElementById('loadingNodes').textContent = protocolNodes.length;
+                document.getElementById('loadingConnections').textContent = connections.length;
+            }, 100); // Small delay to ensure nodes are created
+        }
+
+        // Create Quantum Field
+        function createQuantumField() {
+            const geometry = new THREE.BufferGeometry();
+            const fieldSize = 50;
+            const fieldResolution = 20;
+            const vertices = [];
+            
+            for (let x = 0; x < fieldResolution; x++) {
+                for (let z = 0; z < fieldResolution; z++) {
+                    const px = (x / fieldResolution - 0.5) * fieldSize;
+                    const pz = (z / fieldResolution - 0.5) * fieldSize;
+                    const py = -10;
+                    
+                    vertices.push(px, py, pz);
+                }
+            }
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            
+            const material = new THREE.PointsMaterial({
+                color: 0x00ffff,
+                size: 0.5,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending
+            });
+            
+            quantumField = new THREE.Points(geometry, material);
+            scene.add(quantumField);
+        }
+
+        // Camera Controls
+        function setupCameraControls() {
+            let isMouseDown = false;
+            let mouseX = 0;
+            let mouseY = 0;
+            let targetRotationX = 0;
+            let targetRotationY = 0;
+
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.tagName === 'CANVAS') {
+                    isMouseDown = true;
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
                 }
             });
-        }, observerOptions);
-        
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
 
-        // Developer Portal button placeholder
-        document.querySelector('.nav-dev-portal').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('Developer Portal coming soon! The registry frontend will be available after the public beta launch.');
-        });
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+            });
 
-        // Mobile Dropdown Toggle
-        const dropdownToggle = document.querySelector('.nav-dropdown-toggle');
-        const dropdown = document.querySelector('.nav-dropdown');
+            document.addEventListener('mousemove', (e) => {
+                if (isMouseDown && currentView !== 'cinematic') {
+                    const deltaX = e.clientX - mouseX;
+                    const deltaY = e.clientY - mouseY;
+                    targetRotationY += deltaX * 0.01;
+                    targetRotationX += deltaY * 0.01;
+                    targetRotationX = Math.max(-Math.PI/4, Math.min(Math.PI/4, targetRotationX));
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                }
 
-        if (dropdownToggle) {
-            dropdownToggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 968) {
+                // Update mouse position for raycasting
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                // Update custom cursor
+                const cursor = document.getElementById('customCursor');
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+
+                // Cursor trail effect
+                const trail = document.getElementById('cursorTrail');
+                trail.style.left = e.clientX + 'px';
+                trail.style.top = e.clientY + 'px';
+                trail.style.opacity = '1';
+                setTimeout(() => { trail.style.opacity = '0'; }, 100);
+            });
+
+            // Update camera rotation
+            window.updateCameraRotation = function() {
+                if (currentView === 'cinematic') return;
+                
+                const radius = 30;
+                camera.position.x = Math.sin(targetRotationY) * Math.cos(targetRotationX) * radius;
+                camera.position.y = Math.sin(targetRotationX) * radius + 5;
+                camera.position.z = Math.cos(targetRotationY) * Math.cos(targetRotationX) * radius;
+                camera.lookAt(0, 0, 0);
+            };
+        }
+
+        // View Modes
+        function setViewMode(mode) {
+            currentView = mode;
+            
+            // Kill any active camera animations
+            if (cameraAnimation) cameraAnimation.kill();
+            
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+
+            switch (mode) {
+                case 'hero':
+                    showHeroView();
+                    break;
+                case 'network':
+                    showNetworkView();
+                    break;
+                case 'flow':
+                    showEnergyFlow();
+                    break;
+                case 'quantum':
+                    showQuantumView();
+                    break;
+                case 'cinematic':
+                    startCinematicMode();
+                    break;
+            }
+        }
+
+        function showHeroView() {
+            cinematicActive = false;
+            document.getElementById('cinematicOverlay').classList.remove('active');
+            
+            gsap.to(camera.position, {
+                x: 0,
+                y: 5,
+                z: 30,
+                duration: 2,
+                ease: "power2.inOut",
+                onUpdate: () => camera.lookAt(0, 0, 0)
+            });
+            
+            // Show environment info
+            document.getElementById('environmentInfo').classList.add('visible');
+            document.getElementById('envType').textContent = 'Nebula Field';
+        }
+
+        function showNetworkView() {
+            cinematicActive = false;
+            document.getElementById('cinematicOverlay').classList.remove('active');
+            
+            gsap.to(camera.position, {
+                x: 0,
+                y: 40,
+                z: 10,
+                duration: 2,
+                ease: "power2.inOut",
+                onUpdate: () => camera.lookAt(0, 0, 0)
+            });
+            
+            document.getElementById('envType').textContent = 'Network Topology';
+        }
+
+        function showEnergyFlow() {
+            cinematicActive = false;
+            document.getElementById('cinematicOverlay').classList.remove('active');
+            
+            // Activate all connections
+            connections.forEach((conn, i) => {
+                setTimeout(() => conn.activate(), i * 100);
+            });
+            
+            // Random node activations - less frequent for performance
+            setInterval(() => {
+                if (currentView === 'flow') {
+                    const randomNode = protocolNodes[Math.floor(Math.random() * protocolNodes.length)];
+                    randomNode.activate();
+                }
+            }, 3000); // Increased from 2000ms to 3000ms
+            
+            document.getElementById('envType').textContent = 'Energy Matrix';
+        }
+
+        function showQuantumView() {
+            cinematicActive = false;
+            document.getElementById('cinematicOverlay').classList.remove('active');
+            
+            gsap.to(camera.position, {
+                x: 20,
+                y: 20,
+                z: 20,
+                duration: 2,
+                ease: "power2.inOut",
+                onUpdate: () => camera.lookAt(0, -10, 0)
+            });
+            
+            // Animate quantum field
+            gsap.to(quantumField.material, {
+                opacity: 0.8,
+                size: 1,
+                duration: 1
+            });
+            
+            document.getElementById('envType').textContent = 'Quantum Field';
+        }
+
+        function startCinematicMode() {
+            cinematicActive = true;
+            document.getElementById('cinematicOverlay').classList.add('active');
+            document.getElementById('environmentInfo').classList.remove('visible');
+            
+            // Create cinematic camera path
+            const path = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(40, 10, 20),
+                new THREE.Vector3(20, 30, -30),
+                new THREE.Vector3(-30, 5, -20),
+                new THREE.Vector3(-20, 20, 30),
+                new THREE.Vector3(0, 50, 0),
+                new THREE.Vector3(40, 10, 20)
+            ]);
+            
+            const duration = 60;
+            
+            cameraAnimation = gsap.timeline({ repeat: -1 })
+                .to(camera.position, {
+                    duration: duration,
+                    ease: "none",
+                    onUpdate: function() {
+                        const point = path.getPoint(this.progress());
+                        camera.position.copy(point);
+                        
+                        // Look ahead on the path
+                        const lookPoint = path.getPoint((this.progress() + 0.01) % 1);
+                        camera.lookAt(lookPoint);
+                    }
+                });
+        }
+
+        // Audio System
+        function initAudio() {
+            try {
+                // Start audio context with user gesture handling
+                Tone.start();
+                
+                // Create synthesizers
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                reverb = new Tone.Reverb(3).toDestination();
+                synth.connect(reverb);
+                
+                // Ambient synthesizer
+                ambientSynth = new Tone.PolySynth(Tone.Synth, {
+                    oscillator: { type: "sine" },
+                    envelope: {
+                        attack: 4,
+                        decay: 2,
+                        sustain: 0.5,
+                        release: 4
+                    }
+                }).toDestination();
+                ambientSynth.connect(reverb);
+                
+                // Set volume
+                Tone.Destination.volume.value = -10;
+            } catch (e) {
+                console.log('Audio initialization skipped');
+            }
+        }
+
+        function playNodeSound(type) {
+            if (!audioEnabled || !synth) return;
+            
+            const notes = {
+                'core': ['C3', 'E3', 'G3', 'B3'],
+                'satellite': ['D4', 'F#4', 'A4', 'C#5']
+            };
+            
+            const chord = notes[type] || ['C4'];
+            try {
+                synth.triggerAttackRelease(chord, '4n');
+            } catch (e) {
+                console.log('Audio playback skipped');
+            }
+        }
+
+        function playAmbientSound() {
+            if (!audioEnabled || !ambientSynth) return;
+            
+            const ambientNotes = ['C2', 'G2', 'E3', 'B3'];
+            const note = ambientNotes[Math.floor(Math.random() * ambientNotes.length)];
+            
+            try {
+                ambientSynth.triggerAttackRelease(note, '8n');
+            } catch (e) {
+                console.log('Ambient audio skipped');
+            }
+        }
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            time = Date.now();
+            
+            // Update FPS
+            updateFPS();
+            
+            // Update nodes
+            protocolNodes.forEach(node => node.update(time));
+            
+            // Update connections
+            connections.forEach(conn => {
+                if (conn.update) conn.update();
+            });
+            
+            // Update starfield
+            if (starfield) {
+                starfield.material.uniforms.time.value = time;
+                starfield.rotation.y += 0.00005;
+            }
+            
+            // Update nebula
+            if (nebula && nebula.material.uniforms) {
+                nebula.material.uniforms.time.value = time;
+            }
+            
+            // Update energy field
+            if (energyField) {
+                energyField.material.uniforms.time.value = time;
+                energyField.rotation.y += 0.0001;
+                
+                // Update particle positions - OPTIMIZED: Update only a portion each frame
+                const positions = energyField.geometry.attributes.position.array;
+                const velocities = energyField.geometry.attributes.velocity.array;
+                const lifetimes = energyField.geometry.attributes.life.array;
+                
+                // Update only 1/4 of particles per frame for performance
+                const updateCount = Math.floor(environment.particleDensity / 4);
+                const offset = (frameCount % 4) * updateCount;
+                
+                for (let j = 0; j < updateCount && (offset + j) < environment.particleDensity; j++) {
+                    const i = offset + j;
+                    const i3 = i * 3;
+                    
+                    // Update position
+                    positions[i3] += velocities[i3] * 0.1;
+                    positions[i3 + 1] += velocities[i3 + 1] * 0.1;
+                    positions[i3 + 2] += velocities[i3 + 2] * 0.1;
+                    
+                    // Boundary check
+                    if (Math.abs(positions[i3]) > 50) positions[i3] *= -0.9;
+                    if (Math.abs(positions[i3 + 1]) > 25) positions[i3 + 1] *= -0.9;
+                    if (Math.abs(positions[i3 + 2]) > 50) positions[i3 + 2] *= -0.9;
+                    
+                    // Update lifetime
+                    lifetimes[i] -= 0.001;
+                    if (lifetimes[i] <= 0) {
+                        lifetimes[i] = 1.0;
+                        positions[i3] = (Math.random() - 0.5) * 100;
+                        positions[i3 + 1] = (Math.random() - 0.5) * 50;
+                        positions[i3 + 2] = (Math.random() - 0.5) * 100;
+                    }
+                }
+                
+                energyField.geometry.attributes.position.needsUpdate = true;
+                energyField.geometry.attributes.life.needsUpdate = true;
+            }
+            
+            // Update quantum field - only when visible and optimized
+            if (quantumField && currentView === 'quantum' && frameCount % 5 === 0) {
+                const positions = quantumField.geometry.attributes.position.array;
+                const updateCount = Math.min(positions.length / 3, 100); // Limit updates
+                for (let i = 0; i < updateCount; i++) {
+                    const idx = i * 3 + 1;
+                    if (idx < positions.length) {
+                        positions[idx] = -10 + Math.sin(time * 0.001 + positions[idx - 1] * 0.1) * 2;
+                    }
+                }
+                quantumField.geometry.attributes.position.needsUpdate = true;
+            }
+            
+            // Update camera
+            if (window.updateCameraRotation && !cinematicActive) {
+                window.updateCameraRotation();
+            }
+            
+            // Raycasting
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(scene.children, true);
+            
+            const cursor = document.getElementById('customCursor');
+            if (intersects.length > 0) {
+                cursor.classList.add('hover');
+                
+                // Check if hovering over a node
+                const object = intersects[0].object;
+                if (object.userData.node) {
+                    object.userData.node.energy = Math.min(object.userData.node.energy + 0.02, 1);
+                }
+            } else {
+                cursor.classList.remove('hover');
+            }
+            
+            // Play ambient sounds occasionally - less frequently
+            if (audioEnabled && frameCount % 600 === 0 && Math.random() < 0.5) { // Roughly every 10 seconds at 60fps
+                playAmbientSound();
+            }
+            
+            // Update stats - OPTIMIZED: Only update every 10 frames
+            if (frameCount % 10 === 0) {
+            updateStats();
+        }
+            
+            // Render
+            renderer.render(scene, camera);
+        }
+
+        function updateFPS() {
+            frameCount++;
+            const now = performance.now();
+            if (now - lastFpsUpdate >= 250) {
+                const fps = Math.round((frameCount * 1000) / (now - lastFpsUpdate));
+                document.getElementById('fpsCounter').textContent = fps;
+                frameCount = 0;
+                lastFpsUpdate = now;
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('activeNodes').textContent = protocolNodes.length;
+            
+            const activeConnections = connections.filter(c => c.active).length;
+            const flowPercentage = Math.round((activeConnections / connections.length) * 100);
+            document.getElementById('energyFlow').textContent = flowPercentage + '%';
+            
+            document.getElementById('quantumState').textContent = 
+                currentView === 'quantum' ? 'Entangled' : 'Stable';
+            
+            document.getElementById('particleCount').textContent = 
+                environment.particleDensity.toLocaleString();
+            
+            // Generate random hash - OPTIMIZED: Much less frequently
+            if (Math.random() < 0.01) { // Changed from 0.1 to 0.01
+                const hash = '0x' + Math.random().toString(16).substr(2, 6) + '...';
+                document.getElementById('networkHash').textContent = hash;
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+
+            // View mode buttons
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    setViewMode(e.target.dataset.mode);
+                });
+            });
+
+            // Quality settings
+            document.querySelectorAll('.quality-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    quality = e.target.dataset.quality;
+                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'ultra' ? 2 : 1.5));
+                    
+                    // Update environment based on quality
+                    if (quality === 'low') {
+                        environment.starCount = 5000;
+                        environment.particleDensity = 10000;
+                        environment.nebulaIntensity = 0.5;
+                    } else if (quality === 'medium') {
+                        environment.starCount = 7500;
+                        environment.particleDensity = 25000;
+                        environment.nebulaIntensity = 0.7;
+                    } else if (quality === 'high') {
+                        environment.starCount = 10000;
+                        environment.particleDensity = 50000;
+                        environment.nebulaIntensity = 0.8;
+                    } else {
+                        environment.starCount = 15000;
+                        environment.particleDensity = 75000;
+                        environment.nebulaIntensity = 1.0;
+                    }
+                });
+            });
+
+            // Audio toggle
+            document.getElementById('audioToggle').addEventListener('click', () => {
+                audioEnabled = !audioEnabled;
+                const audioToggle = document.getElementById('audioToggle');
+                audioToggle.textContent = audioEnabled ? '🔊' : '🔇';
+                audioToggle.classList.toggle('active', audioEnabled);
+                
+                if (audioEnabled && !synth) {
+                    // Initialize audio only after user interaction
+                    initAudio();
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                switch(e.key) {
+                    case '1':
+                        setViewMode('hero');
+                        break;
+                    case '2':
+                        setViewMode('network');
+                        break;
+                    case '3':
+                        setViewMode('flow');
+                        break;
+                    case '4':
+                        setViewMode('quantum');
+                        break;
+                    case '5':
+                        setViewMode('cinematic');
+                        break;
+                    case 's':
+                        document.getElementById('statsPanel').classList.toggle('visible');
+                        break;
+                    case 'Escape':
+                        if (cinematicActive) {
+                            setViewMode('hero');
+                        }
+                        break;
+                }
+                
+                // Command palette
+                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
-                    dropdown.classList.toggle('active');
+                    document.getElementById('commandPalette').classList.toggle('active');
+                }
+            });
+
+            // Scroll handler
+            let lastScroll = 0;
+            window.addEventListener('scroll', () => {
+                const currentScroll = window.pageYOffset;
+                const header = document.querySelector('.nav-header');
+                
+                if (currentScroll > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+                
+                lastScroll = currentScroll;
+            });
+
+            // Interactive elements hover
+            document.addEventListener('mouseover', (e) => {
+                if (e.target.matches('.floating-cta, .nav-link, .view-mode-btn, button')) {
+                    document.getElementById('customCursor').classList.add('hover');
+                }
+            });
+
+            document.addEventListener('mouseout', (e) => {
+                if (e.target.matches('.floating-cta, .nav-link, .view-mode-btn, button')) {
+                    document.getElementById('customCursor').classList.remove('hover');
                 }
             });
         }
 
-        // Prevent dropdown from closing on desktop when hovering
-        if (window.innerWidth > 968 && dropdownToggle) {
-            dropdownToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-            });
-        }
+        // Initialize on load
+        window.addEventListener('load', () => {
+            // Simulate loading with updates
+            const progress = document.getElementById('loadingProgress');
+            const status = document.getElementById('loadingStatus');
+            const messages = [
+                'Initializing quantum systems...',
+                'Loading stellar environment...',
+                'Creating protocol nodes...',
+                'Establishing energy connections...',
+                'Calibrating particle fields...',
+                'Initializing spatial audio...',
+                'Finalizing cinematic experience...'
+            ];
+            
+            let loadProgress = 0;
+            let messageIndex = 0;
+            
+            const loadingInterval = setInterval(() => {
+                loadProgress += Math.random() * 15;
+                if (loadProgress > 100) loadProgress = 100;
+                
+                progress.style.width = loadProgress + '%';
+                
+                // Update message
+                const newMessageIndex = Math.floor((loadProgress / 100) * messages.length);
+                if (newMessageIndex !== messageIndex && newMessageIndex < messages.length) {
+                    messageIndex = newMessageIndex;
+                    status.textContent = messages[messageIndex];
+                }
+                
+                // Update loading stats
+                document.getElementById('loadingParticles').textContent = 
+                    Math.floor(loadProgress * 500).toLocaleString();
+                
+                if (loadProgress >= 100) {
+                    clearInterval(loadingInterval);
+                    
+                    // Initialize everything
+                    initThree();
+                    // Don't initialize audio until user interaction
+                    // initAudio();
+                    setupEventListeners();
+                    
+                    // Hide loading screen
+                    setTimeout(() => {
+                        const loadingScreen = document.getElementById('loadingScreen');
+                        loadingScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            loadingScreen.style.display = 'none';
+                            
+                            // Show stats panel after a delay
+                            setTimeout(() => {
+                                document.getElementById('statsPanel').classList.add('visible');
+                            }, 1000);
+                            
+                            // Start animations after everything is loaded
+                            protocolNodes.forEach((node, i) => {
+                                setTimeout(() => node.activate(), i * 200);
+                            });
+                        }, 1000);
+                    }, 500);
+                }
+            }, 100);
+        });
     </script>
 </body>
 </html>
