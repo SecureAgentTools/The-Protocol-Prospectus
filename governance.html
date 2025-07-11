@@ -707,7 +707,7 @@
         /* Component Labels */
         .component-label {
             position: absolute;
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(10, 10, 10, 0.7);
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
             font-size: 0.875rem;
@@ -718,14 +718,14 @@
             transform: translateY(0);
             transition: all 0.3s ease;
             white-space: nowrap;
-            border: 1px solid rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.15);
             font-weight: 600;
             max-width: 200px;
             visibility: hidden;
         }
 
         .component-label.visible {
-            opacity: 1;
+            opacity: 0.8;
             visibility: visible;
         }
 
@@ -937,7 +937,7 @@
                     <span>Governance Links</span>
                 </label>
                 <label style="display: flex; align-items: center; gap: 0.5rem;">
-                    <button class="control-button" id="labelToggle" style="margin-bottom: 0;">Node Labels: Full</button>
+                    <button class="control-button" id="labelToggle" style="margin-bottom: 0;">Node Labels: Short</button>
                 </label>
             </div>
         </div>
@@ -1088,7 +1088,7 @@
         let fpsUpdateInterval = 250;
 
         // Label state: 0 = off, 1 = full names, 2 = short names
-        let labelState = 1;
+        let labelState = 2;
 
         // Initialize Tone.js
         let synth, reverb, panner;
@@ -1188,9 +1188,8 @@
                 // Base color with tier-specific modifications
                 vec3 baseColor = color;
                 
-                // Fresnel effect for holographic appearance
-                vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
-                float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), 2.0);
+                // Fresnel effect for holographic appearance - using approximation
+                float fresnel = pow(1.0 - abs(dot(vec3(0.0, 0.0, 1.0), vNormal)), 2.0);
                 
                 // Tier-specific effects
                 vec3 emissive = vec3(0.0);
@@ -1378,8 +1377,7 @@
                         opacity: { value: 0.9 },
                         pulseIntensity: { value: 0.5 },
                         emissiveIntensity: { value: 0.2 },
-                        tier: { value: this.tier },
-                        cameraPosition: { value: camera.position }
+                        tier: { value: this.tier }
                     },
                     vertexShader: governanceVertexShader,
                     fragmentShader: governanceFragmentShader,
@@ -1564,7 +1562,6 @@
 
                 // Update shader uniforms
                 this.mesh.material.uniforms.time.value = time * 0.001;
-                this.mesh.material.uniforms.cameraPosition.value = camera.position;
 
                 // Energy decay
                 if (this.energy > 0) {
@@ -1763,7 +1760,9 @@
                         color: { value: new THREE.Color(chamberConfig.center.color) },
                         time: { value: 0 },
                         opacity: { value: 1.0 },
-                        emissiveIntensity: { value: 0.3 }
+                        emissiveIntensity: { value: 0.3 },
+                        tier: { value: 0 },
+                        pulseIntensity: { value: 0.5 }
                     },
                     vertexShader: governanceVertexShader,
                     fragmentShader: governanceFragmentShader,
@@ -1805,7 +1804,6 @@
                 
                 if (this.consensusField && this.consensusField.visible) {
                     this.consensusField.material.uniforms.time.value = time * 0.001;
-                    this.consensusField.material.uniforms.cameraPosition.value = camera.position;
                     this.consensusField.rotation.y += 0.001;
                 }
             }
@@ -1822,10 +1820,7 @@
                         tertiaryColor: { value: new THREE.Color(0x10B981) },
                         time: { value: 0 },
                         opacity: { value: 0.0 },
-                        consensusLevel: { value: 0 },
-                        cameraPosition: { value: camera.position },
-                        fieldCenter: { value: new THREE.Vector3(0, 5, 0) },
-                        fieldRadius: { value: 20 }
+                        consensusLevel: { value: 0 }
                     },
                     vertexShader: `
                         uniform float time;
@@ -1862,7 +1857,7 @@
                         varying vec3 vWorldPosition;
                         
                         void main() {
-                            vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
+                            vec3 viewDirection = normalize(vec3(0.0, 0.0, 1.0));
                             float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), 2.0);
                             
                             float radius = length(vWorldPosition.xz);
