@@ -40,6 +40,7 @@
             --text-secondary: #94A3B8;
             --gradient-governance: linear-gradient(135deg, #10B981 0%, #3B82F6 100%);
             --gradient-council: linear-gradient(135deg, #8B5CF6 0%, #10B981 100%);
+            --gradient-holographic: linear-gradient(45deg, #3B82F6, #8B5CF6, #EC4899, #F59E0B, #10B981, #3B82F6);
         }
 
         body {
@@ -88,7 +89,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-void);
+            background: radial-gradient(ellipse at center, #0a0a0a 0%, #000 100%);
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -100,11 +101,32 @@
         .loading-title {
             font-size: clamp(2rem, 5vw, 4rem);
             font-weight: 900;
+            background: var(--gradient-holographic);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: holographicShift 4s ease infinite;
             margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .loading-title::before {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: -1;
             background: var(--gradient-governance);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            filter: blur(40px);
+            opacity: 0.5;
             animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes holographicShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
         }
 
         @keyframes pulse {
@@ -170,13 +192,6 @@
             z-index: 1000;
             pointer-events: auto;
             transition: all 0.3s ease;
-        }
-
-        /* Dropdown hover effect */
-        .nav-item:hover .dropdown {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
         }
 
         .nav-container {
@@ -486,7 +501,7 @@
         /* Stats Display */
         .stats-display {
             position: fixed;
-            top: 180px;  /* Positioned below FPS */
+            top: 180px;
             left: 2rem;
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(20px);
@@ -515,7 +530,7 @@
         /* Tier Legend */
         .tier-legend {
             position: fixed;
-            top: 380px;  /* Positioned below stats */
+            top: 380px;
             left: 2rem;
             background: rgba(10, 10, 10, 0.8);
             backdrop-filter: blur(20px);
@@ -542,11 +557,11 @@
             box-shadow: 0 0 10px currentColor;
         }
 
-        /* Audio Controls - Fixed positioning */
+        /* Audio Controls */
         .audio-controls {
             position: fixed;
-            bottom: 2rem;  /* Bottom position */
-            left: 2rem;    /* Moved to left to avoid overlap */
+            bottom: 2rem;
+            left: 2rem;
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -556,7 +571,7 @@
             border-radius: 50px;
             padding: 0.75rem 1.5rem;
             pointer-events: auto;
-            z-index: 300;  /* Increased z-index */
+            z-index: 300;
         }
 
         .audio-toggle {
@@ -689,7 +704,7 @@
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        /* Component Labels - Fixed positioning */
+        /* Component Labels */
         .component-label {
             position: absolute;
             background: rgba(10, 10, 10, 0.9);
@@ -775,7 +790,7 @@
 
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
-        <h1 class="loading-title">Governance & Stewardship</h1>
+        <h1 class="loading-title" data-text="Governance & Stewardship">Governance & Stewardship</h1>
         <div class="loading-progress">
             <div class="loading-progress-bar" id="loadingProgress"></div>
         </div>
@@ -814,6 +829,7 @@
                             <path d="M4.5 2.5L8.5 2.5L8.5 6.5M8.5 2.5L2.5 8.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
+                    <a href="/terms.html" class="nav-link">Legal</a>
                     <a href="#application" class="nav-cta">Join Beta</a>
                 </nav>
                 <button class="mobile-menu-toggle" aria-label="Toggle menu">
@@ -932,7 +948,7 @@
             <p id="infoPanelContent" style="color: var(--text-secondary); line-height: 1.6;"></p>
         </div>
 
-        <!-- Audio Controls - Fixed to bottom right -->
+        <!-- Audio Controls -->
         <div class="audio-controls">
             <button class="audio-toggle" id="audioToggle">🔇</button>
             <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="70">
@@ -1021,6 +1037,11 @@
         <div class="cinematic-ui" id="cinematicUI">
             <span>Press ESC to exit cinematic mode</span>
         </div>
+
+        <!-- Oracle Documentation Button -->
+        <a href="/oracle.html" class="oracle-button">
+            Access The Oracle Documentation
+        </a>
     </div>
 
     <script>
@@ -1044,6 +1065,18 @@
         let connections = [];
         let votingFlows = [];
         let componentLabels = [];
+        let starfield, nebula, cosmicDust;
+
+        // Camera controls
+        let cameraControls = {
+            isMouseDown: false,
+            mouseX: 0,
+            mouseY: 0,
+            targetRotationX: 0,
+            targetRotationY: 0,
+            targetDistance: 30,
+            currentDistance: 30
+        };
 
         // Camera animations
         let orbitAnimation, councilAnimation, timelineAnimation, matrixAnimation;
@@ -1095,7 +1128,7 @@
             }
         };
 
-        // Enhanced Custom Shaders with tier-specific effects
+        // Enhanced Custom Shaders
         const governanceVertexShader = `
             uniform float time;
             uniform float pulseIntensity;
@@ -1200,7 +1233,113 @@
             }
         `;
 
-        // Enhanced Governance Node class
+        // Star shader for atmospheric background
+        const starVertexShader = `
+            attribute float brightness;
+            attribute vec3 color;
+            
+            varying vec3 vColor;
+            varying float vBrightness;
+            
+            uniform float time;
+            
+            void main() {
+                vColor = color;
+                vBrightness = brightness;
+                
+                vec3 pos = position;
+                
+                // Subtle parallax
+                float depth = length(pos);
+                pos.xy += sin(time * 0.0001 + depth * 0.001) * 0.5;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                
+                // Size with twinkle
+                float twinkle = sin(time * 0.005 + pos.x * pos.y * 0.01) * 0.5 + 0.5;
+                gl_PointSize = 1.5 * (1.0 + twinkle * 0.3) * (300.0 / -mvPosition.z);
+                
+                gl_Position = projectionMatrix * mvPosition;
+            }
+        `;
+
+        const starFragmentShader = `
+            varying vec3 vColor;
+            varying float vBrightness;
+            
+            uniform float time;
+            
+            void main() {
+                vec2 coord = gl_PointCoord - vec2(0.5);
+                float dist = length(coord);
+                
+                if(dist > 0.5) discard;
+                
+                float glow = 1.0 - smoothstep(0.0, 0.5, dist);
+                glow = pow(glow, 3.0);
+                
+                vec3 color = vColor * vBrightness;
+                float twinkle = sin(time * 0.01 + gl_FragCoord.x * gl_FragCoord.y * 0.0001) * 0.2 + 0.8;
+                
+                gl_FragColor = vec4(color, glow * vBrightness * twinkle);
+            }
+        `;
+
+        // Nebula shader for background atmosphere
+        const nebulaVertexShader = `
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            
+            void main() {
+                vUv = uv;
+                vPosition = position;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `;
+
+        const nebulaFragmentShader = `
+            uniform float time;
+            uniform float intensity;
+            uniform vec3 color1;
+            uniform vec3 color2;
+            uniform vec3 color3;
+            
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            
+            float noise(vec3 p) {
+                return sin(p.x) * sin(p.y) * sin(p.z);
+            }
+            
+            float fbm(vec3 p) {
+                float value = 0.0;
+                float amplitude = 0.5;
+                
+                for (int i = 0; i < 3; i++) {
+                    value += amplitude * noise(p);
+                    p *= 2.0;
+                    amplitude *= 0.5;
+                }
+                
+                return value;
+            }
+            
+            void main() {
+                vec3 pos = vPosition * 0.1 + time * 0.00005;
+                float n = fbm(pos) * 0.5 + 0.5;
+                n = pow(n, 2.0);
+                
+                vec3 color = mix(color1, color2, n);
+                color = mix(color, color3, pow(n, 3.0));
+                
+                float dist = length(vPosition);
+                float fade = 1.0 - smoothstep(50.0, 200.0, dist);
+                
+                gl_FragColor = vec4(color, n * intensity * fade);
+            }
+        `;
+
+        // Governance Node class
         class GovernanceNode {
             constructor(tier, index, tierConfig) {
                 this.tier = tier;
@@ -1283,7 +1422,6 @@
                 const labelDiv = document.createElement('div');
                 labelDiv.className = 'component-label';
                 
-                // Create both full and short labels
                 const fullName = `${this.config.name} ${this.index + 1}`;
                 const tierPrefix = this.tier === 0 ? 'PC' : this.tier === 1 ? 'TC' : 'CF';
                 const shortName = `${tierPrefix}${this.index + 1}`;
@@ -1300,35 +1438,27 @@
             updateLabelPosition() {
                 if (!this.label || !camera || !this.mesh) return;
                 
-                // Get actual world position of the mesh
                 const worldPos = new THREE.Vector3();
                 this.mesh.getWorldPosition(worldPos);
                 
-                // Offset label above the node
                 const labelOffset = this.config.scale * 2;
                 worldPos.y += labelOffset;
                 
-                // Create a vector for projection
                 const vector = worldPos.clone();
-                
-                // Project to normalized device coordinates
                 vector.project(camera);
 
-                // Check if behind camera
                 if (vector.z > 1) {
                     this.label.classList.remove('visible');
                     this.label.style.display = 'none';
                     return;
                 }
 
-                // Convert to screen coordinates
                 const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
                 const y = -(vector.y * 0.5 - 0.5) * window.innerHeight;
 
-                // Check viewport bounds
                 const margin = 50;
-                const labelWidth = 200; // Approximate label width
-                const labelHeight = 40; // Approximate label height
+                const labelWidth = 200;
+                const labelHeight = 40;
                 
                 if (x < -labelWidth || x > window.innerWidth + labelWidth || 
                     y < -labelHeight || y > window.innerHeight + labelHeight) {
@@ -1337,22 +1467,18 @@
                     return;
                 }
 
-                // Clamp position to keep labels on screen
                 const clampedX = Math.max(margin, Math.min(window.innerWidth - margin, x));
                 const clampedY = Math.max(margin, Math.min(window.innerHeight - margin, y));
 
-                // Update label position
                 this.label.style.display = 'block';
                 this.label.style.left = clampedX + 'px';
                 this.label.style.top = clampedY + 'px';
                 this.label.style.transform = 'translate(-50%, -50%)';
                 
-                // Apply label state
                 if (labelState === 0) {
                     this.label.classList.remove('visible');
                 } else {
                     this.label.classList.add('visible');
-                    // Update label text based on state
                     if (labelState === 1) {
                         this.label.innerHTML = this.label.getAttribute('data-full');
                     } else if (labelState === 2) {
@@ -1391,7 +1517,6 @@
                     });
                 }
 
-                // Play sound
                 if (audioEnabled && synth) {
                     playNodeSound(this.tier);
                 }
@@ -1452,7 +1577,7 @@
             }
         }
 
-        // Voting Flow class for plasma stream visualization
+        // Voting Flow class
         class VotingFlow {
             constructor(source, target, color) {
                 this.source = source;
@@ -1465,7 +1590,6 @@
             }
 
             createFlow() {
-                // Create tube geometry for the flow
                 const curve = new THREE.CatmullRomCurve3([
                     this.source.mesh.position.clone(),
                     new THREE.Vector3(
@@ -1478,7 +1602,6 @@
 
                 const tubeGeometry = new THREE.TubeGeometry(curve, 32, 0.3, 8, false);
                 
-                // Custom shader material for plasma flow
                 const flowMaterial = new THREE.ShaderMaterial({
                     uniforms: {
                         flowColor: { value: this.color },
@@ -1503,7 +1626,7 @@
                         void main() {
                             float pulse = sin(vUv.x * 20.0 - time * pulseRate) * 0.5 + 0.5;
                             vec3 color = flowColor * (0.5 + pulse * 0.5);
-                            float alpha = opacity * pulse * (1.0 - vUv.x); // Fade towards target
+                            float alpha = opacity * pulse * (1.0 - vUv.x);
                             gl_FragColor = vec4(color, alpha);
                         }
                     `,
@@ -1515,7 +1638,6 @@
                 this.mesh.visible = false;
                 scene.add(this.mesh);
 
-                // Create particle trail
                 if (quality !== 'low') {
                     this.createParticleTrail();
                 }
@@ -1546,13 +1668,11 @@
                 this.active = true;
                 this.mesh.visible = true;
                 
-                // Animate flow opacity
                 gsap.to(this.mesh.material.uniforms.opacity, {
                     value: 0.6,
                     duration: 0.5
                 });
 
-                // Show particles
                 this.particles.forEach(p => {
                     p.mesh.visible = true;
                     gsap.to(p.mesh.material, {
@@ -1561,7 +1681,6 @@
                     });
                 });
 
-                // Play flow sound
                 if (audioEnabled && synth) {
                     playFlowSound();
                 }
@@ -1578,7 +1697,6 @@
                     }
                 });
 
-                // Hide particles
                 this.particles.forEach(p => {
                     gsap.to(p.mesh.material, {
                         opacity: 0,
@@ -1593,10 +1711,8 @@
             update(time) {
                 if (!this.active) return;
 
-                // Update shader time
                 this.mesh.material.uniforms.time.value = time * 0.001;
 
-                // Update particle positions along curve
                 const curve = new THREE.CatmullRomCurve3([
                     this.source.mesh.position.clone(),
                     new THREE.Vector3(
@@ -1611,7 +1727,6 @@
                     p.progress += p.speed * 0.01;
                     if (p.progress > 1) {
                         p.progress = 0;
-                        // Pulse at target
                         if (this.target === votingCore) {
                             votingCore.mesh.material.uniforms.emissiveIntensity.value = 0.8;
                             setTimeout(() => {
@@ -1623,16 +1738,13 @@
                     const point = curve.getPoint(p.progress);
                     p.mesh.position.copy(point);
                     
-                    // Scale based on progress
                     const scale = Math.sin(p.progress * Math.PI) * 0.5 + 0.5;
                     p.mesh.scale.setScalar(scale);
                 });
             }
         }
 
-        // Array to store all voting flows
-
-        // Enhanced Voting Core class with consensus field
+        // Voting Core class
         class VotingCore {
             constructor() {
                 this.mesh = null;
@@ -1645,7 +1757,6 @@
             }
 
             createCore() {
-                // Central sphere with custom shader
                 const geometry = new THREE.SphereGeometry(2, 32, 32);
                 const material = new THREE.ShaderMaterial({
                     uniforms: {
@@ -1665,7 +1776,6 @@
                 this.mesh.receiveShadow = true;
                 scene.add(this.mesh);
 
-                // Orbital rings
                 for (let i = 0; i < 3; i++) {
                     const ringGeometry = new THREE.TorusGeometry(3 + i, 0.1, 16, 100);
                     const ringMaterial = new THREE.MeshBasicMaterial({
@@ -1682,26 +1792,20 @@
             }
 
             update(time) {
-                // Core pulsing
                 const scale = 1 + Math.sin(time * 0.002) * 0.1;
                 this.mesh.scale.set(scale, scale, scale);
 
-                // Update shader uniforms
                 this.mesh.material.uniforms.time.value = time * 0.001;
                 this.mesh.material.uniforms.emissiveIntensity.value = 0.3 + this.consensus * 0.5;
 
-                // Rotate rings
                 this.rings.forEach((ring, i) => {
                     ring.rotation.z += 0.01 * (i + 1);
                     ring.rotation.y += 0.005 * (i + 1);
                 });
                 
-                // Update consensus field
                 if (this.consensusField && this.consensusField.visible) {
                     this.consensusField.material.uniforms.time.value = time * 0.001;
                     this.consensusField.material.uniforms.cameraPosition.value = camera.position;
-                    
-                    // Gentle rotation
                     this.consensusField.rotation.y += 0.001;
                 }
             }
@@ -1709,10 +1813,8 @@
             createConsensusField() {
                 if (quality === 'low') return;
                 
-                // Create consensus field geometry
                 const fieldGeometry = new THREE.SphereGeometry(20, 64, 64);
                 
-                // Consensus field shader material
                 const fieldMaterial = new THREE.ShaderMaterial({
                     uniforms: {
                         primaryColor: { value: new THREE.Color(0x8B5CF6) },
@@ -1763,17 +1865,14 @@
                             vec3 viewDirection = normalize(cameraPosition - vWorldPosition);
                             float fresnel = pow(1.0 - abs(dot(viewDirection, vNormal)), 2.0);
                             
-                            // Radial gradient
                             float radius = length(vWorldPosition.xz);
                             float gradient = smoothstep(5.0, 20.0, radius);
                             
                             vec3 color = mix(primaryColor, tertiaryColor, gradient);
                             
-                            // Energy waves
                             float wave = sin(radius * 0.5 - time * 3.0) * 0.5 + 0.5;
                             color *= 0.5 + wave * 0.5 * consensusLevel;
                             
-                            // Fresnel glow
                             color += (primaryColor + secondaryColor) * fresnel * 0.5 * consensusLevel;
                             
                             float alpha = opacity * fresnel * consensusLevel;
@@ -1794,7 +1893,6 @@
             showConsensus(level) {
                 this.consensus = level;
                 
-                // Animate rings expanding
                 this.rings.forEach((ring, i) => {
                     gsap.to(ring.scale, {
                         x: 1 + level * 0.5,
@@ -1806,7 +1904,6 @@
                     });
                 });
 
-                // Show consensus field
                 if (this.consensusField && level > 0.3) {
                     this.consensusField.visible = true;
                     this.consensusField.material.uniforms.consensusLevel.value = level;
@@ -1825,11 +1922,265 @@
                     });
                 }
 
-                // Play consensus sound
                 if (audioEnabled && synth) {
                     playConsensusSound(level);
                 }
             }
+        }
+
+        // Create Starfield Background
+        function createStarfield() {
+            const geometry = new THREE.BufferGeometry();
+            const count = 10000;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const brightness = new Float32Array(count);
+            
+            for (let i = 0; i < count; i++) {
+                // Spherical distribution
+                const radius = 100 + Math.random() * 400;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Star colors
+                const temp = Math.random();
+                if (temp < 0.3) {
+                    // Blue stars
+                    colors[i * 3] = 0.6;
+                    colors[i * 3 + 1] = 0.8;
+                    colors[i * 3 + 2] = 1.0;
+                } else if (temp < 0.8) {
+                    // White stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 1.0;
+                    colors[i * 3 + 2] = 0.9;
+                } else {
+                    // Red stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.6;
+                    colors[i * 3 + 2] = 0.4;
+                }
+                
+                brightness[i] = Math.random() * 0.5 + 0.5;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('brightness', new THREE.BufferAttribute(brightness, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: starVertexShader,
+                fragmentShader: starFragmentShader,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                transparent: true,
+                vertexColors: true
+            });
+            
+            starfield = new THREE.Points(geometry, material);
+            scene.add(starfield);
+        }
+
+        // Create Nebula Background
+        function createNebula() {
+            const geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 },
+                    intensity: { value: 0.5 },
+                    color1: { value: new THREE.Color(0x1a0033) },
+                    color2: { value: new THREE.Color(0x003366) },
+                    color3: { value: new THREE.Color(0x0066cc) }
+                },
+                vertexShader: nebulaVertexShader,
+                fragmentShader: nebulaFragmentShader,
+                side: THREE.DoubleSide,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            nebula = new THREE.Mesh(geometry, material);
+            nebula.position.z = -300;
+            scene.add(nebula);
+            
+            // Add additional nebula layers
+            for (let i = 0; i < 3; i++) {
+                const nebulaLayer = nebula.clone();
+                nebulaLayer.position.z = -250 - i * 100;
+                nebulaLayer.position.x = (Math.random() - 0.5) * 100;
+                nebulaLayer.position.y = (Math.random() - 0.5) * 50;
+                nebulaLayer.scale.set(1 + i * 0.3, 1 + i * 0.3, 1);
+                nebulaLayer.rotation.z = Math.random() * Math.PI;
+                
+                const layerMaterial = material.clone();
+                layerMaterial.uniforms.intensity.value = 0.3 - i * 0.1;
+                nebulaLayer.material = layerMaterial;
+                
+                scene.add(nebulaLayer);
+            }
+        }
+
+        // Create Cosmic Dust
+        function createCosmicDust() {
+            const geometry = new THREE.BufferGeometry();
+            const particleCount = 5000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                // Dust distribution
+                const radius = 20 + Math.random() * 100;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Subtle dust colors
+                const color = new THREE.Color();
+                color.setHSL(0.6 + Math.random() * 0.1, 0.5, 0.2);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+                
+                sizes[i] = Math.random() * 0.5 + 0.1;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            cosmicDust = new THREE.Points(geometry, material);
+            scene.add(cosmicDust);
+        }
+
+        // Energy Particle System
+        class EnergyParticleSystem {
+            constructor() {
+                this.particleCount = quality === 'ultra' ? 200 : quality === 'high' ? 150 : quality === 'medium' ? 100 : 50;
+                this.particles = new THREE.BufferGeometry();
+                this.positions = new Float32Array(this.particleCount * 3);
+                this.colors = new Float32Array(this.particleCount * 3);
+                this.sizes = new Float32Array(this.particleCount);
+                this.velocities = [];
+                
+                this.init();
+            }
+            
+            init() {
+                for (let i = 0; i < this.particleCount; i++) {
+                    const tier = Math.floor(Math.random() * 3);
+                    const tierRadius = [8, 12, 16][tier];
+                    const radius = tierRadius + (Math.random() - 0.5) * 2;
+                    const angle = Math.random() * Math.PI * 2;
+                    
+                    this.positions[i * 3] = Math.cos(angle) * radius;
+                    this.positions[i * 3 + 1] = [10, 5, 0][tier] + (Math.random() - 0.5) * 2;
+                    this.positions[i * 3 + 2] = Math.sin(angle) * radius;
+                    
+                    const height = this.positions[i * 3 + 1];
+                    let color;
+                    if (height > 7) {
+                        color = new THREE.Color(0x8B5CF6);
+                    } else if (height > 2) {
+                        color = new THREE.Color(0x3B82F6);
+                    } else {
+                        color = new THREE.Color(0x10B981);
+                    }
+                    
+                    this.colors[i * 3] = color.r;
+                    this.colors[i * 3 + 1] = color.g;
+                    this.colors[i * 3 + 2] = color.b;
+                    
+                    this.sizes[i] = Math.random() * 0.5 + 0.3;
+                    
+                    this.velocities.push({
+                        x: (Math.random() - 0.5) * 0.01,
+                        y: (Math.random() - 0.5) * 0.01,
+                        z: (Math.random() - 0.5) * 0.01,
+                        angle: Math.random() * Math.PI * 2,
+                        angleVel: (Math.random() - 0.5) * 0.005
+                    });
+                }
+                
+                this.particles.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
+                this.particles.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
+                this.particles.setAttribute('size', new THREE.BufferAttribute(this.sizes, 1));
+                
+                const material = new THREE.PointsMaterial({
+                    size: 0.5,
+                    vertexColors: true,
+                    blending: THREE.AdditiveBlending,
+                    transparent: true,
+                    opacity: 0.2,
+                    sizeAttenuation: true
+                });
+                
+                this.mesh = new THREE.Points(this.particles, material);
+                scene.add(this.mesh);
+            }
+            
+            update(time) {
+                const positions = this.particles.attributes.position.array;
+                
+                for (let i = 0; i < this.particleCount; i++) {
+                    const vel = this.velocities[i];
+                    const i3 = i * 3;
+                    
+                    vel.angle += vel.angleVel;
+                    const radius = Math.sqrt(positions[i3] * positions[i3] + positions[i3 + 2] * positions[i3 + 2]);
+                    
+                    positions[i3] = Math.cos(vel.angle) * radius;
+                    positions[i3 + 2] = Math.sin(vel.angle) * radius;
+                    
+                    positions[i3 + 1] += vel.y;
+                    
+                    if (positions[i3 + 1] > 12) {
+                        positions[i3 + 1] = -2;
+                    } else if (positions[i3 + 1] < -2) {
+                        positions[i3 + 1] = 12;
+                    }
+                    
+                    const maxRadius = [10, 14, 18][Math.floor((positions[i3 + 1] + 2) / 5)];
+                    if (radius > maxRadius) {
+                        vel.angle += Math.PI;
+                        positions[i3] *= 0.95;
+                        positions[i3 + 2] *= 0.95;
+                    } else if (radius < 3) {
+                        vel.angle += Math.PI;
+                    }
+                }
+                
+                this.particles.attributes.position.needsUpdate = true;
+            }
+        }
+
+        let particleSystem;
+        let votingCore;
+
+        function createEnergyParticles() {
+            particleSystem = new EnergyParticleSystem();
+            energyParticles.push(particleSystem);
         }
 
         // Initialize Three.js
@@ -1845,7 +2196,7 @@
                 0.1,
                 1000
             );
-            camera.position.set(0, 15, 25); // Start within bounds
+            camera.position.set(0, 15, 30);
             camera.lookAt(0, 5, 0);
 
             // Renderer
@@ -1865,6 +2216,11 @@
             // Raycaster and mouse
             raycaster = new THREE.Raycaster();
             mouse = new THREE.Vector2();
+
+            // Add background atmosphere
+            createStarfield();
+            createNebula();
+            createCosmicDust();
 
             // Add lights
             setupLighting();
@@ -2027,123 +2383,6 @@
             connections.push({ line, node1: node, node2: votingCore, isCore: true });
         }
 
-        // Energy Particle System - Fixed to be less intrusive
-        class EnergyParticleSystem {
-            constructor() {
-                // Drastically reduced particle count for less clutter
-                this.particleCount = quality === 'ultra' ? 150 : quality === 'high' ? 100 : quality === 'medium' ? 75 : 50;
-                this.particles = new THREE.BufferGeometry();
-                this.positions = new Float32Array(this.particleCount * 3);
-                this.colors = new Float32Array(this.particleCount * 3);
-                this.sizes = new Float32Array(this.particleCount);
-                this.velocities = [];
-                
-                this.init();
-            }
-            
-            init() {
-                for (let i = 0; i < this.particleCount; i++) {
-                    // More tightly constrained position within chamber bounds
-                    const tier = Math.floor(Math.random() * 3);
-                    const tierRadius = [8, 12, 16][tier]; // Match tier radii
-                    const radius = tierRadius + (Math.random() - 0.5) * 2; // Small variation
-                    const angle = Math.random() * Math.PI * 2;
-                    
-                    this.positions[i * 3] = Math.cos(angle) * radius;
-                    this.positions[i * 3 + 1] = [10, 5, 0][tier] + (Math.random() - 0.5) * 2; // Near tier heights
-                    this.positions[i * 3 + 2] = Math.sin(angle) * radius;
-                    
-                    // Color based on height (tier)
-                    const height = this.positions[i * 3 + 1];
-                    let color;
-                    if (height > 7) {
-                        color = new THREE.Color(0x8B5CF6); // Protocol Council purple
-                    } else if (height > 2) {
-                        color = new THREE.Color(0x3B82F6); // Technical Committee blue
-                    } else {
-                        color = new THREE.Color(0x10B981); // Community Forum green
-                    }
-                    
-                    this.colors[i * 3] = color.r;
-                    this.colors[i * 3 + 1] = color.g;
-                    this.colors[i * 3 + 2] = color.b;
-                    
-                    this.sizes[i] = Math.random() * 0.5 + 0.3;  // Even smaller particles
-                    
-                    // Velocity
-                    this.velocities.push({
-                        x: (Math.random() - 0.5) * 0.01,
-                        y: (Math.random() - 0.5) * 0.01,
-                        z: (Math.random() - 0.5) * 0.01,
-                        angle: Math.random() * Math.PI * 2,
-                        angleVel: (Math.random() - 0.5) * 0.005
-                    });
-                }
-                
-                this.particles.setAttribute('position', new THREE.BufferAttribute(this.positions, 3));
-                this.particles.setAttribute('color', new THREE.BufferAttribute(this.colors, 3));
-                this.particles.setAttribute('size', new THREE.BufferAttribute(this.sizes, 1));
-                
-                const material = new THREE.PointsMaterial({
-                    size: 0.5,  // Much smaller base size
-                    vertexColors: true,
-                    blending: THREE.AdditiveBlending,
-                    transparent: true,
-                    opacity: 0.2,  // Even lower opacity
-                    sizeAttenuation: true
-                });
-                
-                this.mesh = new THREE.Points(this.particles, material);
-                scene.add(this.mesh);
-            }
-            
-            update(time) {
-                const positions = this.particles.attributes.position.array;
-                
-                for (let i = 0; i < this.particleCount; i++) {
-                    const vel = this.velocities[i];
-                    const i3 = i * 3;
-                    
-                    // Circular motion
-                    vel.angle += vel.angleVel;
-                    const radius = Math.sqrt(positions[i3] * positions[i3] + positions[i3 + 2] * positions[i3 + 2]);
-                    
-                    // Gentle motion
-                    positions[i3] = Math.cos(vel.angle) * radius;
-                    positions[i3 + 2] = Math.sin(vel.angle) * radius;
-                    
-                    // Vertical drift
-                    positions[i3 + 1] += vel.y;
-                    
-                    // Boundary check - keep within chamber
-                    if (positions[i3 + 1] > 12) {
-                        positions[i3 + 1] = -2;
-                    } else if (positions[i3 + 1] < -2) {
-                        positions[i3 + 1] = 12;
-                    }
-                    
-                    // Keep particles within their tier radius
-                    const maxRadius = [10, 14, 18][Math.floor((positions[i3 + 1] + 2) / 5)];
-                    if (radius > maxRadius) {
-                        vel.angle += Math.PI;
-                        positions[i3] *= 0.95;
-                        positions[i3 + 2] *= 0.95;
-                    } else if (radius < 3) {
-                        vel.angle += Math.PI;
-                    }
-                }
-                
-                this.particles.attributes.position.needsUpdate = true;
-            }
-        }
-
-        let particleSystem;
-
-        function createEnergyParticles() {
-            particleSystem = new EnergyParticleSystem();
-            energyParticles.push(particleSystem);
-        }
-
         // Audio System
         function initAudio() {
             try {
@@ -2197,7 +2436,6 @@
         function playConsensusSound(level) {
             if (!audioEnabled || !synth) return;
             
-            // Build chord based on consensus level
             const baseNotes = ['C3', 'G3', 'C4', 'E4', 'G4'];
             const noteCount = Math.floor(level * baseNotes.length);
             const chord = baseNotes.slice(0, noteCount + 1);
@@ -2209,35 +2447,37 @@
             }
         }
 
-        // Camera Controls
+        // Camera Controls - Fixed version
         function setupCameraControls() {
-            let isMouseDown = false;
-            let mouseX = 0;
-            let mouseY = 0;
-            let targetRotationX = 0;
-            let targetRotationY = 0;
-
             document.addEventListener('mousedown', (e) => {
                 if (e.target.tagName === 'CANVAS') {
-                    isMouseDown = true;
-                    mouseX = e.clientX;
-                    mouseY = e.clientY;
+                    cameraControls.isMouseDown = true;
+                    cameraControls.mouseX = e.clientX;
+                    cameraControls.mouseY = e.clientY;
                 }
             });
 
             document.addEventListener('mouseup', () => {
-                isMouseDown = false;
+                cameraControls.isMouseDown = false;
             });
 
             document.addEventListener('mousemove', (e) => {
-                if (isMouseDown && currentView !== 'cinematic') {
-                    const deltaX = e.clientX - mouseX;
-                    const deltaY = e.clientY - mouseY;
-                    targetRotationY += deltaX * 0.01;
-                    targetRotationX += deltaY * 0.01;
-                    targetRotationX = Math.max(-Math.PI/4, Math.min(Math.PI/4, targetRotationX));
-                    mouseX = e.clientX;
-                    mouseY = e.clientY;
+                if (cameraControls.isMouseDown && currentView !== 'cinematic') {
+                    const deltaX = e.clientX - cameraControls.mouseX;
+                    const deltaY = e.clientY - cameraControls.mouseY;
+                    
+                    // Update rotation targets
+                    cameraControls.targetRotationY += deltaX * 0.01;
+                    cameraControls.targetRotationX += deltaY * 0.01;
+                    
+                    // Clamp vertical rotation
+                    cameraControls.targetRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, cameraControls.targetRotationX));
+                    
+                    cameraControls.mouseX = e.clientX;
+                    cameraControls.mouseY = e.clientY;
+                    
+                    // Update camera immediately for responsive feel
+                    updateCameraRotation();
                 }
 
                 // Update mouse position for raycasting
@@ -2252,45 +2492,36 @@
                 }
             });
 
-            // Mouse wheel zoom - Fixed constraints
+            // Mouse wheel zoom - Fixed
             document.addEventListener('wheel', (e) => {
                 if (e.target.closest('.control-panel') || e.target.closest('.view-modes')) return;
                 if (currentView !== 'cinematic') {
                     e.preventDefault();
-                    const zoomSpeed = 0.1; // Increased zoom speed
-                    const distance = camera.position.length();
-                    const zoomFactor = 1 + (e.deltaY > 0 ? zoomSpeed : -zoomSpeed);
-                    const newDistance = distance * zoomFactor;
                     
-                    // Wider zoom range for better usability
-                    if (newDistance >= 10 && newDistance <= 60) {
-                        const scaleFactor = newDistance / distance;
-                        camera.position.x *= scaleFactor;
-                        camera.position.y *= scaleFactor;
-                        camera.position.z *= scaleFactor;
-                        camera.lookAt(0, 5, 0);
-                    }
+                    const delta = e.deltaY * 0.01;
+                    cameraControls.targetDistance = Math.max(15, Math.min(60, cameraControls.targetDistance + delta));
+                    
+                    // Update camera immediately for responsive feel
+                    updateCameraRotation();
                 }
             }, { passive: false });
-
-            // Smooth camera rotation with constraints
-            function updateCameraRotation() {
-                if (currentView === 'cinematic') return;
-                
-                const cameraDistance = camera.position.length();
-                // Clamp camera distance to prevent it from going too far
-                const clampedDistance = Math.max(15, Math.min(45, cameraDistance));
-                
-                camera.position.x = Math.sin(targetRotationY) * Math.cos(targetRotationX) * clampedDistance;
-                camera.position.y = Math.sin(targetRotationX) * clampedDistance + 10;
-                camera.position.z = Math.cos(targetRotationY) * Math.cos(targetRotationX) * clampedDistance;
-                camera.lookAt(0, 5, 0);
-            }
-
-            return updateCameraRotation;
         }
 
-        let updateCameraRotation;
+        // Update camera rotation function
+        function updateCameraRotation() {
+            if (currentView === 'cinematic') return;
+            
+            // Smooth camera distance
+            cameraControls.currentDistance += (cameraControls.targetDistance - cameraControls.currentDistance) * 0.1;
+            
+            // Calculate camera position
+            const x = Math.sin(cameraControls.targetRotationY) * Math.cos(cameraControls.targetRotationX) * cameraControls.currentDistance;
+            const y = Math.sin(cameraControls.targetRotationX) * cameraControls.currentDistance + 10;
+            const z = Math.cos(cameraControls.targetRotationY) * Math.cos(cameraControls.targetRotationX) * cameraControls.currentDistance;
+            
+            camera.position.set(x, y, z);
+            camera.lookAt(0, 5, 0);
+        }
 
         // View Mode Management
         function setViewMode(mode) {
@@ -2331,10 +2562,15 @@
             cinematicActive = false;
             document.getElementById('cinematicUI').classList.remove('visible');
             
+            // Reset camera controls
+            cameraControls.targetRotationX = 0;
+            cameraControls.targetRotationY = 0;
+            cameraControls.targetDistance = 30;
+            
             gsap.to(camera.position, {
                 x: 0,
                 y: 15,
-                z: 25, // Reduced from 30 to stay within bounds
+                z: 30,
                 duration: 2,
                 ease: "power2.inOut",
                 onUpdate: () => camera.lookAt(0, 5, 0)
@@ -2345,7 +2581,11 @@
             cinematicActive = false;
             document.getElementById('cinematicUI').classList.remove('visible');
             
-            // Focus on voting core and show energy flows
+            // Set camera controls for this view
+            cameraControls.targetRotationX = 0.2;
+            cameraControls.targetRotationY = 0.5;
+            cameraControls.targetDistance = 25;
+            
             gsap.to(camera.position, {
                 x: 20,
                 y: 10,
@@ -2363,10 +2603,14 @@
             cinematicActive = false;
             document.getElementById('cinematicUI').classList.remove('visible');
             
-            // Top-down view - constrained height
+            // Top-down view
+            cameraControls.targetRotationX = -Math.PI / 4;
+            cameraControls.targetRotationY = 0;
+            cameraControls.targetDistance = 40;
+            
             gsap.to(camera.position, {
                 x: 0,
-                y: 35, // Reduced from 40 to stay within bounds
+                y: 35,
                 z: 5,
                 duration: 2,
                 ease: "power2.inOut",
@@ -2378,9 +2622,13 @@
             cinematicActive = false;
             document.getElementById('cinematicUI').classList.remove('visible');
             
-            // Side view focusing on tiers - constrained distance
+            // Side view
+            cameraControls.targetRotationX = 0;
+            cameraControls.targetRotationY = Math.PI / 2;
+            cameraControls.targetDistance = 35;
+            
             gsap.to(camera.position, {
-                x: 30, // Reduced from 35 to stay within bounds
+                x: 30,
                 y: 10,
                 z: 0,
                 duration: 2,
@@ -2437,7 +2685,7 @@
         }
 
         function startOrbitCamera() {
-            const radius = 28; // Reduced from 35 to stay within bounds
+            const radius = 30;
             
             orbitAnimation = gsap.timeline({ repeat: -1 })
                 .to(camera.position, {
@@ -2455,7 +2703,6 @@
         }
 
         function startCouncilCamera() {
-            // Focus on each tier
             councilAnimation = gsap.timeline({ repeat: -1 });
             
             chamberConfig.tiers.forEach((tier, index) => {
@@ -2492,7 +2739,7 @@
         function startMatrixView() {
             gsap.to(camera.position, {
                 x: 0,
-                y: 40, // Reduced from 50 to stay within bounds
+                y: 40,
                 z: 0,
                 duration: 3,
                 ease: "power2.out",
@@ -2502,12 +2749,10 @@
 
         // Governance Actions
         function createProposal() {
-            // Activate random community member
             const communityNodes = governanceNodes.filter(n => n.tier === 2);
             const proposer = communityNodes[Math.floor(Math.random() * communityNodes.length)];
             proposer.activate();
             
-            // Create proposal visualization
             const proposalGeometry = new THREE.OctahedronGeometry(0.5);
             const proposalMaterial = new THREE.MeshBasicMaterial({
                 color: 0xF59E0B,
@@ -2518,7 +2763,6 @@
             proposal.position.copy(proposer.mesh.position);
             scene.add(proposal);
             
-            // Animate proposal to voting core
             gsap.to(proposal.position, {
                 x: votingCore.mesh.position.x,
                 y: votingCore.mesh.position.y,
@@ -2533,7 +2777,6 @@
                 }
             });
             
-            // Update stats
             stats.energyFlow = 'Active';
             updateStats();
         }
@@ -2542,11 +2785,9 @@
             let voteCount = 0;
             let consensus = 0;
             
-            // Random voting from all tiers
             const voteInterval = setInterval(() => {
                 if (voteCount >= 20) {
                     clearInterval(voteInterval);
-                    // Show final consensus
                     votingCore.showConsensus(consensus / 20);
                     stats.consensusLevel = Math.floor((consensus / 20) * 100);
                     stats.energyFlow = 'Normal';
@@ -2554,11 +2795,9 @@
                     return;
                 }
                 
-                // Random node votes
                 const voter = governanceNodes[Math.floor(Math.random() * governanceNodes.length)];
                 voter.activate();
                 
-                // Create vote particle
                 const voteGeometry = new THREE.SphereGeometry(0.3);
                 const voteMaterial = new THREE.MeshBasicMaterial({
                     color: voter.config.color,
@@ -2569,7 +2808,6 @@
                 vote.position.copy(voter.mesh.position);
                 scene.add(vote);
                 
-                // Animate to core
                 gsap.to(vote.position, {
                     x: votingCore.mesh.position.x,
                     y: votingCore.mesh.position.y,
@@ -2583,12 +2821,11 @@
                 });
                 
                 voteCount++;
-                consensus += Math.random() > 0.3 ? 1 : 0; // 70% positive votes
+                consensus += Math.random() > 0.3 ? 1 : 0;
             }, 300);
         }
 
         function showConsensus() {
-            // Activate all nodes briefly
             governanceNodes.forEach((node, i) => {
                 setTimeout(() => {
                     node.activate();
@@ -2596,7 +2833,6 @@
                 }, i * 50);
             });
             
-            // Show maximum consensus
             setTimeout(() => {
                 votingCore.showConsensus(1.0);
                 stats.consensusLevel = 100;
@@ -2605,20 +2841,16 @@
         }
 
         function resetGovernance() {
-            // Deactivate all nodes
             governanceNodes.forEach(node => node.deactivate());
             
-            // Reset voting core
             votingCore.consensus = 0;
             votingCore.showConsensus(0);
             
-            // Reset stats
             stats.proposalCount = 0;
             stats.consensusLevel = 0;
             stats.energyFlow = 'Normal';
             updateStats();
             
-            // Reset camera
             showCouncilView();
         }
 
@@ -2672,6 +2904,25 @@
             // Update FPS
             updateFPS();
 
+            // Update camera if not in cinematic mode
+            if (!cinematicActive) {
+                updateCameraRotation();
+            }
+
+            // Update background elements
+            if (starfield) {
+                starfield.material.uniforms.time.value = time * 0.001;
+                starfield.rotation.y += 0.0001;
+            }
+
+            if (nebula) {
+                nebula.material.uniforms.time.value = time * 0.001;
+            }
+
+            if (cosmicDust) {
+                cosmicDust.rotation.y += 0.0002;
+            }
+
             // Update governance nodes
             governanceNodes.forEach(node => node.update(time));
 
@@ -2707,31 +2958,35 @@
                 }
             });
 
-            // Update camera
-            if (updateCameraRotation && currentView !== 'cinematic') {
-                updateCameraRotation();
-            }
+            // Update voting flows
+            votingFlows.forEach(flow => flow.update(time));
 
             // Raycasting for hover effects
             raycaster.setFromCamera(mouse, camera);
-            const intersects = raycaster.intersectObjects(scene.children, true);
-
-            // Reset cursor
-            const cursor = document.getElementById('customCursor');
-            if (cursor) {
-                cursor.classList.remove('hover');
-            }
-
-            if (intersects.length > 0) {
-                const object = intersects[0].object;
-                if (object.userData.node) {
-                    if (cursor) {
-                        cursor.classList.add('hover');
+            const intersects = raycaster.intersectObjects(governanceNodes.map(n => n.mesh));
+            
+            governanceNodes.forEach(node => {
+                const isHovered = intersects.some(i => i.object === node.mesh);
+                if (isHovered) {
+                    node.mesh.material.uniforms.emissiveIntensity.value = 0.5;
+                    document.getElementById('customCursor').classList.add('hover');
+                    if (!node.isHovered) {
+                        node.isHovered = true;
+                        showInfoPanel(node);
                     }
-                    showInfoPanel(object.userData.node);
+                } else {
+                    if (!node.active) {
+                        node.mesh.material.uniforms.emissiveIntensity.value = 0.2;
+                    }
+                    if (node.isHovered) {
+                        node.isHovered = false;
+                        hideInfoPanel();
+                    }
                 }
-            } else {
-                hideInfoPanel();
+            });
+
+            if (intersects.length === 0) {
+                document.getElementById('customCursor').classList.remove('hover');
             }
 
             // Render
@@ -2739,18 +2994,46 @@
         }
 
         // Event Listeners
-        function setupEventListeners() {
-            // Window resize
-            window.addEventListener('resize', () => {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize audio
+            initAudio();
+
+            // Loading simulation
+            let loadingProgress = 0;
+            const loadingInterval = setInterval(() => {
+                loadingProgress += Math.random() * 20;
+                if (loadingProgress >= 100) {
+                    loadingProgress = 100;
+                    clearInterval(loadingInterval);
+                    
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').style.opacity = '0';
+                        setTimeout(() => {
+                            document.getElementById('loadingScreen').style.display = 'none';
+                        }, 500);
+                    }, 500);
+                }
+                
+                document.getElementById('loadingProgress').style.width = loadingProgress + '%';
+                
+                if (loadingProgress < 30) {
+                    document.getElementById('loadingStatus').textContent = 'Initializing governance systems...';
+                } else if (loadingProgress < 60) {
+                    document.getElementById('loadingStatus').textContent = 'Loading consensus protocols...';
+                } else if (loadingProgress < 90) {
+                    document.getElementById('loadingStatus').textContent = 'Establishing quantum entanglement...';
+                } else {
+                    document.getElementById('loadingStatus').textContent = 'Welcome to governance chamber...';
+                }
+            }, 100);
+
+            // Initialize Three.js
+            initThree();
 
             // View mode buttons
             document.querySelectorAll('.view-mode-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    setViewMode(e.target.dataset.mode);
+                btn.addEventListener('click', () => {
+                    setViewMode(btn.dataset.mode);
                 });
             });
 
@@ -2760,103 +3043,70 @@
             document.getElementById('showConsensusBtn').addEventListener('click', showConsensus);
             document.getElementById('resetGovernanceBtn').addEventListener('click', resetGovernance);
 
-            // Camera presets
+            // Camera preset buttons
             document.querySelectorAll('.camera-preset').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    setCameraPreset(e.target.dataset.camera);
+                btn.addEventListener('click', () => {
+                    setCameraPreset(btn.dataset.camera);
                 });
             });
 
             // Quality settings
             document.querySelectorAll('.quality-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                btn.addEventListener('click', () => {
                     document.querySelectorAll('.quality-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
-                    quality = e.target.dataset.quality;
-                    
-                    // Update renderer settings
-                    renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'ultra' ? 2 : 1.5));
-                    renderer.shadowMap.enabled = quality !== 'low';
-                    renderer.shadowMap.type = quality === 'low' ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
-                    
-                    // Recreate particle system with new quality
-                    if (particleSystem) {
-                        scene.remove(particleSystem.mesh);
-                        energyParticles = [];
-                        createEnergyParticles();
-                    }
+                    quality = btn.dataset.quality;
+                    // Would need to recreate scene with new quality settings
                 });
             });
 
             // Visualization toggles
             document.getElementById('showParticles').addEventListener('change', (e) => {
                 if (e.target.checked) {
-                    createEnergyParticles();
+                    if (!particleSystem) {
+                        createEnergyParticles();
+                    } else {
+                        particleSystem.mesh.visible = true;
+                    }
                 } else if (particleSystem) {
-                    scene.remove(particleSystem.mesh);
-                    particleSystem = null;
-                    energyParticles = [];
+                    particleSystem.mesh.visible = false;
                 }
             });
 
             document.getElementById('showConnections').addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    createGovernanceConnections();
-                } else {
-                    connections.forEach(conn => {
-                        if (conn.line) scene.remove(conn.line);
-                    });
-                    connections = [];
-                }
-            });
-
-            // Label toggle button
-            document.getElementById('labelToggle').addEventListener('click', (e) => {
-                labelState = (labelState + 1) % 3;
-                const button = e.target;
-                
-                // Update button text
-                const states = ['Off', 'Full', 'Short'];
-                button.textContent = `Node Labels: ${states[labelState]}`;
-                
-                // Update all labels
-                governanceNodes.forEach(node => {
-                    if (node.label) {
-                        node.updateLabelPosition();
-                    }
+                connections.forEach(conn => {
+                    conn.line.visible = e.target.checked;
                 });
             });
 
-            // Audio controls
-            const audioToggle = document.getElementById('audioToggle');
-            const volumeSlider = document.getElementById('volumeSlider');
+            // Label toggle
+            document.getElementById('labelToggle').addEventListener('click', () => {
+                labelState = (labelState + 1) % 3;
+                const states = ['Off', 'Full', 'Short'];
+                document.getElementById('labelToggle').textContent = `Node Labels: ${states[labelState]}`;
+            });
 
-            audioToggle.addEventListener('click', async () => {
-                if (!audioEnabled) {
-                    if (typeof Tone !== 'undefined' && Tone.context.state === 'suspended') {
-                        await Tone.start();
-                    }
-                    audioEnabled = true;
-                    audioToggle.textContent = '🔊';
-                    audioToggle.classList.add('active');
-                } else {
-                    audioEnabled = false;
-                    audioToggle.textContent = '🔇';
-                    audioToggle.classList.remove('active');
+            // Audio toggle
+            document.getElementById('audioToggle').addEventListener('click', () => {
+                audioEnabled = !audioEnabled;
+                document.getElementById('audioToggle').textContent = audioEnabled ? '🔊' : '🔇';
+                document.getElementById('audioToggle').classList.toggle('active', audioEnabled);
+                
+                if (audioEnabled && Tone.context.state !== 'running') {
+                    Tone.start();
                 }
             });
 
-            volumeSlider.addEventListener('input', (e) => {
-                const volume = e.target.value / 100;
-                if (typeof Tone !== 'undefined') {
-                    Tone.Destination.volume.value = Tone.gainToDb(volume);
+            // Volume control
+            document.getElementById('volumeSlider').addEventListener('input', (e) => {
+                if (synth) {
+                    const volume = (e.target.value / 100) * 40 - 40; // Convert to dB
+                    synth.volume.value = volume;
                 }
             });
 
             // Keyboard shortcuts
             document.addEventListener('keydown', (e) => {
-                if (document.activeElement.tagName === 'INPUT') return;
-
                 switch(e.key) {
                     case '1':
                         setViewMode('council');
@@ -2883,16 +3133,18 @@
                         break;
                     case 'r':
                     case 'R':
-                        resetGovernance();
+                        showCouncilView();
                         break;
                     case 'm':
                     case 'M':
-                        audioToggle.click();
+                        document.getElementById('audioToggle').click();
                         break;
                     case 'f':
                     case 'F':
-                        if (!e.ctrlKey && !e.metaKey) {
-                            toggleFullscreen();
+                        if (document.fullscreenElement) {
+                            document.exitFullscreen();
+                        } else {
+                            document.documentElement.requestFullscreen();
                         }
                         break;
                     case '?':
@@ -2900,99 +3152,38 @@
                         break;
                     case 'Escape':
                         if (cinematicActive) {
+                            cinematicActive = false;
+                            document.getElementById('cinematicUI').classList.remove('visible');
                             setViewMode('council');
                         }
-                        if (document.getElementById('helpOverlay').style.display === 'flex') {
-                            document.getElementById('helpOverlay').style.display = 'none';
-                        }
+                        document.getElementById('helpOverlay').style.display = 'none';
                         break;
                 }
             });
-        }
 
-        // Fullscreen toggle
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
+            // Close help overlay when clicking outside
+            document.getElementById('helpOverlay').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    e.currentTarget.style.display = 'none';
                 }
-            }
-        }
+            });
 
-        // Loading Manager
-        const loadingManager = new THREE.LoadingManager();
-        let loadingProgress = 0;
+            // Window resize
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
 
-        loadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
-            loadingProgress = (itemsLoaded / itemsTotal) * 100;
-            document.getElementById('loadingProgress').style.width = loadingProgress + '%';
-        };
+            // Mouse leave/enter for custom cursor
+            document.addEventListener('mouseleave', () => {
+                document.getElementById('customCursor').style.display = 'none';
+            });
 
-        loadingManager.onLoad = () => {
-            setTimeout(() => {
-                document.getElementById('loadingScreen').style.opacity = '0';
-                setTimeout(() => {
-                    document.getElementById('loadingScreen').style.display = 'none';
-                    startExperience();
-                }, 500);
-            }, 500);
-        };
-
-        // Start experience
-        function startExperience() {
-            // Initialize audio
-            initAudio();
-            
-            // Setup controls
-            updateCameraRotation = setupCameraControls();
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Start in council view
-            setViewMode('council');
-            
-            // Update initial stats
-            updateStats();
-        }
-
-        // Initialize when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            updateLoadingStatus('Loading governance systems...');
-            initThree();
-            
-            // Simulate loading
-            let progress = 0;
-            const loadingInterval = setInterval(() => {
-                progress += 20;
-                document.getElementById('loadingProgress').style.width = progress + '%';
-                
-                if (progress >= 100) {
-                    clearInterval(loadingInterval);
-                    loadingManager.onLoad();
-                }
-            }, 100);
-        });
-
-        function updateLoadingStatus(status) {
-            document.getElementById('loadingStatus').textContent = status;
-        }
-
-        // Hide cursor when leaving window
-        document.addEventListener('mouseleave', () => {
-            const cursor = document.getElementById('customCursor');
-            if (cursor) cursor.style.display = 'none';
-        });
-
-        document.addEventListener('mouseenter', () => {
-            const cursor = document.getElementById('customCursor');
-            if (cursor) cursor.style.display = 'block';
+            document.addEventListener('mouseenter', () => {
+                document.getElementById('customCursor').style.display = 'block';
+            });
         });
     </script>
-    <!-- Oracle Documentation Button -->
-    <a href="/oracle.html" class="oracle-button">Access The Oracle Documentation</a>
-
 </body>
 </html>
