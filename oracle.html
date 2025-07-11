@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Protocol Oracle - Cinematic Documentation Experience</title>
+    <title>The Protocol Oracle - Immersive Documentation Experience</title>
     
     <!-- Three.js r128 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -11,9 +11,22 @@
     <!-- GSAP for animations -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/TextPlugin.min.js"></script>
     
     <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    
+    <!-- Variable Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -27,56 +40,115 @@
             --oracle-secondary: #8B5CF6;
             --oracle-accent: #10B981;
             --oracle-gold: #F59E0B;
+            --oracle-crimson: #DC2626;
             --bg-void: #000000;
             --bg-deep: #0a0a0a;
+            --bg-surface: rgba(10, 10, 10, 0.6);
             --text-bright: #FFFFFF;
             --text-primary: #F8FAFC;
             --text-secondary: #94A3B8;
+            --text-muted: #64748B;
             --gradient-oracle: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 50%, #10B981 100%);
+            --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #EF4444 100%);
+            --gradient-cosmic: linear-gradient(135deg, #1E3A8A 0%, #7C3AED 50%, #059669 100%);
+            
+            /* Glass effect variables */
+            --glass-bg: rgba(15, 15, 20, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background-color: var(--bg-void);
             color: var(--text-primary);
             overflow-x: hidden;
             cursor: none;
+            font-feature-settings: 'cv01', 'cv02', 'cv03', 'cv04', 'ss01', 'ss02', 'ss03';
         }
 
-        /* Custom Cursor */
+        /* Selection Style */
+        ::selection {
+            background: rgba(59, 130, 246, 0.3);
+            color: var(--text-bright);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--oracle-primary), var(--oracle-secondary));
+            border-radius: 6px;
+            border: 2px solid var(--bg-deep);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--oracle-secondary), var(--oracle-accent));
+        }
+
+        /* Advanced Cursor */
         .oracle-cursor {
             position: fixed;
-            width: 30px;
-            height: 30px;
-            border: 2px solid var(--oracle-primary);
-            border-radius: 50%;
+            width: 24px;
+            height: 24px;
             pointer-events: none;
-            z-index: 10000;
+            z-index: 10001;
             mix-blend-mode: difference;
-            transition: all 0.2s ease;
+            transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        .oracle-cursor::after {
-            content: '';
+        .cursor-dot {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 6px;
-            height: 6px;
+            width: 8px;
+            height: 8px;
             background: var(--oracle-primary);
             border-radius: 50%;
             transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+        }
+
+        .cursor-ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--oracle-primary);
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .oracle-cursor.hover {
+            width: 48px;
+            height: 48px;
+        }
+
+        .oracle-cursor.hover .cursor-ring {
+            border-color: var(--oracle-accent);
+            border-width: 3px;
         }
 
         .oracle-cursor.reading {
-            width: 50px;
-            height: 2px;
-            border-radius: 1px;
-            background: var(--oracle-accent);
-            border: none;
+            width: 60px;
+            height: 3px;
+            background: var(--gradient-oracle);
+            border-radius: 2px;
         }
 
-        /* Loading Oracle */
+        .oracle-cursor.reading .cursor-dot,
+        .oracle-cursor.reading .cursor-ring {
+            display: none;
+        }
+
+        /* Loading Oracle - Enhanced */
         .oracle-loading {
             position: fixed;
             top: 0;
@@ -89,56 +161,66 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.8s ease;
         }
 
-        .oracle-symbol {
-            width: 150px;
-            height: 150px;
+        .oracle-logo {
+            width: 200px;
+            height: 200px;
             position: relative;
-            animation: oracle-pulse 2s ease-in-out infinite;
+            transform-style: preserve-3d;
+            animation: oracle-rotate-3d 4s ease-in-out infinite;
         }
 
-        @keyframes oracle-pulse {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
+        @keyframes oracle-rotate-3d {
+            0%, 100% { transform: rotateX(0deg) rotateY(0deg); }
+            25% { transform: rotateX(20deg) rotateY(180deg); }
+            50% { transform: rotateX(-20deg) rotateY(360deg); }
+            75% { transform: rotateX(20deg) rotateY(540deg); }
         }
 
-        .oracle-ring {
-            position: absolute;
-            border: 3px solid var(--oracle-primary);
-            border-radius: 50%;
-            animation: oracle-rotate 3s linear infinite;
-        }
-
-        .oracle-ring:nth-child(1) {
+        .oracle-cube {
             width: 100%;
             height: 100%;
-            animation-delay: 0s;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cube-spin 20s linear infinite;
         }
 
-        .oracle-ring:nth-child(2) {
-            width: 80%;
-            height: 80%;
-            top: 10%;
-            left: 10%;
-            border-color: var(--oracle-secondary);
-            animation-delay: -1s;
-            animation-direction: reverse;
+        @keyframes cube-spin {
+            from { transform: rotateX(0deg) rotateY(0deg); }
+            to { transform: rotateX(360deg) rotateY(360deg); }
         }
 
-        .oracle-ring:nth-child(3) {
-            width: 60%;
-            height: 60%;
-            top: 20%;
-            left: 20%;
-            border-color: var(--oracle-accent);
-            animation-delay: -2s;
+        .cube-face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--oracle-primary);
+            background: rgba(59, 130, 246, 0.1);
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes oracle-rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .cube-face:nth-child(1) { transform: translateZ(50px); }
+        .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(50px); }
+        .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(50px); }
+        .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(50px); }
+        .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(50px); }
+        .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(50px); }
+
+        .loading-text {
+            margin-top: 3rem;
+            font-size: 1.25rem;
+            font-weight: 300;
+            color: var(--text-secondary);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0;
+            animation: fade-in 1s ease 0.5s forwards;
+        }
+
+        @keyframes fade-in {
+            to { opacity: 1; }
         }
 
         /* Background Canvas */
@@ -151,52 +233,67 @@
             z-index: 1;
         }
 
-        /* Oracle UI Overlay */
-        .oracle-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
-        }
-
-        /* Navigation Header */
+        /* Navigation Header - Premium Glass */
         .oracle-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 1px solid var(--glass-border);
             z-index: 1000;
-            pointer-events: auto;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 1.5rem 2rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .oracle-header.scrolled {
             padding: 1rem 2rem;
+            background: rgba(10, 10, 10, 0.9);
         }
 
         .oracle-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
-        .oracle-title {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .oracle-logo-text {
+            font-size: 1.75rem;
+            font-weight: 800;
             background: var(--gradient-oracle);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
         }
 
+        .oracle-logo-text::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--gradient-oracle);
+            transition: width 0.3s ease;
+        }
+
+        .oracle-logo-text:hover::after {
+            width: 100%;
+        }
+
+        /* Chapter Navigation */
         .chapter-nav {
             display: flex;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
         }
 
@@ -204,72 +301,110 @@
             font-size: 0.875rem;
             color: var(--text-secondary);
             font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            position: relative;
+            padding: 0.5rem 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
+        /* Premium Navigation Buttons */
         .nav-controls {
             display: flex;
             gap: 1rem;
         }
 
         .nav-btn {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
             color: var(--text-primary);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             font-weight: 500;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-oracle);
+            transition: left 0.3s ease;
+            z-index: -1;
         }
 
         .nav-btn:hover {
-            background: var(--oracle-primary);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            border-color: var(--oracle-primary);
         }
 
-        /* Reading Progress */
+        .nav-btn:hover::before {
+            left: 0;
+        }
+
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Reading Progress - Enhanced */
         .reading-progress {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 3px;
-            background: rgba(59, 130, 246, 0.2);
+            height: 4px;
+            background: rgba(59, 130, 246, 0.1);
             z-index: 1001;
             pointer-events: none;
+            overflow: hidden;
         }
 
         .progress-bar {
             height: 100%;
             background: var(--gradient-oracle);
             width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.8);
+            transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6));
+            animation: progress-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes progress-glow {
+            0%, 100% { opacity: 0; transform: translateX(-100px); }
+            50% { opacity: 1; transform: translateX(0); }
         }
 
         /* Content Container */
         .oracle-content {
             position: relative;
             z-index: 10;
-            pointer-events: auto;
             min-height: 100vh;
             padding-top: 100px;
         }
 
-        /* Chapter Container */
-        .chapter-container {
-            opacity: 0;
-            transform: translateY(50px);
-            transition: all 1s ease;
-        }
-
-        .chapter-container.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Chapter Hero */
+        /* Chapter Hero - Cinematic */
         .chapter-hero {
             min-height: 100vh;
             display: flex;
@@ -277,171 +412,475 @@
             justify-content: center;
             position: relative;
             overflow: hidden;
+            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
         }
 
-        .chapter-number {
+        .hero-bg-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(255,255,255,.05) 35px, rgba(255,255,255,.05) 70px);
+            animation: pattern-shift 20s linear infinite;
+        }
+
+        @keyframes pattern-shift {
+            from { transform: translate(0, 0); }
+            to { transform: translate(70px, 70px); }
+        }
+
+        .chapter-number-bg {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 20vw;
+            font-size: 30vw;
             font-weight: 900;
-            opacity: 0.05;
+            opacity: 0.02;
             color: var(--oracle-primary);
             pointer-events: none;
             z-index: 1;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.05em;
         }
 
         .chapter-title-container {
             text-align: center;
             z-index: 2;
-            max-width: 1000px;
+            max-width: 1200px;
             padding: 0 2rem;
-        }
-
-        .chapter-title {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            margin-bottom: 2rem;
-            background: var(--gradient-oracle);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: title-glow 3s ease-in-out infinite;
-        }
-
-        @keyframes title-glow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.2); }
-        }
-
-        .chapter-subtitle {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            font-weight: 300;
-            margin-bottom: 3rem;
-        }
-
-        /* Chapter Content */
-        .chapter-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 4rem 2rem 8rem;
-            position: relative;
-        }
-
-        .chapter-content h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            margin: 4rem 0 2rem;
-            background: var(--gradient-oracle);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .chapter-content h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 3rem 0 1.5rem;
-            color: var(--oracle-primary);
-        }
-
-        .chapter-content h3 {
-            font-size: 2rem;
-            font-weight: 600;
-            margin: 2.5rem 0 1rem;
-            color: var(--oracle-secondary);
-        }
-
-        .chapter-content p {
-            font-size: 1.25rem;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
             opacity: 0;
-            transform: translateY(20px);
-            animation: fade-in-up 0.8s ease forwards;
+            transform: translateY(50px);
+            animation: hero-fade-up 1s ease 0.5s forwards;
         }
 
-        @keyframes fade-in-up {
+        @keyframes hero-fade-up {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
 
+        .chapter-title {
+            font-size: clamp(3.5rem, 10vw, 7rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            background: var(--gradient-oracle);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            position: relative;
+            display: inline-block;
+        }
+
+        .chapter-title::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            background: var(--gradient-oracle);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: blur(40px);
+            opacity: 0.5;
+        }
+
+        .chapter-subtitle {
+            font-size: clamp(1.25rem, 3vw, 2rem);
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 3rem;
+            letter-spacing: 0.02em;
+            opacity: 0;
+            animation: hero-fade-up 1s ease 0.7s forwards;
+        }
+
+        .hero-scroll-indicator {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            opacity: 0;
+            animation: hero-fade-up 1s ease 1s forwards;
+        }
+
+        .scroll-text {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .scroll-arrow {
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--oracle-primary);
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .scroll-arrow::after {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            width: 4px;
+            height: 8px;
+            background: var(--oracle-primary);
+            border-radius: 2px;
+            transform: translateX(-50%);
+            animation: scroll-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes scroll-bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* Chapter Content - Premium Typography */
+        .chapter-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 6rem 2rem 8rem;
+            position: relative;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Enhanced Typography */
+        .chapter-content h1 {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin: 5rem 0 2rem;
+            background: var(--gradient-oracle);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+            position: relative;
+            padding-bottom: 1rem;
+        }
+
+        .chapter-content h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-oracle);
+            border-radius: 2px;
+        }
+
+        .chapter-content h2 {
+            font-size: clamp(2rem, 4vw, 2.5rem);
+            font-weight: 700;
+            margin: 4rem 0 1.5rem;
+            color: var(--oracle-primary);
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .chapter-content h2::before {
+            content: '◈';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--oracle-accent);
+            font-size: 1.25rem;
+        }
+
+        .chapter-content h3 {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 600;
+            margin: 3rem 0 1rem;
+            color: var(--oracle-secondary);
+        }
+
+        .chapter-content p {
+            font-size: 1.125rem;
+            line-height: 1.9;
+            margin-bottom: 1.75rem;
+            color: var(--text-primary);
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: content-fade-in 0.8s ease forwards;
+            animation-delay: calc(var(--paragraph-index, 0) * 0.1s);
+        }
+
+        @keyframes content-fade-in {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Lists - Enhanced */
         .chapter-content ul, .chapter-content ol {
-            margin: 1.5rem 0;
-            padding-left: 2rem;
+            margin: 2rem 0;
+            padding-left: 0;
+            list-style: none;
         }
 
         .chapter-content li {
             font-size: 1.125rem;
             line-height: 1.8;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             color: var(--text-primary);
+            position: relative;
+            padding-left: 2rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: list-slide-in 0.6s ease forwards;
+            animation-delay: calc(var(--list-index, 0) * 0.1s);
         }
 
+        @keyframes list-slide-in {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .chapter-content ul li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--oracle-primary);
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+
+        .chapter-content ol {
+            counter-reset: chapter-counter;
+        }
+
+        .chapter-content ol li {
+            counter-increment: chapter-counter;
+        }
+
+        .chapter-content ol li::before {
+            content: counter(chapter-counter);
+            position: absolute;
+            left: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            background: var(--gradient-oracle);
+            color: var(--text-bright);
+            font-weight: 700;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        /* Code Blocks - Premium */
         .chapter-content code {
             background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 0.2rem 0.4rem;
-            border-radius: 0.25rem;
-            font-family: 'Courier New', monospace;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
             color: var(--oracle-accent);
+            font-size: 0.9em;
+            font-weight: 500;
         }
 
         .chapter-content pre {
-            background: rgba(10, 10, 10, 0.8);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2rem;
             overflow-x: auto;
-            margin: 2rem 0;
+            margin: 2.5rem 0;
+            position: relative;
+            box-shadow: var(--glass-shadow);
         }
 
+        .chapter-content pre::before {
+            content: 'CODE';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            letter-spacing: 0.1em;
+        }
+
+        .chapter-content pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Blockquotes - Enhanced */
         .chapter-content blockquote {
             border-left: 4px solid var(--oracle-primary);
-            padding-left: 2rem;
-            margin: 2rem 0;
+            padding: 1.5rem 0 1.5rem 2.5rem;
+            margin: 3rem 0;
             font-style: italic;
             color: var(--text-secondary);
+            position: relative;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, transparent 100%);
+            border-radius: 0 12px 12px 0;
         }
 
-        /* Chapter Divider */
+        .chapter-content blockquote::before {
+            content: '"';
+            position: absolute;
+            left: 0.5rem;
+            top: 0.5rem;
+            font-size: 3rem;
+            color: var(--oracle-primary);
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        /* Tables - Premium */
+        .chapter-content table {
+            width: 100%;
+            margin: 2.5rem 0;
+            border-collapse: collapse;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .chapter-content th {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 1rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--oracle-primary);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .chapter-content td {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .chapter-content tr:last-child td {
+            border-bottom: none;
+        }
+
+        .chapter-content tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Chapter Divider - Enhanced */
         .chapter-divider {
-            height: 50vh;
+            height: 60vh;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             overflow: hidden;
+            margin: 4rem 0;
+        }
+
+        .divider-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
         }
 
         .divider-symbol {
-            font-size: 4rem;
+            font-size: 5rem;
             color: var(--oracle-primary);
-            animation: float 3s ease-in-out infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: symbol-pulse 3s ease-in-out infinite;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        @keyframes symbol-pulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0.8;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
         }
 
-        /* Chapter Navigation Menu */
+        .divider-rings {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .divider-ring {
+            position: absolute;
+            border: 2px solid var(--oracle-primary);
+            border-radius: 50%;
+            opacity: 0;
+            animation: ring-expand 3s ease-in-out infinite;
+        }
+
+        .divider-ring:nth-child(1) { animation-delay: 0s; }
+        .divider-ring:nth-child(2) { animation-delay: 1s; }
+        .divider-ring:nth-child(3) { animation-delay: 2s; }
+
+        @keyframes ring-expand {
+            0% {
+                width: 50px;
+                height: 50px;
+                opacity: 0.8;
+                transform: translate(-50%, -50%);
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Chapter Menu - Premium Sidebar */
         .chapter-menu {
             position: fixed;
-            top: 100px;
-            right: -400px;
-            width: 400px;
-            height: calc(100vh - 100px);
-            background: rgba(10, 10, 10, 0.95);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(59, 130, 246, 0.2);
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            border-left: 1px solid var(--glass-border);
             z-index: 999;
-            transition: right 0.3s ease;
+            transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow-y: auto;
-            pointer-events: auto;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
         }
 
         .chapter-menu.open {
@@ -449,97 +888,289 @@
         }
 
         .menu-header {
-            padding: 2rem;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 2.5rem;
+            border-bottom: 1px solid var(--glass-border);
+            background: rgba(10, 10, 10, 0.3);
         }
 
         .menu-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-bright);
+            font-size: 1.75rem;
+            font-weight: 800;
+            background: var(--gradient-oracle);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .menu-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-weight: 400;
         }
 
         .chapter-list {
-            padding: 1rem;
+            padding: 1.5rem;
         }
 
         .chapter-item {
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 16px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s ease;
         }
 
         .chapter-item:hover {
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.05);
             border-color: rgba(59, 130, 246, 0.3);
-            transform: translateX(-5px);
+            transform: translateX(-10px);
+        }
+
+        .chapter-item:hover::before {
+            left: 100%;
         }
 
         .chapter-item.active {
-            background: var(--oracle-primary);
+            background: var(--gradient-oracle);
             color: var(--text-bright);
+            border-color: transparent;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
         }
 
         .chapter-item-number {
-            font-size: 0.875rem;
-            color: var(--oracle-primary);
+            font-size: 0.75rem;
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
         }
 
         .chapter-item.active .chapter-item-number {
-            color: var(--text-bright);
+            opacity: 0.9;
         }
 
         .chapter-item-title {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             font-weight: 600;
+            margin-bottom: 0.25rem;
         }
 
-        /* Reading Time */
-        .reading-time {
+        .chapter-item-subtitle {
+            font-size: 0.875rem;
+            opacity: 0.7;
+            font-weight: 400;
+        }
+
+        /* Reading Tools */
+        .reading-tools {
             position: fixed;
             bottom: 2rem;
             left: 2rem;
-            background: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 50px;
-            padding: 1rem 2rem;
-            pointer-events: auto;
+            display: flex;
+            gap: 1rem;
             z-index: 200;
         }
 
-        .time-display {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
+        .tool-button {
+            width: 56px;
+            height: 56px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Exit Oracle Button */
+        .tool-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            border-color: var(--oracle-primary);
+        }
+
+        .tool-button svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--text-primary);
+            stroke-width: 2;
+            fill: none;
+            transition: all 0.3s ease;
+        }
+
+        .tool-button:hover svg {
+            stroke: var(--oracle-primary);
+        }
+
+        .reading-time-display {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .time-icon {
+            width: 16px;
+            height: 16px;
+            stroke: var(--oracle-primary);
+        }
+
+        /* Focus Mode */
+        body.focus-mode .oracle-header,
+        body.focus-mode .reading-tools,
+        body.focus-mode .exit-oracle {
+            opacity: 0.1;
+            transition: opacity 0.3s ease;
+        }
+
+        body.focus-mode .oracle-header:hover,
+        body.focus-mode .reading-tools:hover,
+        body.focus-mode .exit-oracle:hover {
+            opacity: 1;
+        }
+
+        /* Exit Oracle - Enhanced */
         .exit-oracle {
             position: fixed;
             top: 2rem;
             right: 2rem;
             background: rgba(239, 68, 68, 0.1);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(239, 68, 68, 0.3);
             color: var(--text-bright);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             z-index: 1001;
-            pointer-events: auto;
+            font-weight: 500;
+            font-size: 0.875rem;
+            letter-spacing: 0.025em;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .exit-oracle:hover {
             background: rgba(239, 68, 68, 0.3);
             transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
         }
 
-        /* Responsive */
+        /* Annotations */
+        .annotation {
+            position: relative;
+            display: inline-block;
+            border-bottom: 2px dotted var(--oracle-primary);
+            cursor: help;
+        }
+
+        .annotation-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            width: 250px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--glass-shadow);
+            z-index: 100;
+        }
+
+        .annotation:hover .annotation-tooltip {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-15px);
+        }
+
+        /* Search Interface */
+        .search-interface {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 90%;
+            max-width: 600px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 2000;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-interface.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            font-size: 1.125rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--oracle-primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* Keyboard Shortcuts */
+        .kbd {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 0.875em;
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             .chapter-nav {
                 display: none;
@@ -551,76 +1182,182 @@
             }
             
             .chapter-content {
-                padding: 2rem 1rem 4rem;
+                padding: 3rem 1.5rem 5rem;
             }
             
-            .reading-time {
-                display: none;
+            .reading-tools {
+                bottom: 1rem;
+                left: 1rem;
+                flex-direction: column;
             }
+
+            .tool-button {
+                width: 48px;
+                height: 48px;
+            }
+
+            .chapter-title {
+                font-size: clamp(2.5rem, 8vw, 4rem);
+            }
+
+            .oracle-header {
+                padding: 1rem;
+            }
+
+            .exit-oracle {
+                top: 1rem;
+                right: 1rem;
+                padding: 0.5rem 1rem;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .oracle-header,
+            .chapter-menu,
+            .reading-tools,
+            .exit-oracle,
+            #oracle-canvas,
+            .oracle-cursor {
+                display: none !important;
+            }
+
+            .chapter-content {
+                max-width: none;
+                padding: 0;
+            }
+
+            .chapter-title,
+            .chapter-content h1,
+            .chapter-content h2,
+            .chapter-content h3 {
+                color: black;
+                -webkit-text-fill-color: black;
+            }
+        }
+
+        /* Loading Animation for Content */
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        .content-loading {
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.05) 0%,
+                rgba(255, 255, 255, 0.1) 50%,
+                rgba(255, 255, 255, 0.05) 100%
+            );
+            background-size: 1000px 100%;
+            animation: shimmer 2s infinite;
+            border-radius: 8px;
+            height: 20px;
+            margin-bottom: 1rem;
         }
     </style>
 </head>
 <body>
-    <!-- Custom Cursor -->
-    <div class="oracle-cursor" id="oracleCursor"></div>
+    <!-- Advanced Cursor -->
+    <div class="oracle-cursor" id="oracleCursor">
+        <div class="cursor-dot"></div>
+        <div class="cursor-ring"></div>
+    </div>
 
     <!-- Loading Screen -->
     <div class="oracle-loading" id="oracleLoading">
-        <div class="oracle-symbol">
-            <div class="oracle-ring"></div>
-            <div class="oracle-ring"></div>
-            <div class="oracle-ring"></div>
+        <div class="oracle-logo">
+            <div class="oracle-cube">
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+                <div class="cube-face"></div>
+            </div>
         </div>
-        <p style="margin-top: 2rem; color: var(--text-secondary);">Accessing The Oracle...</p>
+        <p class="loading-text">Initializing Oracle Interface</p>
     </div>
 
     <!-- Background Canvas -->
     <canvas id="oracle-canvas"></canvas>
 
-    <!-- UI Overlay -->
-    <div class="oracle-overlay">
-        <!-- Reading Progress -->
-        <div class="reading-progress">
-            <div class="progress-bar" id="progressBar"></div>
-        </div>
+    <!-- Reading Progress -->
+    <div class="reading-progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
 
-        <!-- Navigation Header -->
-        <header class="oracle-header">
-            <nav class="oracle-nav">
-                <div class="oracle-title">The Protocol Oracle</div>
-                <div class="chapter-nav">
-                    <span class="chapter-indicator" id="chapterIndicator">Chapter 1 of 8</span>
-                    <div class="nav-controls">
-                        <button class="nav-btn" id="prevChapter">← Previous</button>
-                        <button class="nav-btn" id="menuToggle">Chapters</button>
-                        <button class="nav-btn" id="nextChapter">Next →</button>
-                    </div>
+    <!-- Navigation Header -->
+    <header class="oracle-header" id="oracleHeader">
+        <nav class="oracle-nav">
+            <a href="/" class="oracle-logo-text">The Protocol Oracle</a>
+            <div class="chapter-nav">
+                <span class="chapter-indicator" id="chapterIndicator">Chapter 1 of 8</span>
+                <div class="nav-controls">
+                    <button class="nav-btn" id="prevChapter">← Previous</button>
+                    <button class="nav-btn" id="menuToggle">Chapters</button>
+                    <button class="nav-btn" id="nextChapter">Next →</button>
                 </div>
-            </nav>
-        </header>
-
-        <!-- Chapter Menu -->
-        <div class="chapter-menu" id="chapterMenu">
-            <div class="menu-header">
-                <h3 class="menu-title">The Protocol Documentation</h3>
             </div>
-            <div class="chapter-list" id="chapterList"></div>
+        </nav>
+    </header>
+
+    <!-- Chapter Menu -->
+    <aside class="chapter-menu" id="chapterMenu">
+        <div class="menu-header">
+            <h3 class="menu-title">The Protocol Documentation</h3>
+            <p class="menu-subtitle">Navigate through the complete guide</p>
         </div>
+        <div class="chapter-list" id="chapterList"></div>
+    </aside>
 
-        <!-- Exit Button -->
-        <button class="exit-oracle" onclick="window.location.href='/'">✕ Exit Oracle</button>
+    <!-- Exit Button -->
+    <button class="exit-oracle" onclick="window.location.href='/'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+        Exit Oracle
+    </button>
 
-        <!-- Reading Time -->
-        <div class="reading-time">
-            <span class="time-display" id="timeDisplay">5 min read</span>
+    <!-- Reading Tools -->
+    <div class="reading-tools">
+        <button class="tool-button" id="focusMode" title="Focus Mode (F)">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
+            </svg>
+        </button>
+        <button class="tool-button" id="searchToggle" title="Search (Ctrl+K)">
+            <svg viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+            </svg>
+        </button>
+        <div class="reading-time-display">
+            <svg class="time-icon" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span id="timeDisplay">5 min read</span>
         </div>
     </div>
 
+    <!-- Search Interface -->
+    <div class="search-interface" id="searchInterface">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search documentation..." />
+    </div>
+
     <!-- Content Container -->
-    <div class="oracle-content" id="oracleContent"></div>
+    <main class="oracle-content" id="oracleContent"></main>
 
     <script>
-        // Oracle Documentation System
+        // Enhanced Oracle Documentation System
         class OracleViewer {
             constructor() {
                 this.chapters = [
@@ -638,33 +1375,44 @@
                 this.scene = null;
                 this.camera = null;
                 this.renderer = null;
-                this.particles = [];
+                this.particles = null;
+                this.mouseX = 0;
+                this.mouseY = 0;
+                this.targetX = 0;
+                this.targetY = 0;
                 
                 this.init();
             }
 
             async init() {
-                // Initialize Three.js
+                // Initialize Three.js with enhanced graphics
                 this.initThree();
                 
-                // Setup event listeners
+                // Setup all event listeners
                 this.setupEventListeners();
+                
+                // Initialize GSAP
+                gsap.registerPlugin(ScrollTrigger, TextPlugin);
                 
                 // Load first chapter
                 await this.loadChapter(0);
                 
-                // Hide loading screen
-                setTimeout(() => {
-                    const loading = document.getElementById('oracleLoading');
-                    loading.style.opacity = '0';
-                    setTimeout(() => loading.style.display = 'none', 500);
-                }, 2000);
+                // Hide loading screen with style
+                gsap.to('#oracleLoading', {
+                    opacity: 0,
+                    duration: 1,
+                    delay: 1.5,
+                    ease: 'power2.inOut',
+                    onComplete: () => {
+                        document.getElementById('oracleLoading').style.display = 'none';
+                    }
+                });
             }
 
             initThree() {
-                // Scene
+                // Scene setup
                 this.scene = new THREE.Scene();
-                this.scene.fog = new THREE.FogExp2(0x000000, 0.001);
+                this.scene.fog = new THREE.FogExp2(0x000000, 0.0008);
 
                 // Camera
                 this.camera = new THREE.PerspectiveCamera(
@@ -675,76 +1423,191 @@
                 );
                 this.camera.position.z = 50;
 
-                // Renderer
+                // Renderer with enhanced settings
                 this.renderer = new THREE.WebGLRenderer({
                     canvas: document.getElementById('oracle-canvas'),
                     antialias: true,
-                    alpha: true
+                    alpha: true,
+                    powerPreference: 'high-performance'
                 });
                 this.renderer.setSize(window.innerWidth, window.innerHeight);
                 this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+                this.renderer.shadowMap.enabled = true;
+                this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-                // Lights
-                const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+                // Enhanced lighting
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.3);
                 this.scene.add(ambientLight);
 
-                const pointLight = new THREE.PointLight(0x3B82F6, 1, 100);
-                pointLight.position.set(0, 20, 30);
-                this.scene.add(pointLight);
+                const pointLight1 = new THREE.PointLight(0x3B82F6, 2, 100);
+                pointLight1.position.set(30, 30, 30);
+                pointLight1.castShadow = true;
+                this.scene.add(pointLight1);
 
-                // Create particle field
-                this.createParticles();
+                const pointLight2 = new THREE.PointLight(0x8B5CF6, 1.5, 100);
+                pointLight2.position.set(-30, -30, 30);
+                this.scene.add(pointLight2);
 
-                // Start animation
+                const pointLight3 = new THREE.PointLight(0x10B981, 1, 80);
+                pointLight3.position.set(0, 0, -50);
+                this.scene.add(pointLight3);
+
+                // Create enhanced particle system
+                this.createEnhancedParticles();
+                
+                // Create geometric elements
+                this.createGeometricElements();
+
+                // Start animation loop
                 this.animate();
             }
 
-            createParticles() {
+            createEnhancedParticles() {
                 const geometry = new THREE.BufferGeometry();
-                const count = 1000;
+                const count = 5000;
                 const positions = new Float32Array(count * 3);
                 const colors = new Float32Array(count * 3);
+                const sizes = new Float32Array(count);
 
                 for (let i = 0; i < count; i++) {
-                    positions[i * 3] = (Math.random() - 0.5) * 100;
-                    positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
-                    positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
+                    positions[i * 3] = (Math.random() - 0.5) * 200;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
+                    positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
 
                     const color = new THREE.Color();
-                    color.setHSL(0.6 + Math.random() * 0.1, 0.8, 0.5);
+                    const hue = 0.55 + Math.random() * 0.2;
+                    color.setHSL(hue, 0.8, 0.5 + Math.random() * 0.3);
                     colors[i * 3] = color.r;
                     colors[i * 3 + 1] = color.g;
                     colors[i * 3 + 2] = color.b;
+
+                    sizes[i] = Math.random() * 2;
                 }
 
                 geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
                 geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+                geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
-                const material = new THREE.PointsMaterial({
-                    size: 1,
-                    vertexColors: true,
+                // Shader material for enhanced particles
+                const material = new THREE.ShaderMaterial({
+                    uniforms: {
+                        time: { value: 0 },
+                        pixelRatio: { value: this.renderer.getPixelRatio() }
+                    },
+                    vertexShader: `
+                        attribute float size;
+                        uniform float time;
+                        uniform float pixelRatio;
+                        varying vec3 vColor;
+                        
+                        void main() {
+                            vColor = color;
+                            vec3 pos = position;
+                            pos.y += sin(time + position.x * 0.01) * 2.0;
+                            pos.x += cos(time + position.y * 0.01) * 2.0;
+                            
+                            vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                            gl_PointSize = size * pixelRatio * (300.0 / -mvPosition.z);
+                            gl_Position = projectionMatrix * mvPosition;
+                        }
+                    `,
+                    fragmentShader: `
+                        varying vec3 vColor;
+                        
+                        void main() {
+                            float r = distance(gl_PointCoord, vec2(0.5, 0.5));
+                            if (r > 0.5) discard;
+                            
+                            float opacity = 1.0 - smoothstep(0.0, 0.5, r);
+                            gl_FragColor = vec4(vColor, opacity * 0.8);
+                        }
+                    `,
                     blending: THREE.AdditiveBlending,
+                    depthTest: false,
                     transparent: true,
-                    opacity: 0.8
+                    vertexColors: true
                 });
 
                 this.particles = new THREE.Points(geometry, material);
                 this.scene.add(this.particles);
             }
 
+            createGeometricElements() {
+                // Create floating geometric shapes
+                const geometries = [
+                    new THREE.TetrahedronGeometry(5, 0),
+                    new THREE.OctahedronGeometry(4, 0),
+                    new THREE.IcosahedronGeometry(3, 0)
+                ];
+
+                for (let i = 0; i < 10; i++) {
+                    const geometry = geometries[Math.floor(Math.random() * geometries.length)];
+                    const material = new THREE.MeshPhysicalMaterial({
+                        color: new THREE.Color().setHSL(0.55 + Math.random() * 0.2, 0.8, 0.5),
+                        metalness: 0.8,
+                        roughness: 0.2,
+                        transparent: true,
+                        opacity: 0.6,
+                        side: THREE.DoubleSide
+                    });
+
+                    const mesh = new THREE.Mesh(geometry, material);
+                    mesh.position.set(
+                        (Math.random() - 0.5) * 100,
+                        (Math.random() - 0.5) * 100,
+                        (Math.random() - 0.5) * 50
+                    );
+                    mesh.rotation.set(
+                        Math.random() * Math.PI,
+                        Math.random() * Math.PI,
+                        Math.random() * Math.PI
+                    );
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+
+                    mesh.userData = {
+                        rotationSpeed: {
+                            x: (Math.random() - 0.5) * 0.01,
+                            y: (Math.random() - 0.5) * 0.01,
+                            z: (Math.random() - 0.5) * 0.01
+                        }
+                    };
+
+                    this.scene.add(mesh);
+                }
+            }
+
             animate() {
                 requestAnimationFrame(() => this.animate());
 
-                // Rotate particles
-                if (this.particles) {
-                    this.particles.rotation.x += 0.0005;
-                    this.particles.rotation.y += 0.0005;
+                // Update time uniform for shader
+                if (this.particles && this.particles.material.uniforms) {
+                    this.particles.material.uniforms.time.value = Date.now() * 0.0005;
                 }
 
-                // Gentle camera movement
-                this.camera.position.x = Math.sin(Date.now() * 0.0001) * 5;
-                this.camera.position.y = Math.cos(Date.now() * 0.0001) * 5;
+                // Smooth mouse following
+                this.targetX += (this.mouseX - this.targetX) * 0.05;
+                this.targetY += (this.mouseY - this.targetY) * 0.05;
+
+                // Camera movement
+                this.camera.position.x = Math.sin(Date.now() * 0.0001) * 10 + this.targetX * 0.1;
+                this.camera.position.y = Math.cos(Date.now() * 0.0001) * 10 + this.targetY * 0.1;
                 this.camera.lookAt(0, 0, 0);
+
+                // Rotate particles
+                if (this.particles) {
+                    this.particles.rotation.x += 0.0002;
+                    this.particles.rotation.y += 0.0003;
+                }
+
+                // Animate geometric elements
+                this.scene.children.forEach(child => {
+                    if (child.userData.rotationSpeed) {
+                        child.rotation.x += child.userData.rotationSpeed.x;
+                        child.rotation.y += child.userData.rotationSpeed.y;
+                        child.rotation.z += child.userData.rotationSpeed.z;
+                    }
+                });
 
                 this.renderer.render(this.scene, this.camera);
             }
@@ -755,57 +1618,141 @@
                 this.currentChapter = index;
                 const chapter = this.chapters[index];
 
-                // Update UI
+                // Update UI elements
                 document.getElementById('chapterIndicator').textContent = 
                     `Chapter ${index + 1} of ${this.chapters.length}`;
 
                 // Update chapter menu
                 this.updateChapterMenu();
 
-                // Load content
+                // Show loading placeholders
+                const container = document.getElementById('oracleContent');
+                container.innerHTML = this.getLoadingTemplate();
+
                 try {
+                    // FETCH ACTUAL MARKDOWN FILES FROM SERVER
                     const response = await fetch(`/website_docs/${chapter.id}.md`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to load chapter: ${response.status}`);
+                    }
+                    
                     const markdown = await response.text();
                     const html = marked.parse(markdown);
 
-                    // Create chapter container
-                    const container = document.getElementById('oracleContent');
+                    // Create chapter container with enhanced structure
                     container.innerHTML = `
                         <div class="chapter-container" id="chapter-${index}">
                             <div class="chapter-hero">
-                                <div class="chapter-number">${(index + 1).toString().padStart(2, '0')}</div>
+                                <div class="hero-bg-pattern"></div>
+                                <div class="chapter-number-bg">${(index + 1).toString().padStart(2, '0')}</div>
                                 <div class="chapter-title-container">
-                                    <h1 class="chapter-title">${chapter.title}</h1>
+                                    <h1 class="chapter-title" data-text="${chapter.title}">${chapter.title}</h1>
                                     <p class="chapter-subtitle">${chapter.subtitle}</p>
+                                </div>
+                                <div class="hero-scroll-indicator">
+                                    <span class="scroll-text">Scroll to read</span>
+                                    <div class="scroll-arrow"></div>
                                 </div>
                             </div>
                             <div class="chapter-content">
-                                ${html}
+                                <div class="content-wrapper">
+                                    ${html}
+                                </div>
                             </div>
                             <div class="chapter-divider">
-                                <div class="divider-symbol">◈</div>
+                                <div class="divider-container">
+                                    <div class="divider-symbol">◈</div>
+                                    <div class="divider-rings">
+                                        <div class="divider-ring"></div>
+                                        <div class="divider-ring"></div>
+                                        <div class="divider-ring"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     `;
 
-                    // Trigger animations
-                    setTimeout(() => {
-                        document.querySelector('.chapter-container').classList.add('active');
-                    }, 100);
+                    // Apply syntax highlighting
+                    Prism.highlightAll();
 
-                    // Scroll to top
-                    window.scrollTo(0, 0);
+                    // Animate content
+                    this.animateContent();
 
                     // Calculate reading time
-                    const text = container.textContent || '';
-                    const wordsPerMinute = 200;
-                    const words = text.trim().split(/\s+/).length;
-                    const minutes = Math.ceil(words / wordsPerMinute);
-                    document.getElementById('timeDisplay').textContent = `${minutes} min read`;
+                    this.updateReadingTime();
+
+                    // Scroll to top
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
 
                 } catch (error) {
                     console.error('Error loading chapter:', error);
+                    container.innerHTML = `
+                        <div class="error-message">
+                            <h2>Unable to load chapter</h2>
+                            <p>Please try again later.</p>
+                        </div>
+                    `;
                 }
+            }
+
+            getLoadingTemplate() {
+                return `
+                    <div class="chapter-container">
+                        <div class="chapter-hero">
+                            <div class="chapter-title-container">
+                                <div class="content-loading" style="width: 60%; height: 60px; margin: 0 auto;"></div>
+                                <div class="content-loading" style="width: 40%; height: 30px; margin: 2rem auto;"></div>
+                            </div>
+                        </div>
+                        <div class="chapter-content">
+                            <div class="content-loading" style="width: 100%;"></div>
+                            <div class="content-loading" style="width: 90%;"></div>
+                            <div class="content-loading" style="width: 95%;"></div>
+                            <div class="content-loading" style="width: 80%;"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Removed getChapterContent function - now fetching actual markdown files from server
+
+            animateContent() {
+                // Animate paragraphs
+                const paragraphs = document.querySelectorAll('.chapter-content p');
+                paragraphs.forEach((p, i) => {
+                    p.style.setProperty('--paragraph-index', i);
+                });
+
+                // Animate list items
+                const listItems = document.querySelectorAll('.chapter-content li');
+                listItems.forEach((li, i) => {
+                    li.style.setProperty('--list-index', i);
+                });
+
+                // Scroll-triggered animations
+                gsap.utils.toArray('.chapter-content h2').forEach(heading => {
+                    gsap.from(heading, {
+                        x: -50,
+                        opacity: 0,
+                        duration: 1,
+                        scrollTrigger: {
+                            trigger: heading,
+                            start: 'top 80%',
+                            end: 'bottom 20%',
+                            toggleActions: 'play none none none'
+                        }
+                    });
+                });
+            }
+
+            updateReadingTime() {
+                const content = document.getElementById('oracleContent');
+                const text = content.textContent || '';
+                const wordsPerMinute = 200;
+                const words = text.trim().split(/\s+/).length;
+                const minutes = Math.ceil(words / wordsPerMinute);
+                document.getElementById('timeDisplay').textContent = `${minutes} min read`;
             }
 
             updateChapterMenu() {
@@ -818,6 +1765,7 @@
                     item.innerHTML = `
                         <div class="chapter-item-number">Chapter ${index + 1}</div>
                         <div class="chapter-item-title">${chapter.title}</div>
+                        <div class="chapter-item-subtitle">${chapter.subtitle}</div>
                     `;
                     item.onclick = () => {
                         this.loadChapter(index);
@@ -828,7 +1776,43 @@
             }
 
             setupEventListeners() {
-                // Navigation buttons
+                // Mouse movement for 3D effect
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+                    this.mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+                });
+
+                // Enhanced cursor
+                const cursor = document.getElementById('oracleCursor');
+                let cursorX = 0, cursorY = 0;
+                let clientX = 0, clientY = 0;
+
+                document.addEventListener('mousemove', (e) => {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                });
+
+                const animateCursor = () => {
+                    cursorX += (clientX - cursorX) * 0.1;
+                    cursorY += (clientY - cursorY) * 0.1;
+                    cursor.style.left = cursorX + 'px';
+                    cursor.style.top = cursorY + 'px';
+                    requestAnimationFrame(animateCursor);
+                };
+                animateCursor();
+
+                // Cursor states
+                const interactiveElements = 'a, button, .chapter-item, .tool-button';
+                document.querySelectorAll(interactiveElements).forEach(el => {
+                    el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                    el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+                });
+
+                const content = document.getElementById('oracleContent');
+                content.addEventListener('mouseenter', () => cursor.classList.add('reading'));
+                content.addEventListener('mouseleave', () => cursor.classList.remove('reading'));
+
+                // Navigation
                 document.getElementById('prevChapter').addEventListener('click', () => {
                     if (this.currentChapter > 0) {
                         this.loadChapter(this.currentChapter - 1);
@@ -846,12 +1830,29 @@
                     document.getElementById('chapterMenu').classList.toggle('open');
                 });
 
+                // Close menu on outside click
+                document.addEventListener('click', (e) => {
+                    const menu = document.getElementById('chapterMenu');
+                    const menuBtn = document.getElementById('menuToggle');
+                    if (!menu.contains(e.target) && e.target !== menuBtn) {
+                        menu.classList.remove('open');
+                    }
+                });
+
                 // Scroll progress
                 window.addEventListener('scroll', () => {
                     const scrolled = window.scrollY;
                     const height = document.documentElement.scrollHeight - window.innerHeight;
                     const progress = (scrolled / height) * 100;
                     document.getElementById('progressBar').style.width = progress + '%';
+
+                    // Header scroll effect
+                    const header = document.getElementById('oracleHeader');
+                    if (scrolled > 50) {
+                        header.classList.add('scrolled');
+                    } else {
+                        header.classList.remove('scrolled');
+                    }
                 });
 
                 // Window resize
@@ -861,28 +1862,65 @@
                     this.renderer.setSize(window.innerWidth, window.innerHeight);
                 });
 
-                // Custom cursor
-                const cursor = document.getElementById('oracleCursor');
-                document.addEventListener('mousemove', (e) => {
-                    cursor.style.left = e.clientX + 'px';
-                    cursor.style.top = e.clientY + 'px';
+                // Focus mode
+                document.getElementById('focusMode').addEventListener('click', () => {
+                    document.body.classList.toggle('focus-mode');
                 });
 
-                // Reading mode cursor
-                const content = document.getElementById('oracleContent');
-                content.addEventListener('mouseenter', () => {
-                    cursor.classList.add('reading');
+                // Search interface
+                const searchInterface = document.getElementById('searchInterface');
+                const searchToggle = document.getElementById('searchToggle');
+                const searchInput = document.getElementById('searchInput');
+
+                searchToggle.addEventListener('click', () => {
+                    searchInterface.classList.add('active');
+                    searchInput.focus();
                 });
-                content.addEventListener('mouseleave', () => {
-                    cursor.classList.remove('reading');
+
+                searchInput.addEventListener('blur', () => {
+                    if (!searchInput.value) {
+                        searchInterface.classList.remove('active');
+                    }
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    // Ctrl/Cmd + K for search
+                    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                        e.preventDefault();
+                        searchInterface.classList.add('active');
+                        searchInput.focus();
+                    }
+                    
+                    // Escape to close search
+                    if (e.key === 'Escape') {
+                        searchInterface.classList.remove('active');
+                        searchInput.blur();
+                        document.getElementById('chapterMenu').classList.remove('open');
+                    }
+                    
+                    // Arrow keys for navigation
+                    if (e.key === 'ArrowLeft' && this.currentChapter > 0) {
+                        this.loadChapter(this.currentChapter - 1);
+                    }
+                    if (e.key === 'ArrowRight' && this.currentChapter < this.chapters.length - 1) {
+                        this.loadChapter(this.currentChapter + 1);
+                    }
+                    
+                    // F for focus mode
+                    if (e.key === 'f' && !e.ctrlKey && !e.metaKey) {
+                        document.body.classList.toggle('focus-mode');
+                    }
                 });
             }
         }
 
-        // Initialize Oracle Viewer
-        window.addEventListener('load', () => {
+        // Initialize Oracle Viewer when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => new OracleViewer());
+        } else {
             new OracleViewer();
-        });
+        }
     </script>
 </body>
 </html>
