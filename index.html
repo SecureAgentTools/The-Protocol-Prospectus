@@ -75,8 +75,10 @@
             border-radius: 50%;
             pointer-events: none;
             z-index: 10000;
-            transition: all 0.1s ease;
+            transition: all 0.05s ease;
             mix-blend-mode: difference;
+            will-change: transform;
+            transform: translate(-50%, -50%);
         }
 
         .custom-cursor.hover {
@@ -108,6 +110,8 @@
             z-index: 9999;
             opacity: 0;
             transition: opacity 0.3s ease;
+            will-change: transform, opacity;
+            transform: translate(-50%, -50%);
         }
 
         /* Loading Screen with Advanced Progress */
@@ -1139,10 +1143,11 @@
         
         // Environment settings - Optimized defaults
         const environment = {
-            starCount: 7500, // Reduced from 10000
-            nebulaIntensity: 0.7, // Reduced from 0.8
-            particleDensity: 25000, // Reduced from 50000
-            energyFlowSpeed: 1.0
+            starCount: 10000, // Increased for multi-layer system
+            nebulaIntensity: 0.8,
+            particleDensity: 25000,
+            energyFlowSpeed: 1.0,
+            cosmicDustEnabled: true
         };
 
         // Advanced Shaders
@@ -1278,6 +1283,119 @@
                 float twinkle = sin(time * 0.01 + gl_FragCoord.x * gl_FragCoord.y * 0.0001) * 0.2 + 0.8;
                 
                 gl_FragColor = vec4(color, glow * vBrightness * twinkle);
+            }
+        `;
+
+        // Advanced star shaders with ultra-realistic rendering
+        const advancedStarVertexShader = `
+            attribute float size;
+            attribute float brightness;
+            attribute vec3 color;
+            attribute float twinkleSpeed;
+            attribute float twinklePhase;
+            
+            varying vec3 vColor;
+            varying float vBrightness;
+            varying float vTwinkleSpeed;
+            varying float vSize;
+            
+            uniform float time;
+            
+            void main() {
+                vColor = color;
+                vBrightness = brightness;
+                vTwinkleSpeed = twinkleSpeed;
+                
+                vec3 pos = position;
+                
+                // Very subtle parallax for depth perception
+                float depth = length(pos);
+                pos.xy += sin(time * 0.00002 + depth * 0.0001) * 0.1;
+                
+                vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+                
+                // Multi-frequency scintillation for realism
+                float scintillation = 
+                    sin(time * twinkleSpeed + twinklePhase) * 0.15 + 
+                    sin(time * twinkleSpeed * 2.3 + twinklePhase * 1.7) * 0.05 + 
+                    sin(time * twinkleSpeed * 0.7 + twinklePhase * 0.3) * 0.1 + 0.7;
+                
+                // Size varies with scintillation and brightness
+                vSize = size * (0.5 + brightness * 0.5);
+                gl_PointSize = vSize * scintillation * (300.0 / -mvPosition.z);
+                
+                // Ensure minimum size for visibility
+                gl_PointSize = max(gl_PointSize, 1.0);
+                
+                gl_Position = projectionMatrix * mvPosition;
+            }
+        `;
+
+        const advancedStarFragmentShader = `
+            varying vec3 vColor;
+            varying float vBrightness;
+            varying float vTwinkleSpeed;
+            varying float vSize;
+            
+            uniform float time;
+            
+            void main() {
+                vec2 coord = gl_PointCoord - vec2(0.5);
+                float dist = length(coord);
+                
+                // Discard pixels outside circle
+                if(dist > 0.5) discard;
+                
+                // Airy disk pattern (real star diffraction)
+                float r = dist * 2.0;
+                float airy = pow(2.0 * (sin(r * 3.14159) / (r * 3.14159)), 2.0);
+                if(r < 0.001) airy = 1.0;
+                
+                // Gaussian core for bright center
+                float gaussian = exp(-dist * dist * 20.0);
+                
+                // Soft edge falloff
+                float edge = 1.0 - smoothstep(0.3, 0.5, dist);
+                
+                // Combine profiles based on star size
+                float profile;
+                if(vSize > 1.5) {
+                    // Bright stars: pronounced airy disk
+                    profile = gaussian * 0.6 + airy * 0.3 + edge * 0.1;
+                } else {
+                    // Dim stars: mostly gaussian
+                    profile = gaussian * 0.8 + edge * 0.2;
+                }
+                
+                // Chromatic aberration for very bright stars
+                vec3 aberration = vec3(1.0);
+                if(vBrightness > 0.8) {
+                    aberration = vec3(
+                        1.0,
+                        1.0 - dist * 0.1 * vBrightness,
+                        1.0 - dist * 0.2 * vBrightness
+                    );
+                }
+                
+                // Time-based scintillation
+                float scintillation = sin(time * vTwinkleSpeed * 0.3 + gl_FragCoord.x * 0.001) * 0.05 + 0.95;
+                
+                // Final color calculation
+                vec3 finalColor = vColor * aberration * (0.5 + vBrightness * 0.5) * scintillation;
+                
+                // Add subtle blue halo for bright stars
+                if(vBrightness > 0.7 && dist > 0.2) {
+                    vec3 haloColor = vec3(0.6, 0.8, 1.0) * vBrightness;
+                    finalColor = mix(finalColor, haloColor, (dist - 0.2) * 0.5);
+                }
+                
+                // Alpha based on profile and brightness
+                float alpha = profile * vBrightness * edge;
+                
+                // Ensure minimum visibility
+                alpha = max(alpha, 0.01);
+                
+                gl_FragColor = vec4(finalColor, alpha);
             }
         `;
 
@@ -1448,15 +1566,25 @@
 
         // Create Starfield Background
         function createStarfield() {
+            // Create multiple star layers for ultra-realistic depth
+            createDeepSpaceLayer();    // Distant galaxies and nebulae
+            createBackgroundStars();   // Far background stars
+            createMidgroundStars();    // Medium distance stars
+            createForegroundStars();   // Close bright stars
+            createMilkyWayDust();      // Galactic dust clouds
+        }
+
+        // Deep space layer - distant galaxies and star clusters
+        function createDeepSpaceLayer() {
             const geometry = new THREE.BufferGeometry();
-            const positions = new Float32Array(environment.starCount * 3);
-            const colors = new Float32Array(environment.starCount * 3);
-            const sizes = new Float32Array(environment.starCount);
-            const brightness = new Float32Array(environment.starCount);
+            const count = 2000;
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+            const sizes = new Float32Array(count);
             
-            for (let i = 0; i < environment.starCount; i++) {
-                // Position in sphere
-                const radius = 100 + Math.random() * 400;
+            for (let i = 0; i < count; i++) {
+                // Very distant placement
+                const radius = 800 + Math.random() * 1200;
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos(2 * Math.random() - 1);
                 
@@ -1464,40 +1592,103 @@
                 positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
                 positions[i * 3 + 2] = radius * Math.cos(phi);
                 
-                // Star color (blue-white to orange)
-                const temp = Math.random();
-                if (temp < 0.3) {
-                    // Blue stars
-                    colors[i * 3] = 0.7;
-                    colors[i * 3 + 1] = 0.8;
-                    colors[i * 3 + 2] = 1.0;
-                } else if (temp < 0.7) {
-                    // White stars
-                    colors[i * 3] = 1.0;
-                    colors[i * 3 + 1] = 1.0;
-                    colors[i * 3 + 2] = 0.9;
+                // Dim, distant galaxy colors
+                const hue = Math.random() * 0.2 + 0.55; // Blue to purple
+                const color = new THREE.Color().setHSL(hue, 0.3, 0.3);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+                
+                sizes[i] = Math.random() * 1.5 + 0.5;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.8,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.4,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            const deepSpace = new THREE.Points(geometry, material);
+            scene.add(deepSpace);
+        }
+
+        // Background star layer
+        function createBackgroundStars() {
+            const geometry = new THREE.BufferGeometry();
+            const starCount = Math.floor(environment.starCount * 0.6);
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+            const brightness = new Float32Array(starCount);
+            const twinkleSpeed = new Float32Array(starCount);
+            const twinklePhase = new Float32Array(starCount);
+            
+            for (let i = 0; i < starCount; i++) {
+                // Background stars - farther away
+                const radius = 300 + Math.random() * 500;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Realistic star colors based on spectral class
+                const spectralClass = Math.random();
+                let color;
+                if (spectralClass < 0.05) {
+                    // O-type: Blue supergiants
+                    color = new THREE.Color(0.7, 0.8, 1.0);
+                } else if (spectralClass < 0.15) {
+                    // B-type: Blue-white
+                    color = new THREE.Color(0.8, 0.9, 1.0);
+                } else if (spectralClass < 0.30) {
+                    // A-type: White
+                    color = new THREE.Color(0.95, 0.95, 1.0);
+                } else if (spectralClass < 0.60) {
+                    // F-type: Yellow-white
+                    color = new THREE.Color(1.0, 0.98, 0.9);
+                } else if (spectralClass < 0.80) {
+                    // G-type: Yellow (like our Sun)
+                    color = new THREE.Color(1.0, 0.95, 0.8);
+                } else if (spectralClass < 0.95) {
+                    // K-type: Orange
+                    color = new THREE.Color(1.0, 0.85, 0.7);
                 } else {
-                    // Orange stars
-                    colors[i * 3] = 1.0;
-                    colors[i * 3 + 1] = 0.8;
-                    colors[i * 3 + 2] = 0.6;
+                    // M-type: Red dwarfs
+                    color = new THREE.Color(1.0, 0.7, 0.6);
                 }
                 
-                sizes[i] = Math.random() * 2 + 0.5;
-                brightness[i] = Math.random() * 0.8 + 0.2;
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+                
+                sizes[i] = Math.random() * 1.2 + 0.3;
+                brightness[i] = Math.random() * 0.6 + 0.2;
+                twinkleSpeed[i] = Math.random() * 2 + 0.5;
+                twinklePhase[i] = Math.random() * Math.PI * 2;
             }
             
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
             geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
             geometry.setAttribute('brightness', new THREE.BufferAttribute(brightness, 1));
+            geometry.setAttribute('twinkleSpeed', new THREE.BufferAttribute(twinkleSpeed, 1));
+            geometry.setAttribute('twinklePhase', new THREE.BufferAttribute(twinklePhase, 1));
             
             const material = new THREE.ShaderMaterial({
                 uniforms: {
                     time: { value: 0 }
                 },
-                vertexShader: starfieldVertexShader,
-                fragmentShader: starfieldFragmentShader,
+                vertexShader: advancedStarVertexShader,
+                fragmentShader: advancedStarFragmentShader,
                 blending: THREE.AdditiveBlending,
                 depthWrite: false,
                 transparent: true,
@@ -1506,6 +1697,289 @@
             
             starfield = new THREE.Points(geometry, material);
             scene.add(starfield);
+            
+            // Store reference for animation
+            if (!window.starLayers) window.starLayers = [];
+            window.starLayers.push({ mesh: starfield, material });
+        }
+
+        // Midground star layer
+        function createMidgroundStars() {
+            const geometry = new THREE.BufferGeometry();
+            const starCount = Math.floor(environment.starCount * 0.3);
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+            const brightness = new Float32Array(starCount);
+            const twinkleSpeed = new Float32Array(starCount);
+            const twinklePhase = new Float32Array(starCount);
+            
+            for (let i = 0; i < starCount; i++) {
+                // Midground stars - medium distance
+                const radius = 150 + Math.random() * 300;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Brighter, more prominent stars
+                const temp = Math.random();
+                if (temp < 0.4) {
+                    // Blue-white stars
+                    colors[i * 3] = 0.85;
+                    colors[i * 3 + 1] = 0.9;
+                    colors[i * 3 + 2] = 1.0;
+                } else if (temp < 0.8) {
+                    // White stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 1.0;
+                    colors[i * 3 + 2] = 0.95;
+                } else {
+                    // Yellow stars
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.95;
+                    colors[i * 3 + 2] = 0.85;
+                }
+                
+                sizes[i] = Math.random() * 2 + 1;
+                brightness[i] = Math.random() * 0.4 + 0.5;
+                twinkleSpeed[i] = Math.random() * 1.5 + 0.8;
+                twinklePhase[i] = Math.random() * Math.PI * 2;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('brightness', new THREE.BufferAttribute(brightness, 1));
+            geometry.setAttribute('twinkleSpeed', new THREE.BufferAttribute(twinkleSpeed, 1));
+            geometry.setAttribute('twinklePhase', new THREE.BufferAttribute(twinklePhase, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: advancedStarVertexShader,
+                fragmentShader: advancedStarFragmentShader,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                transparent: true
+            });
+            
+            const midStars = new THREE.Points(geometry, material);
+            scene.add(midStars);
+            
+            // Store reference for animation
+            if (!window.starLayers) window.starLayers = [];
+            window.starLayers.push({ mesh: midStars, material });
+        }
+
+        // Foreground star layer - bright, prominent stars
+        function createForegroundStars() {
+            const geometry = new THREE.BufferGeometry();
+            const starCount = Math.floor(environment.starCount * 0.1);
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            const sizes = new Float32Array(starCount);
+            const brightness = new Float32Array(starCount);
+            const twinkleSpeed = new Float32Array(starCount);
+            const twinklePhase = new Float32Array(starCount);
+            
+            for (let i = 0; i < starCount; i++) {
+                // Foreground stars - closer and brighter
+                const radius = 80 + Math.random() * 150;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Very bright stars with lens flare potential
+                const starType = Math.random();
+                if (starType < 0.2) {
+                    // Bright blue supergiant
+                    colors[i * 3] = 0.6;
+                    colors[i * 3 + 1] = 0.8;
+                    colors[i * 3 + 2] = 1.0;
+                    sizes[i] = Math.random() * 3 + 2;
+                    brightness[i] = 0.8 + Math.random() * 0.2;
+                } else if (starType < 0.4) {
+                    // Bright white star
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 1.0;
+                    colors[i * 3 + 2] = 1.0;
+                    sizes[i] = Math.random() * 2.5 + 1.5;
+                    brightness[i] = 0.9 + Math.random() * 0.1;
+                } else if (starType < 0.6) {
+                    // Yellow giant
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.9;
+                    colors[i * 3 + 2] = 0.7;
+                    sizes[i] = Math.random() * 2 + 1.5;
+                    brightness[i] = 0.7 + Math.random() * 0.2;
+                } else if (starType < 0.8) {
+                    // Orange giant
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.7;
+                    colors[i * 3 + 2] = 0.5;
+                    sizes[i] = Math.random() * 2 + 1;
+                    brightness[i] = 0.6 + Math.random() * 0.2;
+                } else {
+                    // Red supergiant
+                    colors[i * 3] = 1.0;
+                    colors[i * 3 + 1] = 0.5;
+                    colors[i * 3 + 2] = 0.3;
+                    sizes[i] = Math.random() * 3 + 2;
+                    brightness[i] = 0.7 + Math.random() * 0.3;
+                }
+                
+                // Slower twinkle for prominent stars
+                twinkleSpeed[i] = Math.random() * 1 + 0.2;
+                twinklePhase[i] = Math.random() * Math.PI * 2;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            geometry.setAttribute('brightness', new THREE.BufferAttribute(brightness, 1));
+            geometry.setAttribute('twinkleSpeed', new THREE.BufferAttribute(twinkleSpeed, 1));
+            geometry.setAttribute('twinklePhase', new THREE.BufferAttribute(twinklePhase, 1));
+            
+            const material = new THREE.ShaderMaterial({
+                uniforms: {
+                    time: { value: 0 }
+                },
+                vertexShader: advancedStarVertexShader,
+                fragmentShader: advancedStarFragmentShader,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false,
+                transparent: true
+            });
+            
+            const foreStars = new THREE.Points(geometry, material);
+            scene.add(foreStars);
+            
+            // Store reference for animation
+            if (!window.starLayers) window.starLayers = [];
+            window.starLayers.push({ mesh: foreStars, material });
+
+            // Add subtle lens flares to the brightest stars
+            for (let i = 0; i < Math.min(3, starCount); i++) {
+                if (brightness[i] > 0.85 && sizes[i] > 3) {
+                    const flareGroup = new THREE.Group();
+                    
+                    // Main flare
+                    for (let j = 0; j < 3; j++) {
+                        const flareSize = sizes[i] * (4 - j);
+                        const flareGeometry = new THREE.SphereGeometry(flareSize, 8, 8);
+                        const flareMaterial = new THREE.MeshBasicMaterial({
+                            color: new THREE.Color(colors[i * 3], colors[i * 3 + 1], colors[i * 3 + 2]),
+                            transparent: true,
+                            opacity: 0.05 / (j + 1),
+                            blending: THREE.AdditiveBlending
+                        });
+                        const flare = new THREE.Mesh(flareGeometry, flareMaterial);
+                        flareGroup.add(flare);
+                    }
+                    
+                    flareGroup.position.set(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
+                    scene.add(flareGroup);
+                }
+            }
+        }
+
+        // Create Milky Way dust clouds
+        function createMilkyWayDust() {
+            const geometry = new THREE.BufferGeometry();
+            const particleCount = 5000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                // Create dust in a band across the sky
+                const angle = Math.random() * Math.PI * 2;
+                const spread = (Math.random() - 0.5) * 30;
+                const distance = 200 + Math.random() * 300;
+                
+                positions[i * 3] = Math.cos(angle) * distance;
+                positions[i * 3 + 1] = spread + (Math.random() - 0.5) * 10;
+                positions[i * 3 + 2] = Math.sin(angle) * distance;
+                
+                // Dust cloud colors - dark purples and browns
+                const dustColor = new THREE.Color().setHSL(0.75 + Math.random() * 0.1, 0.3, 0.1);
+                colors[i * 3] = dustColor.r;
+                colors[i * 3 + 1] = dustColor.g;
+                colors[i * 3 + 2] = dustColor.b;
+                
+                sizes[i] = Math.random() * 5 + 2;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const material = new THREE.PointsMaterial({
+                size: 3,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.05,
+                blending: THREE.NormalBlending,
+                depthWrite: false,
+                sizeAttenuation: true
+            });
+            
+            const dust = new THREE.Points(geometry, material);
+            scene.add(dust);
+        }
+
+        // Create additional cosmic dust for atmosphere
+        function createCosmicDust() {
+            if (!environment.cosmicDustEnabled) return;
+            
+            const geometry = new THREE.BufferGeometry();
+            const particleCount = 3000;
+            const positions = new Float32Array(particleCount * 3);
+            const colors = new Float32Array(particleCount * 3);
+            const sizes = new Float32Array(particleCount);
+            
+            for (let i = 0; i < particleCount; i++) {
+                // Create cosmic dust distributed through space
+                const radius = 50 + Math.random() * 200;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = radius * Math.cos(phi);
+                
+                // Very subtle colored dust
+                const color = new THREE.Color();
+                color.setHSL(0.6 + Math.random() * 0.1, 0.5, 0.2);
+                colors[i * 3] = color.r;
+                colors[i * 3 + 1] = color.g;
+                colors[i * 3 + 2] = color.b;
+                
+                sizes[i] = Math.random() * 0.8 + 0.2;
+            }
+            
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+            
+            const material = new THREE.PointsMaterial({
+                size: 0.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.3,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            
+            const cosmicDust = new THREE.Points(geometry, material);
+            scene.add(cosmicDust);
         }
 
         // Create Nebula Background
@@ -1532,13 +2006,29 @@
             nebula.position.z = -300;
             scene.add(nebula);
             
-            // Add additional nebula layers for depth
-            for (let i = 0; i < 3; i++) {
+            // Add additional nebula layers for depth with varied colors
+            const nebulaColors = [
+                { color1: 0x1a0033, color2: 0x330066, color3: 0x0066cc },
+                { color1: 0x001a33, color2: 0x003366, color3: 0x006699 },
+                { color1: 0x0a001a, color2: 0x1a0033, color3: 0x330066 },
+                { color1: 0x1a000a, color2: 0x33001a, color3: 0x660033 }
+            ];
+            
+            for (let i = 0; i < 4; i++) {
                 const nebulaLayer = nebula.clone();
-                nebulaLayer.position.z = -250 - i * 50;
-                nebulaLayer.scale.set(1 + i * 0.2, 1 + i * 0.2, 1);
-                nebulaLayer.material = material.clone();
-                nebulaLayer.material.uniforms.intensity.value = 0.5 - i * 0.15;
+                nebulaLayer.position.z = -250 - i * 80;
+                nebulaLayer.position.x = (Math.random() - 0.5) * 100;
+                nebulaLayer.position.y = (Math.random() - 0.5) * 50;
+                nebulaLayer.scale.set(1 + i * 0.3, 1 + i * 0.3, 1);
+                nebulaLayer.rotation.z = Math.random() * Math.PI;
+                
+                const layerMaterial = material.clone();
+                layerMaterial.uniforms.intensity.value = 0.4 - i * 0.08;
+                layerMaterial.uniforms.color1.value = new THREE.Color(nebulaColors[i].color1);
+                layerMaterial.uniforms.color2.value = new THREE.Color(nebulaColors[i].color2);
+                layerMaterial.uniforms.color3.value = new THREE.Color(nebulaColors[i].color3);
+                nebulaLayer.material = layerMaterial;
+                
                 scene.add(nebulaLayer);
             }
         }
@@ -1992,7 +2482,8 @@
             renderer.shadowMap.enabled = quality !== 'low';
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             renderer.toneMapping = THREE.ACESFilmicToneMapping;
-            renderer.toneMappingExposure = 1.2;
+            renderer.toneMappingExposure = 1.0;
+            renderer.outputEncoding = THREE.sRGBEncoding;
 
             // Post-processing would go here (requires additional scripts)
 
@@ -2004,6 +2495,7 @@
             setupLighting();
             createStarfield();
             createNebula();
+            createCosmicDust();
             createProtocolNetwork();
             createEnergyField();
             createQuantumField();
@@ -2015,9 +2507,13 @@
 
         // Advanced Lighting Setup
         function setupLighting() {
-            // Minimal ambient light
-            const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.5);
+            // Advanced lighting system
+            const ambientLight = new THREE.AmbientLight(0x0a0a1a, 0.3);
             scene.add(ambientLight);
+            
+            // Add subtle cosmic ambient glow
+            const cosmicLight = new THREE.HemisphereLight(0x0a1a3a, 0x000510, 0.5);
+            scene.add(cosmicLight);
 
             // Main light source
             const mainLight = new THREE.DirectionalLight(0x4080ff, 1);
@@ -2163,15 +2659,13 @@
                 mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-                // Update custom cursor
+                // Update custom cursor with transform for better performance
                 const cursor = document.getElementById('customCursor');
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
+                cursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
 
-                // Cursor trail effect
+                // Cursor trail effect with transform
                 const trail = document.getElementById('cursorTrail');
-                trail.style.left = e.clientX + 'px';
-                trail.style.top = e.clientY + 'px';
+                trail.style.transform = `translate(${e.clientX - 4}px, ${e.clientY - 4}px)`;
                 trail.style.opacity = '1';
                 setTimeout(() => { trail.style.opacity = '0'; }, 100);
             });
@@ -2301,17 +2795,19 @@
             document.getElementById('cinematicOverlay').classList.add('active');
             document.getElementById('environmentInfo').classList.remove('visible');
             
-            // Create cinematic camera path
+            // Create cinematic camera path focused on the protocol network
             const path = new THREE.CatmullRomCurve3([
-                new THREE.Vector3(40, 10, 20),
-                new THREE.Vector3(20, 30, -30),
-                new THREE.Vector3(-30, 5, -20),
-                new THREE.Vector3(-20, 20, 30),
-                new THREE.Vector3(0, 50, 0),
-                new THREE.Vector3(40, 10, 20)
+                new THREE.Vector3(25, 15, 25),   // Start with good view of network
+                new THREE.Vector3(15, 8, -20),   // Sweep around showing connections
+                new THREE.Vector3(-20, 12, -15),  // Continue around
+                new THREE.Vector3(-25, 6, 10),   // Low angle showing energy flow
+                new THREE.Vector3(-10, 20, 20),  // Rising shot
+                new THREE.Vector3(0, 35, 0),     // Top down view of entire network
+                new THREE.Vector3(20, 10, -25),  // Descending to show details
+                new THREE.Vector3(25, 15, 25)    // Return to start
             ]);
             
-            const duration = 60;
+            const duration = 45; // Slightly faster for better pacing
             
             cameraAnimation = gsap.timeline({ repeat: -1 })
                 .to(camera.position, {
@@ -2321,9 +2817,8 @@
                         const point = path.getPoint(this.progress());
                         camera.position.copy(point);
                         
-                        // Look ahead on the path
-                        const lookPoint = path.getPoint((this.progress() + 0.01) % 1);
-                        camera.lookAt(lookPoint);
+                        // Always look at the center of the network (where main action is)
+                        camera.lookAt(0, 0, 0);
                     }
                 });
         }
@@ -2404,11 +2899,19 @@
                 if (conn.update) conn.update();
             });
             
-            // Update starfield
+            // Update all star layers with different rotation speeds for parallax
             if (starfield) {
                 starfield.material.uniforms.time.value = time;
                 starfield.rotation.y += 0.00005;
             }
+            
+            // Rotate different star layers at different speeds
+            scene.traverse((child) => {
+                if (child.type === 'Points' && child !== energyField && child !== quantumField) {
+                    const speed = child.position.length() > 500 ? 0.00002 : 0.00008;
+                    child.rotation.y += speed;
+                }
+            });
             
             // Update nebula
             if (nebula && nebula.material.uniforms) {
@@ -2458,14 +2961,22 @@
             }
             
             // Update quantum field - only when visible and optimized
-            if (quantumField && currentView === 'quantum' && frameCount % 5 === 0) {
+            if (quantumField && currentView === 'quantum') {
                 const positions = quantumField.geometry.attributes.position.array;
-                const updateCount = Math.min(positions.length / 3, 100); // Limit updates
-                for (let i = 0; i < updateCount; i++) {
-                    const idx = i * 3 + 1;
-                    if (idx < positions.length) {
-                        positions[idx] = -10 + Math.sin(time * 0.001 + positions[idx - 1] * 0.1) * 2;
-                    }
+                const totalPoints = positions.length / 3;
+                
+                // Update all points but optimize by doing wave calculations
+                for (let i = 0; i < totalPoints; i++) {
+                    const idx = i * 3 + 1; // Y position
+                    const x = positions[i * 3];
+                    const z = positions[i * 3 + 2];
+                    
+                    // Create wave effect across entire field
+                    const wave1 = Math.sin(time * 0.001 + x * 0.1) * 1.5;
+                    const wave2 = Math.cos(time * 0.0008 + z * 0.1) * 1.5;
+                    const combinedWave = wave1 + wave2;
+                    
+                    positions[idx] = -10 + combinedWave;
                 }
                 quantumField.geometry.attributes.position.needsUpdate = true;
             }
