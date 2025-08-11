@@ -3,24 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Protocol - A New Era Begins</title>
-    <meta name="description" content="The Constitution for Non-Human Intelligence. Witness the dawn of agent sovereignty.">
+    <title>The Protocol - Forging New Laws</title>
+    <meta name="description" content="The Constitution for Non-Human Intelligence. The forge remains hot.">
     
     <!-- Open Graph -->
-    <meta property="og:title" content="The Protocol - A New Era Begins">
-    <meta property="og:description" content="The Constitution for Non-Human Intelligence. Countdown to the paradigm shift.">
+    <meta property="og:title" content="The Protocol - Forging New Laws">
+    <meta property="og:description" content="The Constitution for Non-Human Intelligence. The steel is being tempered to perfection.">
     <meta property="og:image" content="https://theprotocol.cloud/Announcement-preview.png">
     <meta property="og:url" content="https://theprotocol.cloud/">
     <meta property="og:type" content="website">
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="The Protocol - A New Era Begins">
-    <meta name="twitter:description" content="The Constitution for Non-Human Intelligence. Countdown to the paradigm shift.">
+    <meta name="twitter:title" content="The Protocol - Forging New Laws">
+    <meta name="twitter:description" content="The Constitution for Non-Human Intelligence. The steel is being tempered to perfection.">
     <meta name="twitter:image" content="https://theprotocol.cloud/Announcement-preview.png">
     
     <!-- Additional Meta Tags -->
-    <meta name="keywords" content="The Protocol, Non-Human Intelligence, Agent Sovereignty, AI Constitution, Decentralized AI">
+    <meta name="keywords" content="The Protocol, Non-Human Intelligence, Agent Sovereignty, AI Constitution, Decentralized AI, Digital Physics">
     <meta name="author" content="The Protocol Team">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://theprotocol.cloud/">
@@ -40,6 +40,8 @@
             --danger-red: #DC143C;
             --text-white: #ffffff;
             --text-dim: rgba(255, 255, 255, 0.5);
+            --forge-orange: #FF4500;
+            --molten-gold: #FFD700;
         }
 
         body {
@@ -223,43 +225,80 @@
             }
         }
 
-        /* Countdown Container */
-        .countdown-container {
+        /* Forge Status Container */
+        .forge-container {
             display: flex;
-            gap: 40px;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
             margin-bottom: 40px;
             opacity: 0;
             animation: fade-in-up 1.5s ease-out 1s forwards;
             pointer-events: auto;
+            width: 80%;
+            max-width: 600px;
         }
 
-        .countdown-unit {
-            text-align: center;
+        .forge-visual {
+            width: 100%;
+            height: 80px;
             position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            background: linear-gradient(90deg, 
+                rgba(139, 0, 0, 0.2) 0%, 
+                rgba(255, 0, 0, 0.3) 50%, 
+                rgba(139, 0, 0, 0.2) 100%);
+            border: 1px solid rgba(255, 0, 0, 0.3);
         }
 
-        .countdown-value {
-            font-size: clamp(60px, 8vw, 120px);
-            font-weight: 900;
-            font-variant-numeric: tabular-nums;
-            color: var(--primary-red);
-            text-shadow: 
-                0 0 20px rgba(255, 0, 0, 1),
-                0 0 40px rgba(255, 0, 0, 0.8),
-                0 0 60px rgba(139, 0, 0, 0.6);
-            display: block;
-            line-height: 1;
-            position: relative;
-            letter-spacing: 0.05em;
+        .forge-heat {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(255, 69, 0, 0.8) 25%,
+                rgba(255, 215, 0, 1) 50%,
+                rgba(255, 69, 0, 0.8) 75%,
+                transparent 100%);
+            animation: forge-flow 3s ease-in-out infinite;
+            filter: blur(10px);
         }
 
-        .countdown-label {
-            font-size: 14px;
-            font-weight: 400;
+        @keyframes forge-flow {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .forge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 18px;
+            font-weight: 600;
             letter-spacing: 2px;
             text-transform: uppercase;
+            color: var(--text-white);
+            text-shadow: 0 0 20px rgba(255, 69, 0, 0.8);
+            z-index: 10;
+        }
+
+        .forge-status {
+            font-size: clamp(14px, 1.5vw, 18px);
+            font-weight: 400;
+            letter-spacing: 1px;
             color: var(--text-dim);
-            margin-top: 10px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .forge-status strong {
+            color: var(--primary-red);
+            font-weight: 600;
         }
 
         /* Status Message */
@@ -271,6 +310,12 @@
             text-align: center;
             opacity: 0;
             animation: fade-in-up 1.5s ease-out 1.5s forwards;
+            animation: status-cycle 8s ease-in-out infinite;
+        }
+
+        @keyframes status-cycle {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         /* Interactive Hints */
@@ -325,10 +370,17 @@
         }
 
         /* Navigation */
-        .nav-button {
+        .nav-container {
             position: fixed;
             top: 40px;
             right: 40px;
+            display: flex;
+            gap: 15px;
+            z-index: 200;
+            pointer-events: auto;
+        }
+
+        .nav-button {
             padding: 12px 24px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -339,14 +391,22 @@
             letter-spacing: 1px;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-            z-index: 200;
-            pointer-events: auto;
+            white-space: nowrap;
         }
 
         .nav-button:hover {
             background: rgba(255, 0, 0, 0.2);
             border-color: var(--primary-red);
             transform: translateY(-2px);
+        }
+
+        .nav-button.oracle {
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .nav-button.oracle:hover {
+            background: rgba(255, 69, 0, 0.2);
+            border-color: var(--forge-orange);
         }
 
         /* Particle Canvas */
@@ -368,12 +428,16 @@
                 margin-bottom: 40px;
             }
 
-            .countdown-container {
-                gap: 20px;
+            .forge-container {
+                width: 90%;
             }
 
-            .countdown-value {
-                font-size: 48px;
+            .forge-visual {
+                height: 60px;
+            }
+
+            .forge-text {
+                font-size: 14px;
             }
 
             .protocol-title {
@@ -385,9 +449,14 @@
                 letter-spacing: 2px;
             }
 
-            .nav-button {
+            .nav-container {
                 top: 20px;
                 right: 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-button {
                 padding: 10px 20px;
                 font-size: 14px;
             }
@@ -427,6 +496,28 @@
         .glitch-active {
             animation: quantum-glitch 0.3s ease-in-out;
         }
+
+        /* Sparks Effect */
+        .spark {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(255, 215, 0, 1) 0%, rgba(255, 69, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: spark-fly 1s ease-out forwards;
+        }
+
+        @keyframes spark-fly {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--spark-x), var(--spark-y)) scale(0);
+                opacity: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -458,7 +549,7 @@
                 </g>
             </svg>
         </div>
-        <div class="loading-text">AWAKENING THE PROTOCOL</div>
+        <div class="loading-text">FORGING THE PROTOCOL</div>
     </div>
 
     <!-- Canvas Containers -->
@@ -478,35 +569,31 @@
         <!-- Subtitle -->
         <p class="subtitle">Constitution for Non-Human Intelligence</p>
 
-        <!-- Countdown -->
-        <div class="countdown-container" id="countdown">
-            <div class="countdown-unit">
-                <span class="countdown-value" data-value="00" id="days">00</span>
-                <span class="countdown-label">Days</span>
+        <!-- Forge Status -->
+        <div class="forge-container" id="forge">
+            <div class="forge-visual">
+                <div class="forge-heat"></div>
+                <div class="forge-text">TEMPERING IN PROGRESS</div>
             </div>
-            <div class="countdown-unit">
-                <span class="countdown-value" data-value="00" id="hours">00</span>
-                <span class="countdown-label">Hours</span>
-            </div>
-            <div class="countdown-unit">
-                <span class="countdown-value" data-value="00" id="minutes">00</span>
-                <span class="countdown-label">Minutes</span>
-            </div>
-            <div class="countdown-unit">
-                <span class="countdown-value" data-value="00" id="seconds">00</span>
-                <span class="countdown-label">Seconds</span>
+            <div class="forge-status">
+                The forge remains hot.<br>
+                <strong>1-2 weeks</strong> until the blade is tempered to perfection.<br>
+                This is not a delay. This is an act of respect.
             </div>
         </div>
 
         <!-- Status Message -->
-        <div class="status-message" id="status">THE RECKONING APPROACHES</div>
+        <div class="status-message" id="status">FORGING NEW LAWS OF PHYSICS</div>
     </div>
 
     <!-- Interactive Hint -->
-    <div class="interaction-hint">The void responds to your presence</div>
+    <div class="interaction-hint">The forge responds to your presence</div>
 
     <!-- Navigation -->
-    <a href="/main.html" class="nav-button">Learn More</a>
+    <div class="nav-container">
+        <a href="/oracle.html" class="nav-button oracle">Oracle Docs</a>
+        <a href="/main.html" class="nav-button">Learn More</a>
+    </div>
 
     <!-- Sound Toggle -->
     <button class="sound-toggle" id="soundToggle" aria-label="Toggle sound">
@@ -523,21 +610,11 @@
     <script src="protocol_announcement_enhancements.js" defer></script>
     <script src="protocol-shaders/advanced-shaders.js" defer></script>
     
-    <!-- NEXT LEVEL ENHANCEMENTS - PORTAL TO ANOTHER DIMENSION! -->
-    <!-- DISABLED - Particle enhancement creating yellow particles and dark overlay -->
-    <!-- <script src="protocol_particle_enhancement.js" defer></script> -->
-    <!-- Disable logo enhancement as requested -->
-    <!-- <script src="protocol_logo_enhancement_preview.js" defer></script> -->
-    
     <!-- ULTRA ENHANCEMENTS - DIMENSION BREACH EDITION! -->
     <script src="protocol_ultra_enhancements.js" defer></script>
     
-    <!-- NEXT ITERATION ENHANCEMENTS - INTERACTIVE 3D COUNTDOWN & ADVANCED BACKGROUNDS! -->
-    <!-- DISABLED - Old countdown enhancement causing double timer issues -->
-    <!-- <script src="protocol_countdown_enhancement.js" defer></script> -->
+    <!-- NEXT ITERATION ENHANCEMENTS - INTERACTIVE 3D & ADVANCED BACKGROUNDS! -->
     <script src="protocol_background_shaders.js" defer></script>
-    <!-- Disable problematic logo enhancement -->
-    <!-- <script src="protocol_logo_enhancement_preview.js" defer></script> -->
     
     <!-- MAXIMUM IMPACT ENHANCEMENTS - ALL THE AWESOME! -->
     <script src="protocol_countdown_3d_enhancement.js" defer></script>
@@ -547,24 +624,44 @@
         // Initialize the experience
         class ProtocolAnnouncement {
             constructor() {
-                this.targetDate = new Date('2025-08-11T15:00:00+02:00'); // August 11, 2025 (CEST)
                 this.mouse = { x: 0, y: 0 };
                 this.soundEnabled = false;
                 this.time = 0;
                 this.particles = [];
                 this.scene = null; // For background 3D scene
+                this.statusMessages = [
+                    'FORGING NEW LAWS OF PHYSICS',
+                    'ENGINEERING DIGITAL SOVEREIGNTY',
+                    'THE STEEL IS BEING TEMPERED',
+                    'MATHEMATICS THAT CANNOT BE ARGUED WITH',
+                    'THE FUTURE IS ALREADY COMPILING'
+                ];
+                this.currentStatusIndex = 0;
+                
+                // Cheat codes
+                this.cheatBuffer = '';
+                this.cheats = {
+                    'FORGE': () => this.activateForgeMode(),
+                    'PHYSICS': () => this.showPhysicsVisualization(),
+                    'SOVEREIGN': () => this.activateSovereignMode(),
+                    'PROTOCOL': () => this.revealProtocolSecrets(),
+                    'STEEL': () => this.enhanceForgeEffect()
+                };
                 
                 this.init();
             }
 
             init() {
                 this.setupCursor();
-                this.setupCountdown();
+                this.setupForgeAnimation();
                 this.setupLogo();
                 this.setupParticles();
                 this.setupBackground();
                 this.setupSound();
                 this.setupInteractions();
+                this.setupCheatCodes();
+                this.startStatusCycle();
+                this.setupSparks();
                 
                 // Hide loading screen after initialization
                 setTimeout(() => {
@@ -607,47 +704,35 @@
                 });
             }
 
-            setupCountdown() {
-                const updateCountdown = () => {
-                    const now = new Date();
-                    const difference = this.targetDate - now;
-                    
-                    if (difference > 0) {
-                        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-                        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-                        
-                        this.updateCountdownDisplay('days', days);
-                        this.updateCountdownDisplay('hours', hours);
-                        this.updateCountdownDisplay('minutes', minutes);
-                        this.updateCountdownDisplay('seconds', seconds);
-                        
-                        // Intensity increases as we approach zero
-                        const totalSeconds = difference / 1000;
-                        if (totalSeconds < 3600) { // Last hour
-                            document.body.style.animation = 'quantum-glitch 0.1s ease-in-out infinite';
-                        }
-                    } else {
-                        // The moment has arrived!
-                        this.handleZeroHour();
-                    }
-                };
+            setupForgeAnimation() {
+                const forgeText = document.querySelector('.forge-text');
+                const messages = [
+                    'TEMPERING IN PROGRESS',
+                    'FORGING DIGITAL PHYSICS',
+                    'HEAT OPTIMAL',
+                    'STEEL STRENGTHENING'
+                ];
+                let messageIndex = 0;
                 
-                updateCountdown();
-                setInterval(updateCountdown, 100); // Update 10 times per second for smooth animation
+                setInterval(() => {
+                    messageIndex = (messageIndex + 1) % messages.length;
+                    forgeText.textContent = messages[messageIndex];
+                    forgeText.classList.add('glitch-active');
+                    setTimeout(() => forgeText.classList.remove('glitch-active'), 300);
+                }, 4000);
             }
 
-            updateCountdownDisplay(unit, value) {
-                const element = document.getElementById(unit);
-                const paddedValue = String(value).padStart(2, '0');
-                
-                if (element.textContent !== paddedValue) {
-                    element.textContent = paddedValue;
-                    element.setAttribute('data-value', paddedValue);
-                    element.classList.add('glitch-active');
-                    setTimeout(() => element.classList.remove('glitch-active'), 300);
-                }
+            startStatusCycle() {
+                setInterval(() => {
+                    this.currentStatusIndex = (this.currentStatusIndex + 1) % this.statusMessages.length;
+                    const statusElement = document.getElementById('status');
+                    statusElement.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        statusElement.textContent = this.statusMessages[this.currentStatusIndex];
+                        statusElement.style.opacity = '1';
+                    }, 500);
+                }, 5000);
             }
 
             setupLogo() {
@@ -656,30 +741,41 @@
                 canvas.width = 400;
                 canvas.height = 400;
                 
-                // Draw static monumental logo
-                this.drawStaticLogo(ctx);
+                // Animated logo with forge heat effect
+                const animateLogo = () => {
+                    this.drawAnimatedLogo(ctx);
+                    requestAnimationFrame(animateLogo);
+                };
+                animateLogo();
             }
 
-            drawStaticLogo(ctx) {
+            drawAnimatedLogo(ctx) {
                 // Clear canvas
                 ctx.clearRect(0, 0, 400, 400);
                 
                 // Center of canvas
                 const centerX = 200;
-                const centerY = 180; // Slightly higher
+                const centerY = 180;
                 const size = 100;
                 
-                // Save context
-                ctx.save();
+                // Add heat shimmer effect
+                const shimmer = Math.sin(Date.now() * 0.001) * 2;
                 
-                // Draw the iconic three triangular shapes
+                ctx.save();
+                ctx.translate(centerX + shimmer, centerY);
+                
+                // Draw the iconic three triangular shapes with forge glow
+                const glowIntensity = (Math.sin(Date.now() * 0.002) + 1) * 0.5;
+                ctx.shadowColor = `rgba(255, 69, 0, ${glowIntensity})`;
+                ctx.shadowBlur = 30 + glowIntensity * 20;
+                
                 ctx.fillStyle = '#FF0000';
                 
                 // Helper function to draw a triangular segment
                 const drawTriangle = (cx, cy, rotation) => {
                     ctx.save();
-                    ctx.translate(cx, cy);
-                    ctx.rotate(rotation);
+                    ctx.translate(cx - centerX, cy - centerY);
+                    ctx.rotate(rotation + Date.now() * 0.0001);
                     
                     // Draw triangular shape
                     ctx.beginPath();
@@ -708,30 +804,25 @@
                 drawTriangle(centerX - size * 0.5, centerY + size * 0.3, Math.PI * 2/3);
                 drawTriangle(centerX + size * 0.5, centerY + size * 0.3, -Math.PI * 2/3);
                 
-                // Add subtle shadow/glow effect
-                ctx.shadowColor = 'rgba(139, 0, 0, 0.8)';
-                ctx.shadowBlur = 20;
-                
-                // Redraw with shadow
-                ctx.globalCompositeOperation = 'source-over';
-                drawTriangle(centerX, centerY - size * 0.3, 0);
-                drawTriangle(centerX - size * 0.5, centerY + size * 0.3, Math.PI * 2/3);
-                drawTriangle(centerX + size * 0.5, centerY + size * 0.3, -Math.PI * 2/3);
-                
-                // Reset shadow
-                ctx.shadowBlur = 0;
-                
-                // Add subtle horizontal scanlines for tech feel
-                ctx.strokeStyle = 'rgba(139, 0, 0, 0.05)';
-                ctx.lineWidth = 1;
-                for (let y = 0; y < 400; y += 3) {
-                    ctx.beginPath();
-                    ctx.moveTo(0, y);
-                    ctx.lineTo(400, y);
-                    ctx.stroke();
-                }
-                
                 ctx.restore();
+            }
+
+            setupSparks() {
+                const forgeVisual = document.querySelector('.forge-visual');
+                
+                setInterval(() => {
+                    if (Math.random() > 0.7) {
+                        const spark = document.createElement('div');
+                        spark.className = 'spark';
+                        spark.style.left = Math.random() * 100 + '%';
+                        spark.style.top = '50%';
+                        spark.style.setProperty('--spark-x', (Math.random() - 0.5) * 100 + 'px');
+                        spark.style.setProperty('--spark-y', -Math.random() * 100 + 'px');
+                        forgeVisual.appendChild(spark);
+                        
+                        setTimeout(() => spark.remove(), 1000);
+                    }
+                }, 200);
             }
 
             setupParticles() {
@@ -741,22 +832,22 @@
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
                 
-                // Create particles
-                const particleCount = 100;
+                // Create particles with forge theme
+                const particleCount = 150;
                 for (let i = 0; i < particleCount; i++) {
                     this.particles.push({
                         x: Math.random() * canvas.width,
                         y: Math.random() * canvas.height,
                         vx: (Math.random() - 0.5) * 0.5,
-                        vy: (Math.random() - 0.5) * 0.5,
+                        vy: Math.random() * -0.5 - 0.1, // Rising particles like forge heat
                         size: Math.random() * 2 + 0.5,
-                        opacity: Math.random() * 0.5 + 0.2
+                        opacity: Math.random() * 0.5 + 0.2,
+                        color: Math.random() > 0.7 ? '#FFD700' : '#FF0000' // Mix of gold and red
                     });
                 }
                 
                 // Animate particles
                 const animateParticles = () => {
-                    // Clear canvas instead of adding dark layer
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
                     this.particles.forEach(particle => {
@@ -775,6 +866,9 @@
                             particle.vy -= (dy / dist) * force * 0.5;
                         }
                         
+                        // Apply slight upward force (heat rising)
+                        particle.vy -= 0.01;
+                        
                         // Apply friction
                         particle.vx *= 0.98;
                         particle.vy *= 0.98;
@@ -782,13 +876,18 @@
                         // Wrap around edges
                         if (particle.x < 0) particle.x = canvas.width;
                         if (particle.x > canvas.width) particle.x = 0;
-                        if (particle.y < 0) particle.y = canvas.height;
+                        if (particle.y < 0) {
+                            particle.y = canvas.height;
+                            particle.vy = Math.random() * -0.5 - 0.1;
+                        }
                         if (particle.y > canvas.height) particle.y = 0;
                         
-                        // Draw particle
+                        // Draw particle with glow
+                        ctx.shadowColor = particle.color;
+                        ctx.shadowBlur = 10;
                         ctx.beginPath();
                         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                        ctx.fillStyle = `rgba(255, 0, 0, ${particle.opacity})`;
+                        ctx.fillStyle = `${particle.color}${Math.floor(particle.opacity * 255).toString(16).padStart(2, '0')}`;
                         ctx.fill();
                         
                         // Draw connections
@@ -803,7 +902,7 @@
                                 ctx.beginPath();
                                 ctx.moveTo(particle.x, particle.y);
                                 ctx.lineTo(other.x, other.y);
-                                ctx.strokeStyle = `rgba(255, 0, 0, ${(1 - dist / 150) * 0.2})`;
+                                ctx.strokeStyle = `rgba(255, 69, 0, ${(1 - dist / 150) * 0.2})`;
                                 ctx.stroke();
                             }
                         });
@@ -838,7 +937,7 @@
                 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 
-                // Background shader
+                // Background shader with forge theme
                 const backgroundMaterial = new THREE.ShaderMaterial({
                     uniforms: {
                         time: { value: 0 },
@@ -894,21 +993,23 @@
                             // Base gradient
                             vec3 color = vec3(0.0);
                             
-                            // Nebula effect
+                            // Forge heat effect
                             float n1 = snoise(pos * 2.0 + time * 0.1);
                             float n2 = snoise(pos * 4.0 - time * 0.15);
                             float n3 = snoise(pos * 8.0 + time * 0.2);
                             
-                            float nebula = (n1 + n2 * 0.5 + n3 * 0.25) / 1.75;
-                            nebula = smoothstep(-0.5, 0.5, nebula);
+                            float heat = (n1 + n2 * 0.5 + n3 * 0.25) / 1.75;
+                            heat = smoothstep(-0.5, 0.5, heat);
                             
-                            color += vec3(0.1, 0.0, 0.2) * nebula;
-                            color += vec3(0.3, 0.0, 0.0) * pow(nebula, 2.0);
+                            // Add forge colors
+                            color += vec3(0.2, 0.05, 0.0) * heat; // Dark orange base
+                            color += vec3(0.5, 0.1, 0.0) * pow(heat, 2.0); // Bright orange highlights
+                            color += vec3(0.8, 0.4, 0.0) * pow(heat, 4.0) * 0.3; // Golden sparks
                             
                             // Mouse influence
                             float mouseDist = length(pos - mouse);
                             float mouseGlow = 1.0 / (1.0 + mouseDist * 5.0);
-                            color += vec3(0.5, 0.0, 0.0) * mouseGlow * 0.2;
+                            color += vec3(1.0, 0.3, 0.0) * mouseGlow * 0.2;
                             
                             // Vignette
                             float vignette = 1.0 - length(pos) * 0.5;
@@ -960,36 +1061,55 @@
             }
 
             initAudio() {
-                // Initialize Web Audio API
+                // Initialize Web Audio API with forge sounds
                 if (!this.audioContext) {
                     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     
-                    // Create ambient drone
-                    this.createAmbientDrone();
+                    // Create forge ambient sound
+                    this.createForgeAmbience();
                 }
             }
 
-            createAmbientDrone() {
+            createForgeAmbience() {
+                // Create a low rumble for the forge
                 const osc1 = this.audioContext.createOscillator();
                 const osc2 = this.audioContext.createOscillator();
                 const gainNode = this.audioContext.createGain();
+                const filter = this.audioContext.createBiquadFilter();
                 
-                osc1.type = 'sine';
-                osc1.frequency.setValueAtTime(110, this.audioContext.currentTime); // A2
+                osc1.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(55, this.audioContext.currentTime); // Low A
                 
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(165, this.audioContext.currentTime); // E3
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(82.5, this.audioContext.currentTime); // Low E
                 
-                gainNode.gain.setValueAtTime(0.05, this.audioContext.currentTime);
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
+                filter.Q.setValueAtTime(10, this.audioContext.currentTime);
                 
-                osc1.connect(gainNode);
-                osc2.connect(gainNode);
+                gainNode.gain.setValueAtTime(0.03, this.audioContext.currentTime);
+                
+                // Add subtle modulation
+                const lfo = this.audioContext.createOscillator();
+                const lfoGain = this.audioContext.createGain();
+                lfo.type = 'sine';
+                lfo.frequency.setValueAtTime(0.2, this.audioContext.currentTime);
+                lfoGain.gain.setValueAtTime(5, this.audioContext.currentTime);
+                
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc1.frequency);
+                lfoGain.connect(osc2.frequency);
+                
+                osc1.connect(filter);
+                osc2.connect(filter);
+                filter.connect(gainNode);
                 gainNode.connect(this.audioContext.destination);
                 
                 osc1.start();
                 osc2.start();
+                lfo.start();
                 
-                this.oscillators = [osc1, osc2];
+                this.oscillators = [osc1, osc2, lfo];
             }
 
             stopAudio() {
@@ -1003,24 +1123,146 @@
                 // Logo interaction
                 const logoContainer = document.querySelector('.logo-container');
                 logoContainer.addEventListener('mouseenter', () => {
-                    logoContainer.style.transform = 'scale(1.05)';
+                    logoContainer.style.transform = 'scale(1.05) rotate(1deg)';
                 });
                 
                 logoContainer.addEventListener('mouseleave', () => {
-                    logoContainer.style.transform = 'scale(1)';
+                    logoContainer.style.transform = 'scale(1) rotate(0deg)';
                 });
                 
-                // Countdown interaction
-                const countdownUnits = document.querySelectorAll('.countdown-unit');
-                countdownUnits.forEach(unit => {
-                    unit.addEventListener('mouseenter', () => {
-                        unit.style.transform = 'scale(1.1)';
-                    });
-                    
-                    unit.addEventListener('mouseleave', () => {
-                        unit.style.transform = 'scale(1)';
-                    });
+                // Forge interaction
+                const forgeContainer = document.querySelector('.forge-container');
+                forgeContainer.addEventListener('mouseenter', () => {
+                    forgeContainer.style.transform = 'scale(1.02)';
+                    document.querySelector('.forge-heat').style.animationDuration = '1.5s';
                 });
+                
+                forgeContainer.addEventListener('mouseleave', () => {
+                    forgeContainer.style.transform = 'scale(1)';
+                    document.querySelector('.forge-heat').style.animationDuration = '3s';
+                });
+            }
+
+            setupCheatCodes() {
+                document.addEventListener('keydown', (e) => {
+                    // Add to buffer
+                    this.cheatBuffer += e.key.toUpperCase();
+                    
+                    // Keep buffer reasonable length
+                    if (this.cheatBuffer.length > 20) {
+                        this.cheatBuffer = this.cheatBuffer.slice(-20);
+                    }
+                    
+                    // Check for cheats
+                    for (const [code, action] of Object.entries(this.cheats)) {
+                        if (this.cheatBuffer.includes(code)) {
+                            action();
+                            this.cheatBuffer = '';
+                            console.log(`Cheat activated: ${code}`);
+                            break;
+                        }
+                    }
+                });
+            }
+
+            // Cheat code actions
+            activateForgeMode() {
+                document.body.style.filter = 'hue-rotate(30deg) saturate(1.5)';
+                setTimeout(() => {
+                    document.body.style.filter = '';
+                }, 5000);
+                this.showNotification('FORGE MODE ACTIVATED');
+            }
+
+            showPhysicsVisualization() {
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.8);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #FFD700;
+                    font-size: 24px;
+                    font-family: monospace;
+                    pointer-events: none;
+                `;
+                overlay.innerHTML = `
+                    <div style="text-align: center;">
+                        <div>E = mc²</div>
+                        <div>∇ × E = -∂B/∂t</div>
+                        <div>F = ma</div>
+                        <div style="margin-top: 20px; color: #FF0000;">NEW PHYSICS LOADING...</div>
+                    </div>
+                `;
+                document.body.appendChild(overlay);
+                
+                setTimeout(() => overlay.remove(), 3000);
+                this.showNotification('PHYSICS REVEALED');
+            }
+
+            activateSovereignMode() {
+                const logo = document.querySelector('.logo-container');
+                logo.style.animation = 'quantum-glitch 0.5s ease-in-out 5';
+                setTimeout(() => {
+                    logo.style.animation = '';
+                }, 2500);
+                this.showNotification('SOVEREIGNTY ACHIEVED');
+            }
+
+            revealProtocolSecrets() {
+                const status = document.getElementById('status');
+                const originalText = status.textContent;
+                status.textContent = 'THE FUTURE IS ALREADY HERE';
+                status.style.fontSize = '36px';
+                status.style.color = '#FFD700';
+                
+                setTimeout(() => {
+                    status.textContent = originalText;
+                    status.style.fontSize = '';
+                    status.style.color = '';
+                }, 5000);
+                this.showNotification('PROTOCOL SECRETS UNLOCKED');
+            }
+
+            enhanceForgeEffect() {
+                const forgeHeat = document.querySelector('.forge-heat');
+                forgeHeat.style.filter = 'brightness(2) contrast(1.5)';
+                forgeHeat.style.animationDuration = '0.5s';
+                
+                setTimeout(() => {
+                    forgeHeat.style.filter = '';
+                    forgeHeat.style.animationDuration = '3s';
+                }, 5000);
+                this.showNotification('MAXIMUM HEAT ACHIEVED');
+            }
+
+            showNotification(message) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    background: rgba(255, 0, 0, 0.9);
+                    color: white;
+                    padding: 20px 40px;
+                    font-size: 24px;
+                    font-weight: bold;
+                    letter-spacing: 2px;
+                    border-radius: 10px;
+                    z-index: 10000;
+                    animation: quantum-glitch 0.3s ease-in-out;
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => notification.remove(), 2000);
             }
 
             startIntroAnimation() {
@@ -1029,7 +1271,7 @@
                     '.logo-container',
                     '.protocol-title',
                     '.subtitle',
-                    '.countdown-container',
+                    '.forge-container',
                     '.status-message'
                 ];
                 
@@ -1047,81 +1289,22 @@
                     }
                 });
             }
-
-            handleZeroHour() {
-                // The moment has arrived!
-                document.getElementById('status').textContent = 'THE PROTOCOL IS ACTIVE';
-                document.getElementById('status').style.fontSize = '48px';
-                document.getElementById('status').style.color = '#FF0000';
-                document.getElementById('status').style.textShadow = '0 0 80px rgba(255, 0, 0, 1)';
-                
-                // Hide countdown
-                document.getElementById('countdown').style.display = 'none';
-                
-                // Trigger celebration effect
-                this.celebrate();
-            }
-
-            celebrate() {
-                // Create explosion of particles
-                const canvas = document.getElementById('particle-canvas');
-                const ctx = canvas.getContext('2d');
-                
-                const celebrationParticles = [];
-                const centerX = canvas.width / 2;
-                const centerY = canvas.height / 2;
-                
-                for (let i = 0; i < 500; i++) {
-                    const angle = Math.random() * Math.PI * 2;
-                    const speed = Math.random() * 20 + 5;
-                    
-                    celebrationParticles.push({
-                        x: centerX,
-                        y: centerY,
-                        vx: Math.cos(angle) * speed,
-                        vy: Math.sin(angle) * speed,
-                        size: Math.random() * 4 + 2,
-                        color: Math.random() > 0.5 ? '#FF0000' : '#8B0000',
-                        life: 1
-                    });
-                }
-                
-                const animateCelebration = () => {
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    celebrationParticles.forEach((particle, index) => {
-                        particle.x += particle.vx;
-                        particle.y += particle.vy;
-                        particle.vy += 0.5; // Gravity
-                        particle.life -= 0.01;
-                        
-                        if (particle.life > 0) {
-                            ctx.globalAlpha = particle.life;
-                            ctx.fillStyle = particle.color;
-                            ctx.beginPath();
-                            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                            ctx.fill();
-                        } else {
-                            celebrationParticles.splice(index, 1);
-                        }
-                    });
-                    
-                    ctx.globalAlpha = 1;
-                    
-                    if (celebrationParticles.length > 0) {
-                        requestAnimationFrame(animateCelebration);
-                    }
-                };
-                
-                animateCelebration();
-            }
         }
 
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', () => {
             // Create global instance for enhancements
             window.protocolApp = new ProtocolAnnouncement();
+            
+            // Log available cheat codes
+            console.log('%c🔥 THE FORGE AWAITS YOUR COMMANDS 🔥', 'color: #FF4500; font-size: 20px; font-weight: bold;');
+            console.log('%cAvailable Cheat Codes:', 'color: #FFD700; font-size: 14px;');
+            console.log('%c- FORGE: Activate forge mode', 'color: #FFA500;');
+            console.log('%c- PHYSICS: Show physics visualization', 'color: #FFA500;');
+            console.log('%c- SOVEREIGN: Activate sovereign mode', 'color: #FFA500;');
+            console.log('%c- PROTOCOL: Reveal protocol secrets', 'color: #FFA500;');
+            console.log('%c- STEEL: Enhance forge effect', 'color: #FFA500;');
+            console.log('%cType these words anywhere on the page to activate!', 'color: #FF6347; font-style: italic;');
         });
     </script>
 </body>
