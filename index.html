@@ -293,12 +293,15 @@
             letter-spacing: 1px;
             color: var(--text-dim);
             text-align: center;
-            line-height: 1.6;
+            line-height: 1.8;
+            padding: 0 20px;
         }
 
         .forge-status strong {
             color: var(--primary-red);
             font-weight: 600;
+            display: block;
+            margin: 10px 0;
         }
 
         /* Status Message */
@@ -310,12 +313,7 @@
             text-align: center;
             opacity: 0;
             animation: fade-in-up 1.5s ease-out 1.5s forwards;
-            animation: status-cycle 8s ease-in-out infinite;
-        }
-
-        @keyframes status-cycle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            margin-bottom: 30px;
         }
 
         /* Interactive Hints */
@@ -409,6 +407,23 @@
             border-color: var(--forge-orange);
         }
 
+        /* Version Badge */
+        .version-badge {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-radius: 20px;
+            color: var(--primary-red);
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            z-index: 200;
+            backdrop-filter: blur(10px);
+        }
+
         /* Particle Canvas */
         #particle-canvas {
             position: fixed;
@@ -466,6 +481,13 @@
                 right: 20px;
                 width: 40px;
                 height: 40px;
+            }
+
+            .version-badge {
+                bottom: 10px;
+                left: 10px;
+                font-size: 12px;
+                padding: 6px 12px;
             }
         }
 
@@ -576,8 +598,8 @@
                 <div class="forge-text">TEMPERING IN PROGRESS</div>
             </div>
             <div class="forge-status">
-                The forge remains hot.<br>
-                <strong>1-2 weeks</strong> until the blade is tempered to perfection.<br>
+                The forge remains hot.
+                <strong>It will be ready when the steel is true.</strong>
                 This is not a delay. This is an act of respect.
             </div>
         </div>
@@ -587,7 +609,7 @@
     </div>
 
     <!-- Interactive Hint -->
-    <div class="interaction-hint">The forge responds to your presence</div>
+    <div class="interaction-hint">The void responds to your presence</div>
 
     <!-- Navigation -->
     <div class="nav-container">
@@ -603,20 +625,17 @@
         </svg>
     </button>
 
+    <!-- Version Badge -->
+    <div class="version-badge">v3.0</div>
+
     <!-- Three.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
     <!-- Enhancement Suite -->
     <script src="protocol_announcement_enhancements.js" defer></script>
     <script src="protocol-shaders/advanced-shaders.js" defer></script>
-    
-    <!-- ULTRA ENHANCEMENTS - DIMENSION BREACH EDITION! -->
     <script src="protocol_ultra_enhancements.js" defer></script>
-    
-    <!-- NEXT ITERATION ENHANCEMENTS - INTERACTIVE 3D & ADVANCED BACKGROUNDS! -->
     <script src="protocol_background_shaders.js" defer></script>
-    
-    <!-- MAXIMUM IMPACT ENHANCEMENTS - ALL THE AWESOME! -->
     <script src="protocol_countdown_3d_enhancement.js" defer></script>
     <script src="protocol_background_enhanced.js" defer></script>
     
@@ -628,7 +647,9 @@
                 this.soundEnabled = false;
                 this.time = 0;
                 this.particles = [];
-                this.scene = null; // For background 3D scene
+                this.scene = null;
+                this.megaStructureActive = false;
+                this.connectionDistance = 150;
                 this.statusMessages = [
                     'FORGING NEW LAWS OF PHYSICS',
                     'ENGINEERING DIGITAL SOVEREIGNTY',
@@ -638,6 +659,10 @@
                 ];
                 this.currentStatusIndex = 0;
                 
+                // Audio context
+                this.audioContext = null;
+                this.oscillators = [];
+                
                 // Cheat codes
                 this.cheatBuffer = '';
                 this.cheats = {
@@ -645,7 +670,11 @@
                     'PHYSICS': () => this.showPhysicsVisualization(),
                     'SOVEREIGN': () => this.activateSovereignMode(),
                     'PROTOCOL': () => this.revealProtocolSecrets(),
-                    'STEEL': () => this.enhanceForgeEffect()
+                    'STEEL': () => this.enhanceForgeEffect(),
+                    'MEGA': () => this.activateMegaStructure(),
+                    'MATRIX': () => this.activateMatrixMode(),
+                    'TRANSCEND': () => this.activateTranscendenceMode(),
+                    'INFINITY': () => this.unlockInfinityMode()
                 };
                 
                 this.init();
@@ -663,7 +692,7 @@
                 this.startStatusCycle();
                 this.setupSparks();
                 
-                // Hide loading screen after initialization
+                // Hide loading screen
                 setTimeout(() => {
                     const loadingScreen = document.getElementById('loading-screen');
                     loadingScreen.style.opacity = '0';
@@ -741,7 +770,6 @@
                 canvas.width = 400;
                 canvas.height = 400;
                 
-                // Animated logo with forge heat effect
                 const animateLogo = () => {
                     this.drawAnimatedLogo(ctx);
                     requestAnimationFrame(animateLogo);
@@ -750,43 +778,34 @@
             }
 
             drawAnimatedLogo(ctx) {
-                // Clear canvas
                 ctx.clearRect(0, 0, 400, 400);
                 
-                // Center of canvas
                 const centerX = 200;
                 const centerY = 180;
                 const size = 100;
-                
-                // Add heat shimmer effect
                 const shimmer = Math.sin(Date.now() * 0.001) * 2;
                 
                 ctx.save();
                 ctx.translate(centerX + shimmer, centerY);
                 
-                // Draw the iconic three triangular shapes with forge glow
                 const glowIntensity = (Math.sin(Date.now() * 0.002) + 1) * 0.5;
                 ctx.shadowColor = `rgba(255, 69, 0, ${glowIntensity})`;
                 ctx.shadowBlur = 30 + glowIntensity * 20;
                 
                 ctx.fillStyle = '#FF0000';
                 
-                // Helper function to draw a triangular segment
                 const drawTriangle = (cx, cy, rotation) => {
                     ctx.save();
                     ctx.translate(cx - centerX, cy - centerY);
                     ctx.rotate(rotation + Date.now() * 0.0001);
                     
-                    // Draw triangular shape
                     ctx.beginPath();
-                    // Outer triangle
                     ctx.moveTo(0, -size);
                     ctx.lineTo(-size * 0.866, size * 0.5);
                     ctx.lineTo(size * 0.866, size * 0.5);
                     ctx.closePath();
                     ctx.fill();
                     
-                    // Cut out inner triangle to create the frame
                     ctx.globalCompositeOperation = 'destination-out';
                     ctx.beginPath();
                     ctx.moveTo(0, -size * 0.5);
@@ -799,7 +818,6 @@
                     ctx.restore();
                 };
                 
-                // Draw three interlocking triangles
                 drawTriangle(centerX, centerY - size * 0.3, 0);
                 drawTriangle(centerX - size * 0.5, centerY + size * 0.3, Math.PI * 2/3);
                 drawTriangle(centerX + size * 0.5, centerY + size * 0.3, -Math.PI * 2/3);
@@ -811,6 +829,9 @@
                 const forgeVisual = document.querySelector('.forge-visual');
                 
                 setInterval(() => {
+                    const existingSparks = forgeVisual.querySelectorAll('.spark').length;
+                    if (existingSparks > 5) return;
+                    
                     if (Math.random() > 0.7) {
                         const spark = document.createElement('div');
                         spark.className = 'spark';
@@ -832,21 +853,20 @@
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
                 
-                // Create particles with forge theme
-                const particleCount = 150;
+                // Create particles - original beautiful physics
+                const particleCount = 100;
                 for (let i = 0; i < particleCount; i++) {
                     this.particles.push({
                         x: Math.random() * canvas.width,
                         y: Math.random() * canvas.height,
                         vx: (Math.random() - 0.5) * 0.5,
-                        vy: Math.random() * -0.5 - 0.1, // Rising particles like forge heat
+                        vy: (Math.random() - 0.5) * 0.5,
                         size: Math.random() * 2 + 0.5,
-                        opacity: Math.random() * 0.5 + 0.2,
-                        color: Math.random() > 0.7 ? '#FFD700' : '#FF0000' // Mix of gold and red
+                        opacity: Math.random() * 0.5 + 0.2
                     });
                 }
                 
-                // Animate particles
+                // Animate particles with beautiful thin connections
                 const animateParticles = () => {
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
@@ -866,9 +886,6 @@
                             particle.vy -= (dy / dist) * force * 0.5;
                         }
                         
-                        // Apply slight upward force (heat rising)
-                        particle.vy -= 0.01;
-                        
                         // Apply friction
                         particle.vx *= 0.98;
                         particle.vy *= 0.98;
@@ -876,21 +893,16 @@
                         // Wrap around edges
                         if (particle.x < 0) particle.x = canvas.width;
                         if (particle.x > canvas.width) particle.x = 0;
-                        if (particle.y < 0) {
-                            particle.y = canvas.height;
-                            particle.vy = Math.random() * -0.5 - 0.1;
-                        }
+                        if (particle.y < 0) particle.y = canvas.height;
                         if (particle.y > canvas.height) particle.y = 0;
                         
-                        // Draw particle with glow
-                        ctx.shadowColor = particle.color;
-                        ctx.shadowBlur = 10;
+                        // Draw particle
                         ctx.beginPath();
                         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                        ctx.fillStyle = `${particle.color}${Math.floor(particle.opacity * 255).toString(16).padStart(2, '0')}`;
+                        ctx.fillStyle = `rgba(255, 0, 0, ${particle.opacity})`;
                         ctx.fill();
                         
-                        // Draw connections
+                        // Draw thin elegant connections
                         this.particles.forEach(other => {
                             if (particle === other) return;
                             
@@ -898,11 +910,13 @@
                             const dy = other.y - particle.y;
                             const dist = Math.sqrt(dx * dx + dy * dy);
                             
-                            if (dist < 150) {
+                            if (dist < this.connectionDistance) {
                                 ctx.beginPath();
                                 ctx.moveTo(particle.x, particle.y);
                                 ctx.lineTo(other.x, other.y);
-                                ctx.strokeStyle = `rgba(255, 69, 0, ${(1 - dist / 150) * 0.2})`;
+                                // Thin, elegant lines - not thick and glowy
+                                ctx.strokeStyle = `rgba(255, 0, 0, ${(1 - dist / this.connectionDistance) * 0.2})`;
+                                ctx.lineWidth = 0.5; // Very thin!
                                 ctx.stroke();
                             }
                         });
@@ -921,128 +935,8 @@
             }
 
             setupBackground() {
-                // Create WebGL background
-                const canvas = document.createElement('canvas');
-                canvas.style.position = 'fixed';
-                canvas.style.top = '0';
-                canvas.style.left = '0';
-                canvas.style.width = '100%';
-                canvas.style.height = '100%';
-                canvas.style.zIndex = '0';
-                document.getElementById('canvas-container').appendChild(canvas);
-                
-                // Store scene reference for enhancements
-                this.scene = new THREE.Scene();
-                const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-                const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
-                renderer.setSize(window.innerWidth, window.innerHeight);
-                
-                // Background shader with forge theme
-                const backgroundMaterial = new THREE.ShaderMaterial({
-                    uniforms: {
-                        time: { value: 0 },
-                        resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-                        mouse: { value: new THREE.Vector2(0, 0) }
-                    },
-                    vertexShader: `
-                        varying vec2 vUv;
-                        void main() {
-                            vUv = uv;
-                            gl_Position = vec4(position, 1.0);
-                        }
-                    `,
-                    fragmentShader: `
-                        uniform float time;
-                        uniform vec2 resolution;
-                        uniform vec2 mouse;
-                        varying vec2 vUv;
-                        
-                        // Simplex noise function
-                        vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-                        vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
-                        vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-                        
-                        float snoise(vec2 v) {
-                            const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
-                            vec2 i  = floor(v + dot(v, C.yy));
-                            vec2 x0 = v - i + dot(i, C.xx);
-                            vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-                            vec4 x12 = x0.xyxy + C.xxzz;
-                            x12.xy -= i1;
-                            i = mod289(i);
-                            vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
-                            vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
-                            m = m*m;
-                            m = m*m;
-                            vec3 x = 2.0 * fract(p * C.www) - 1.0;
-                            vec3 h = abs(x) - 0.5;
-                            vec3 ox = floor(x + 0.5);
-                            vec3 a0 = x - ox;
-                            m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
-                            vec3 g;
-                            g.x = a0.x * x0.x + h.x * x0.y;
-                            g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-                            return 130.0 * dot(m, g);
-                        }
-                        
-                        void main() {
-                            vec2 uv = vUv;
-                            vec2 pos = uv * 2.0 - 1.0;
-                            pos.x *= resolution.x / resolution.y;
-                            
-                            // Base gradient
-                            vec3 color = vec3(0.0);
-                            
-                            // Forge heat effect
-                            float n1 = snoise(pos * 2.0 + time * 0.1);
-                            float n2 = snoise(pos * 4.0 - time * 0.15);
-                            float n3 = snoise(pos * 8.0 + time * 0.2);
-                            
-                            float heat = (n1 + n2 * 0.5 + n3 * 0.25) / 1.75;
-                            heat = smoothstep(-0.5, 0.5, heat);
-                            
-                            // Add forge colors
-                            color += vec3(0.2, 0.05, 0.0) * heat; // Dark orange base
-                            color += vec3(0.5, 0.1, 0.0) * pow(heat, 2.0); // Bright orange highlights
-                            color += vec3(0.8, 0.4, 0.0) * pow(heat, 4.0) * 0.3; // Golden sparks
-                            
-                            // Mouse influence
-                            float mouseDist = length(pos - mouse);
-                            float mouseGlow = 1.0 / (1.0 + mouseDist * 5.0);
-                            color += vec3(1.0, 0.3, 0.0) * mouseGlow * 0.2;
-                            
-                            // Vignette
-                            float vignette = 1.0 - length(pos) * 0.5;
-                            color *= vignette;
-                            
-                            gl_FragColor = vec4(color, 1.0);
-                        }
-                    `
-                });
-                
-                const backgroundMesh = new THREE.Mesh(
-                    new THREE.PlaneGeometry(2, 2),
-                    backgroundMaterial
-                );
-                this.scene.add(backgroundMesh);
-                
-                // Animation loop
-                const animateBackground = () => {
-                    requestAnimationFrame(animateBackground);
-                    
-                    backgroundMaterial.uniforms.time.value += 0.005;
-                    backgroundMaterial.uniforms.mouse.value.set(this.mouse.x, this.mouse.y);
-                    
-                    renderer.render(this.scene, camera);
-                };
-                
-                animateBackground();
-                
-                // Handle resize
-                window.addEventListener('resize', () => {
-                    renderer.setSize(window.innerWidth, window.innerHeight);
-                    backgroundMaterial.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
-                });
+                // Background is handled by enhancement scripts
+                // Keep it minimal here
             }
 
             setupSound() {
@@ -1061,55 +955,33 @@
             }
 
             initAudio() {
-                // Initialize Web Audio API with forge sounds
                 if (!this.audioContext) {
                     this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    
-                    // Create forge ambient sound
-                    this.createForgeAmbience();
                 }
+                this.createAmbientDrone();
             }
 
-            createForgeAmbience() {
-                // Create a low rumble for the forge
+            createAmbientDrone() {
                 const osc1 = this.audioContext.createOscillator();
                 const osc2 = this.audioContext.createOscillator();
                 const gainNode = this.audioContext.createGain();
-                const filter = this.audioContext.createBiquadFilter();
                 
-                osc1.type = 'sawtooth';
-                osc1.frequency.setValueAtTime(55, this.audioContext.currentTime); // Low A
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(110, this.audioContext.currentTime);
                 
-                osc2.type = 'triangle';
-                osc2.frequency.setValueAtTime(82.5, this.audioContext.currentTime); // Low E
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(165, this.audioContext.currentTime);
                 
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(200, this.audioContext.currentTime);
-                filter.Q.setValueAtTime(10, this.audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.05, this.audioContext.currentTime);
                 
-                gainNode.gain.setValueAtTime(0.03, this.audioContext.currentTime);
-                
-                // Add subtle modulation
-                const lfo = this.audioContext.createOscillator();
-                const lfoGain = this.audioContext.createGain();
-                lfo.type = 'sine';
-                lfo.frequency.setValueAtTime(0.2, this.audioContext.currentTime);
-                lfoGain.gain.setValueAtTime(5, this.audioContext.currentTime);
-                
-                lfo.connect(lfoGain);
-                lfoGain.connect(osc1.frequency);
-                lfoGain.connect(osc2.frequency);
-                
-                osc1.connect(filter);
-                osc2.connect(filter);
-                filter.connect(gainNode);
+                osc1.connect(gainNode);
+                osc2.connect(gainNode);
                 gainNode.connect(this.audioContext.destination);
                 
                 osc1.start();
                 osc2.start();
-                lfo.start();
                 
-                this.oscillators = [osc1, osc2, lfo];
+                this.oscillators = [osc1, osc2];
             }
 
             stopAudio() {
@@ -1120,7 +992,6 @@
             }
 
             setupInteractions() {
-                // Logo interaction
                 const logoContainer = document.querySelector('.logo-container');
                 logoContainer.addEventListener('mouseenter', () => {
                     logoContainer.style.transform = 'scale(1.05) rotate(1deg)';
@@ -1130,7 +1001,6 @@
                     logoContainer.style.transform = 'scale(1) rotate(0deg)';
                 });
                 
-                // Forge interaction
                 const forgeContainer = document.querySelector('.forge-container');
                 forgeContainer.addEventListener('mouseenter', () => {
                     forgeContainer.style.transform = 'scale(1.02)';
@@ -1145,15 +1015,12 @@
 
             setupCheatCodes() {
                 document.addEventListener('keydown', (e) => {
-                    // Add to buffer
                     this.cheatBuffer += e.key.toUpperCase();
                     
-                    // Keep buffer reasonable length
                     if (this.cheatBuffer.length > 20) {
                         this.cheatBuffer = this.cheatBuffer.slice(-20);
                     }
                     
-                    // Check for cheats
                     for (const [code, action] of Object.entries(this.cheats)) {
                         if (this.cheatBuffer.includes(code)) {
                             action();
@@ -1242,6 +1109,48 @@
                 this.showNotification('MAXIMUM HEAT ACHIEVED');
             }
 
+            activateMegaStructure() {
+                this.megaStructureActive = !this.megaStructureActive;
+                
+                if (this.megaStructureActive) {
+                    // Add many more particles for mega structure
+                    const canvas = document.getElementById('particle-canvas');
+                    for (let i = 0; i < 200; i++) {
+                        this.particles.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            vx: (Math.random() - 0.5) * 0.5,
+                            vy: (Math.random() - 0.5) * 0.5,
+                            size: Math.random() * 3 + 1,
+                            opacity: Math.random() * 0.7 + 0.3
+                        });
+                    }
+                    this.connectionDistance = 250;
+                    
+                    this.showNotification('MEGA STRUCTURE ASSEMBLED');
+                } else {
+                    this.particles = this.particles.slice(0, 100);
+                    this.connectionDistance = 150;
+                    this.showNotification('RETURNING TO NORMAL');
+                }
+            }
+
+            activateMatrixMode() {
+                // Matrix effect is handled by enhancement scripts
+                this.showNotification('MATRIX MODE ACTIVATED');
+                console.log('Matrix effect triggered in enhancement scripts');
+            }
+
+            activateTranscendenceMode() {
+                console.log('✨ TRANSCENDENCE MODE ACTIVATED!');
+                // Already handled by enhancement scripts
+            }
+
+            unlockInfinityMode() {
+                console.log('∞ INFINITY MODE UNLOCKED!');
+                // Already handled by enhancement scripts
+            }
+
             showNotification(message) {
                 const notification = document.createElement('div');
                 notification.style.cssText = `
@@ -1266,7 +1175,6 @@
             }
 
             startIntroAnimation() {
-                // Fade in elements with stagger
                 const elements = [
                     '.logo-container',
                     '.protocol-title',
@@ -1293,10 +1201,9 @@
 
         // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', () => {
-            // Create global instance for enhancements
             window.protocolApp = new ProtocolAnnouncement();
             
-            // Log available cheat codes
+            // Enhanced console messages
             console.log('%c🔥 THE FORGE AWAITS YOUR COMMANDS 🔥', 'color: #FF4500; font-size: 20px; font-weight: bold;');
             console.log('%cAvailable Cheat Codes:', 'color: #FFD700; font-size: 14px;');
             console.log('%c- FORGE: Activate forge mode', 'color: #FFA500;');
@@ -1304,6 +1211,10 @@
             console.log('%c- SOVEREIGN: Activate sovereign mode', 'color: #FFA500;');
             console.log('%c- PROTOCOL: Reveal protocol secrets', 'color: #FFA500;');
             console.log('%c- STEEL: Enhance forge effect', 'color: #FFA500;');
+            console.log('%c- MEGA: Build mega structure from particle network', 'color: #FF00FF;');
+            console.log('%c- MATRIX: Enter the Matrix', 'color: #00FF00;');
+            console.log('%c- TRANSCEND: Activate transcendence mode', 'color: #FFFFFF;');
+            console.log('%c- INFINITY: Unlock infinity mode', 'color: #FFFFFF;');
             console.log('%cType these words anywhere on the page to activate!', 'color: #FF6347; font-style: italic;');
         });
     </script>
